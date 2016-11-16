@@ -5,7 +5,9 @@
 #define BOOST_SPIRIT_THREADSAFE
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-
+#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
+#include <iostream>
 //Added for the default_resource example
 #include <fstream>
 #include <boost/filesystem.hpp>
@@ -22,12 +24,22 @@ typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 //Added for the default_resource example
 void default_resource_send(const HttpServer &server, const shared_ptr<HttpServer::Response> &response,
                            const shared_ptr<ifstream> &ifs);
+void wait(int seconds){
+  boost::this_thread::sleep_for(boost::chrono::seconds{seconds});
+}
+
+void threadTest(){
+  for (int i = 0; i < 5; ++i){
+    wait(1);
+    std::cout << i << '\n';
+  }
+}
 
 int main() {
     //HTTP-server at port 8080 using 1 thread
     //Unless you do more heavy non-threaded processing in the resources,
     //1 thread is usually faster than several threads
-    HttpServer server(8080, 1);
+    HttpServer server(8080,2);
     
     //Add resources using path-regex and method-string, and an anonymous function
     //POST-example for the path /string, responds the posted string
@@ -158,6 +170,9 @@ int main() {
     auto r3=client.request("POST", "/json", json_string);
     cout << r3->content.rdbuf() << endl;
         
+    boost::thread t{threadTest};
+    t.join();
+
     server_thread.join();
     
     return 0;
