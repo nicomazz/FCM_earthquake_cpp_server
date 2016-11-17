@@ -19,16 +19,24 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 
 
-add_executable(http_examples http_examples.cpp)
-target_link_libraries(http_examples ${Boost_LIBRARIES})
-target_link_libraries(http_examples ${CMAKE_THREAD_LIBS_INIT})
+file(GLOB DataSources_dir  "DataSources/*.cpp")
+file(GLOB Models_dir "Models/*.cpp")
+
+add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} )
+#MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
+#MESSAGE( STATUS "dir2 sources:         " ${Dir2_Sources} )
+
+
+
+
+target_link_libraries(http_web_server ${Boost_LIBRARIES})
+target_link_libraries(http_web_server ${CMAKE_THREAD_LIBS_INIT})
 
 if(MSYS) #TODO: Is MSYS true when MSVC is true?
-    target_link_libraries(http_examples ws2_32 wsock32)
-    target_link_libraries(https_examples ws2_32 wsock32)
+    target_link_libraries(http_web_server ws2_32 wsock32)
 endif()
 
 enable_testing()
 add_subdirectory(tests)
 
-install(FILES server_http.hpp client_http.hpp server_https.hpp client_https.hpp DESTINATION include/simple-web-server)
+install(FILES server_http.hpp  DESTINATION include/simple-web-server)
