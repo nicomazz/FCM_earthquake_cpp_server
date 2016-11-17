@@ -17,21 +17,7 @@ endif()
 find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
-if(APPLE)
-    set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
-endif()
 
-#TODO: add requirement for version 1.0.1g (can it be done in one line?)
-find_package(OpenSSL)
-
-if(OPENSSL_FOUND)
-    include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
-
-    add_executable(https_examples https_examples.cpp)
-    target_link_libraries(https_examples ${Boost_LIBRARIES})
-    target_link_libraries(https_examples ${OPENSSL_LIBRARIES})
-    target_link_libraries(https_examples ${CMAKE_THREAD_LIBS_INIT})
-endif()
 
 add_executable(http_examples http_examples.cpp)
 target_link_libraries(http_examples ${Boost_LIBRARIES})
