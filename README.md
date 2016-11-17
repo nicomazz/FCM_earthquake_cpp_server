@@ -10,7 +10,7 @@ A very simple, fast, multithreaded, platform independent HTTP and HTTPS server a
 
 ###Usage
 
-See http_examples.cpp or https_examples.cpp for example usage. 
+See http_web_server.cpp or https_examples.cpp for example usage. 
 
 See particularly the JSON-POST (using Boost.PropertyTree) and the GET /match/[number] examples, which are most relevant.
 
@@ -31,7 +31,7 @@ cd ..
 
 #### HTTP
 
-Run the server and client examples: `./build/http_examples`
+Run the server and client examples: `./build/http_web_server`
 
 Direct your favorite browser to for instance http://localhost:8080/
 

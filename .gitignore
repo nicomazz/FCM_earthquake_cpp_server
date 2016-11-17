@@ -11,7 +11,7 @@ Testing
 compile_commands.json
 
 # executables
-http_examples
+http_web_server
 https_examples
 io_test
 parse_test
