@@ -29,7 +29,8 @@ void wait(int seconds){
 }
 
 void threadTest(){
-  for (int i = 0; i < 5; ++i){
+  for (int i = 0; i < 5; ++i)
+	{
     wait(1);
     std::cout << i << '\n';
   }
