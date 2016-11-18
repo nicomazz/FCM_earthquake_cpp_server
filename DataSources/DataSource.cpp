@@ -36,4 +36,5 @@ std::vector<Event> DataSource::requestEvents() {
     std::clog << "risposta: " << respose;
     // todo check if it is a bad respose
     return parseEvents(respose);
-};
+}
+

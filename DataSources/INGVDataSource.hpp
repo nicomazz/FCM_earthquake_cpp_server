@@ -21,4 +21,6 @@ private:
     virtual std::vector<Event> parseEvents(std::string webResponse) override;
 
     virtual std::string getWebServiceUrlParams() override;
+
+    ~INGVDataSource(){}
 };

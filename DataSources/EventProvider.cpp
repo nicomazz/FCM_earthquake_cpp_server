@@ -6,12 +6,12 @@
 std::vector<Event>  EventProvider::requestEventWebUpdate(){
 	using namespace std;
 
-	DataSource sources[] = {INGVDataSource()}; // add here other dataSource
-	int sz = sizeof(sources)/sizeof(sources[0]);
+    vector<unique_ptr<DataSource>> sources;
+    sources.push_back(unique_ptr<DataSource>(new INGVDataSource));
 	vector<Event> results;
 
-	for (int i = 0; i < sz; i++){
-		vector<Event> thisResults = sources[i].requestEvents();
+	for (unique_ptr<DataSource> & thisDatasource: sources){
+		vector<Event> thisResults = thisDatasource->requestEvents();
 		results.insert(results.end(), thisResults.begin(), thisResults.end());
 	}
 

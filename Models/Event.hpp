@@ -4,6 +4,9 @@
 
 #include <string>
 
+//#include <odb/core.hxx>
+
+//#pragma db object
 class Event{
 public:
 	Event(){}
