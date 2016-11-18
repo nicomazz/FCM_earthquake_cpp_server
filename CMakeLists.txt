@@ -22,7 +22,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 file(GLOB DataSources_dir  "DataSources/*.cpp")
 file(GLOB Models_dir "Models/*.cpp")
 
-add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} DataSources/DataSource.h)
+add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} DataSources/DataSource.hpp DataSources/DataSource.cpp)
 #MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
 #MESSAGE( STATUS "dir2 sources:         " ${Dir2_Sources} )
 

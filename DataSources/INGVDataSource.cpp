@@ -4,23 +4,7 @@
 #include <iostream>
 #include "INGVDataSource.hpp"
 
-std::vector <Event> INGVDataSource::requestEvents() {
-    SimpleWeb::Client<SimpleWeb::HTTP> client("webservices.ingv.it");
-    std::string respose;
-    {
-        std::stringstream output;
-        auto r=client.request("GET","/fdsnws/event/1/query?format=text");
-        output << r->content.rdbuf();
-        respose = output.str();
-    }
-    std::clog<<"risposta: "<<respose;
-    // todo check if it is a bad respose
-    return parseEvents(respose);
-}
 
-std::string INGVDataSource::getWebServiceUrl() {
-    return "webservices.ingv.it/fdsnws/event/1/query?format=text";
-}
 
 std::vector <Event> INGVDataSource::parseEvents(std::string webResponse) {
     std::vector<std::string> eventsStrings = split(webResponse,'\n');
@@ -51,4 +35,11 @@ Event INGVDataSource::buildEvent(std::string s) {
     ss>>event.depthKm>>event.author>>event.catalog>>event.contributor>>event.contributorId>>event.magType;
     ss>>event.magnitude>>event.author>>event.eventLocation;
     return event;
+}
+
+std::string INGVDataSource::getWebServiceUrlParams() {
+    return "/fdsnws/event/1/query?format=text";
+}
+std::string INGVDataSource::getWebServiceUrl() {
+    return "webservices.ingv.it";
 }

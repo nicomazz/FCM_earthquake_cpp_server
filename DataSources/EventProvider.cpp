@@ -4,10 +4,17 @@
 
 
 std::vector<Event>  EventProvider::requestEventWebUpdate(){
-	//todo richiesta get a web service dei vari data sources..
-	// per ora creo 10 eventi e li restituisco
-	INGVDataSource ingv;
-	std::vector<Event> results = ingv.requestEvents();
+	using namespace std;
+
+	DataSource sources[] = {INGVDataSource()}; // add here other dataSource
+	int sz = sizeof(sources)/sizeof(sources[0]);
+	vector<Event> results;
+
+	for (int i = 0; i < sz; i++){
+		vector<Event> thisResults = sources[i].requestEvents();
+		results.insert(results.end(), thisResults.begin(), thisResults.end());
+	}
+
 	std::clog<<"numero di eventi presi: "<<results.size()<<"\n";
 	return results;
 }
