@@ -3,24 +3,24 @@ sudo: required
 services:
 
 script:
-  - apt-get update 
-  - apt-get install --yes cmake make g\+\+ clang perl libssl-dev libboost-thread-dev libboost-regex-dev libboost-date-time-dev libboost-filesystem-dev 
-  - curl -O http://www.codesynthesis.com/download/odb/2.4/odb_2.4.0-1_i386.deb 
-  - sudo dpkg -i odb_2.4.0-1_i386.deb 
-  - curl -O http://www.codesynthesis.com/download/odb/2.4/libodb-sqlite-2.4.0.tar.gz 
-  - tar -xvzf libodb-sqlite-2.4.0.tar.gz 
-  - cd libodb-sqlite-2.4.0/ 
-  - ./configure 
-  - make 
-  - make install 
-  - cd .. &
-  - cd /repository  mkdir build  cd build 
-  - scan-build cmake -DCMAKE_CXX_FLAGS=-Werror .. 
-  - scan-build --status-bugs make 
-  - rm -r * 
-  - CXX=clang++ cmake -DCMAKE_CXX_FLAGS=-Werror .. 
-  - make 
-  - rm -r * 
-  - CXX=g++ cmake -DCMAKE_CXX_FLAGS=-Werror .. 
-  - make 
-  - CTEST_OUTPUT_ON_FAILURE=1 make test
+  - sudo apt-get update
+  - sudo apt-get install --yes cmake make g\+\+ clang perl libssl-dev libboost-thread-dev libboost-regex-dev libboost-date-time-dev libboost-filesystem-dev libc6
+  - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/odb_2.4.0-1_i386.deb
+  - sudo dpkg -i odb_2.4.0-1_i386.deb
+  - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/libodb-sqlite-2.4.0.tar.gz
+  - sudo tar -xvzf libodb-sqlite-2.4.0.tar.gz
+  - sudo cd libodb-sqlite-2.4.0/
+  - sudo ./configure
+  - sudo make
+  - sudo make install
+  - sudo cd .. &
+  - sudo cd /repository  mkdir build  cd build
+  - sudo scan-build cmake -DCMAKE_CXX_FLAGS=-Werror ..
+  - sudo scan-build --status-bugs make
+  - sudo rm -r *
+  - sudo CXX=clang++ cmake -DCMAKE_CXX_FLAGS=-Werror ..
+  - sudo make
+  - sudo rm -r *
+  - sudo CXX=g++ cmake -DCMAKE_CXX_FLAGS=-Werror ..
+  - sudo make
+  - sudo CTEST_OUTPUT_ON_FAILURE=1 make test
