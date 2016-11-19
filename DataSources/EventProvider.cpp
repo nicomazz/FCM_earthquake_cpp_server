@@ -24,6 +24,16 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
     return results;
 }
 
+std::vector<Event> EventProvider::requestNewEventNotInDB(){
+    std::vector<Event> all_events = requestEventWebUpdate();
+    std::vector<Event> new_events;
+    for (Event & e : all_events){
+        if (isEventPresent(e.id))continue;
+        new_events.push_back(e);
+    }
+    return new_events;
+}
+
 std::vector<Event> EventProvider::requestEventFromDB() {
     using namespace odb::core;
     std::vector<Event> results;
@@ -48,10 +58,10 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     return results;
 }
 
-void EventProvider::persistEvent(Event e) {
+void EventProvider::persistEvent(Event e, bool checkAlreadyPresent) {
     using namespace odb::core;
 
-    if (isEventPresent(e.id)) // esiste già
+    if (checkAlreadyPresent && isEventPresent(e.id)) // esiste già
         return;
 
     try {

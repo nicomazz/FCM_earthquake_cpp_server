@@ -3,6 +3,8 @@
 #include "DataSources/EventProvider.hpp"
 
 //Added for the json-example
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 #define BOOST_SPIRIT_THREADSAFE
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -29,19 +31,24 @@ void wait(int seconds){
     boost::this_thread::sleep_for(boost::chrono::seconds{seconds});
 }
 
+void handleEventNotification(Event e){
+
+}
+
 void eventsParse(){
     EventProvider dataSource;
     for (;;)
     {
         wait(2);
-        std::vector<Event> events = dataSource.requestEventWebUpdate();
-       // for (Event e: events){
-            //std::cout<<"evento trovato: "<<e.id<<" position: "<<e.eventLocation<<'\n';
-       // }
+        std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
+        std::cout<<"numero di nuovi eventi non presenti prima: "<<newEvents.size()<<"\n";
+        for (Event & e: newEvents){
+            dataSource.persistEvent(e);
+            handleEventNotification(e);
+        }
+
         std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
         std::cout<<"eventi nel db attualmente: "<<eventsInDb.size()<<"\n";
-        for (Event e : events)
-            dataSource.persistEvent(e);
         std::cout << "esecuzione attuale terminata\n\n\n";
     }
 }
@@ -206,3 +213,5 @@ void default_resource_send(const HttpServer &server, const shared_ptr<HttpServer
         }
     }
 }
+
+#pragma clang diagnostic pop
