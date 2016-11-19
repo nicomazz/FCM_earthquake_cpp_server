@@ -4,14 +4,16 @@
 
 #include <string>
 
-//#include <odb/core.hxx>
+#include <odb/core.hxx>
 
-//#pragma db object
+#pragma db object
 class Event{
 public:
-	Event(){}
+    Event(){id = 0;}
 	Event(int id, std::string location);
-	int id;
+
+    #pragma db id
+    unsigned long id;
 	std::string date;
 	double depthKm;
 	std::string author;
@@ -26,6 +28,9 @@ public:
 	double distance;
 	double lat;
 	double lng;
+private:
+    friend class odb::access;
+
 };
 
 #endif

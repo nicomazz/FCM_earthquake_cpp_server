@@ -22,15 +22,20 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 file(GLOB DataSources_dir  "DataSources/*.cpp")
 file(GLOB Models_dir "Models/*.cpp")
 
-add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} DataSources/DataSource.hpp DataSources/DataSource.cpp)
+add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} DataSources/DataSource.hpp DataSources/DataSource.cpp Models/database.hpp)
 #MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
-#MESSAGE( STATUS "dir2 sources:         " ${Dir2_Sources} )
+MESSAGE( STATUS "boost lib         " ${Boost_LIBRARIES} )
 
 
 
 
-target_link_libraries(http_web_server ${Boost_LIBRARIES})
-target_link_libraries(http_web_server ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(http_web_server
+        ${Boost_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT}
+        odb
+        odb-sqlite
+        )
+
 
 if(MSYS) #TODO: Is MSYS true when MSVC is true?
     target_link_libraries(http_web_server ws2_32 wsock32)

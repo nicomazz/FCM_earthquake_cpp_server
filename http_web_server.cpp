@@ -33,12 +33,16 @@ void eventsParse(){
     EventProvider dataSource;
     for (;;)
     {
-        wait(10);
+        wait(2);
         std::vector<Event> events = dataSource.requestEventWebUpdate();
-        for (Event e: events){
-            std::cout<<"evento trovato: "<<e.id<<" position: "<<e.eventLocation<<'\n';
-        }
-        std::cout << "esecuzione attuale terminata";
+       // for (Event e: events){
+            //std::cout<<"evento trovato: "<<e.id<<" position: "<<e.eventLocation<<'\n';
+       // }
+        std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
+        std::cout<<"eventi nel db attualmente: "<<eventsInDb.size()<<"\n";
+        for (Event e : events)
+            dataSource.persistEvent(e);
+        std::cout << "esecuzione attuale terminata\n\n\n";
     }
 }
 

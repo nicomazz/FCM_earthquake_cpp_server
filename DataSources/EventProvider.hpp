@@ -3,12 +3,18 @@
 
 
 #include <vector>
+#include <memory>
 #include "Models/Event.hpp"
 
 class EventProvider{
 public:
 	EventProvider(){}
 	std::vector<Event>  requestEventWebUpdate();
+
+	std::vector<Event> requestEventFromDB();
+    void persistEvent(Event e);
+    Event getEvent(long id);
+    bool isEventPresent(long id);
 
 };
 

@@ -33,7 +33,6 @@ std::vector<Event> DataSource::requestEvents() {
         output << r->content.rdbuf();
         respose = output.str();
     }
-    std::clog << "risposta: " << respose;
     // todo check if it is a bad respose
     return parseEvents(respose);
 }
