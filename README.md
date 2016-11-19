@@ -1,4 +1,4 @@
-Simple-Web-Server [![Build Status](https://travis-ci.org/eidheim/Simple-Web-Server.svg?branch=master)](https://travis-ci.org/eidheim/Simple-Web-Server)
+Simple-Web-Server [![Build Status](https://travis-ci.org/nicomazz/Simple-Web-Server.svg?branch=master)](https://travis-ci.org/eidheim/Simple-Web-Server)
 =================
 
 Fork of https://github.com/eidheim/Simple-Web-Server to implement a c++ Web-server to manage Firebase Cloud Messaging.
