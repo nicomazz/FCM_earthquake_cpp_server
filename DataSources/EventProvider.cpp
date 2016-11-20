@@ -1,20 +1,14 @@
-#include <iostream>
-#include <sqlite3.h>
 #include "EventProvider.hpp"
-#include "INGVDataSource.hpp"
-#include "../Models/Event-odb.hpp"
-
-#include "../Models/database.hpp"
 
 
 std::vector<Event> EventProvider::requestEventWebUpdate() {
     using namespace std;
 
-    vector<unique_ptr<DataSource>> sources;
-    sources.push_back(unique_ptr<DataSource>(new INGVDataSource));
+    vector<unique_ptr<WebDataSourceInterface>> sources;
+    sources.push_back(unique_ptr<WebDataSourceInterface>(new INGVDataSource));
     vector<Event> results;
 
-    for (unique_ptr<DataSource> &thisDatasource: sources) {
+    for (unique_ptr<WebDataSourceInterface> &thisDatasource: sources) {
         vector<Event> thisResults = thisDatasource->requestEvents();
         results.insert(results.end(), thisResults.begin(), thisResults.end());
     }
@@ -24,10 +18,10 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
     return results;
 }
 
-std::vector<Event> EventProvider::requestNewEventNotInDB(){
+std::vector<Event> EventProvider::requestNewEventNotInDB() {
     std::vector<Event> all_events = requestEventWebUpdate();
     std::vector<Event> new_events;
-    for (Event & e : all_events){
+    for (Event &e : all_events) {
         if (isEventPresent(e.id))continue;
         new_events.push_back(e);
     }
@@ -38,7 +32,7 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     using namespace odb::core;
     std::vector<Event> results;
 
-    std::unique_ptr<database> db(getDB());
+    database *db = Database::getInstance().getEventDatabase();
 
     {
         typedef odb::query<Event> query;
@@ -65,7 +59,7 @@ void EventProvider::persistEvent(Event e, bool checkAlreadyPresent) {
         return;
 
     try {
-        std::unique_ptr<database> db(getDB());
+        database *db = Database::getInstance().getEventDatabase();
         {
             transaction t(db->begin());
             db->persist(e);
@@ -82,11 +76,11 @@ Event EventProvider::getEvent(long id) {
     typedef odb::result<Event> result;
 
     try {
-        std::unique_ptr<database> db(getDB());
+        database *db = Database::getInstance().getEventDatabase();
         transaction t(db->begin());
 
         result r(db->query<Event>(query::id == id));
-       // result<Event> r(db->query<Event>());
+        // result<Event> r(db->query<Event>());
 
 
         for (const Event e: r) {

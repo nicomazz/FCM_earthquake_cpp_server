@@ -20,9 +20,10 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 
 file(GLOB DataSources_dir  "DataSources/*.cpp")
-file(GLOB Models_dir "Models/*.cpp")
+file(GLOB Models_dir "Models/*/*.cpp")
+file(GLOB Firebase_dir "Firebase/*.cpp")
 
-add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} DataSources/DataSource.hpp DataSources/DataSource.cpp Models/database.hpp)
+add_executable(http_web_server http_web_server.cpp ${DataSources_dir} ${Models_dir} ${Firebase_dir} DataSources/Database.hpp Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp FirecloudServerInitializer.h Models/User/UserBuilder.cpp Models/User/UserBuilder.h)
 #MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
 MESSAGE( STATUS "boost lib         " ${Boost_LIBRARIES} )
 

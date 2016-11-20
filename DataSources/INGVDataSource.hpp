@@ -1,6 +1,6 @@
-#include "DataSource.hpp"
+#include "WebDataSourceInterface.hpp"
 
-class INGVDataSource : public DataSource{
+class INGVDataSource : public WebDataSourceInterface{
 private:
     /**
      * costruisce un evento a partire da una stringa

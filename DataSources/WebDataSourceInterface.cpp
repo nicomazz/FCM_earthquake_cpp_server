@@ -2,9 +2,9 @@
 // Created by nicomazz97 on 18/11/16.
 //
 #include <iostream>
-#include "DataSource.hpp"
+#include "WebDataSourceInterface.hpp"
 
-std::vector<std::string> DataSource::split(std::string &str, char delimiter) {
+std::vector<std::string> WebDataSourceInterface::split(std::string &str, char delimiter) {
     static char buffer[5000];
     std::vector<std::string> result;
     int sz = str.size();
@@ -24,7 +24,7 @@ std::vector<std::string> DataSource::split(std::string &str, char delimiter) {
     return result;
 }
 
-std::vector<Event> DataSource::requestEvents() {
+std::vector<Event> WebDataSourceInterface::requestEvents() {
     SimpleWeb::Client<SimpleWeb::HTTP> client(getWebServiceUrl());
     std::string respose;
     {

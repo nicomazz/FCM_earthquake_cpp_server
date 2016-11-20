@@ -5,12 +5,12 @@
 #ifndef SIMPLE_WEB_SERVER_DATASOURCE_H
 #define SIMPLE_WEB_SERVER_DATASOURCE_H
 
-#include <Models/Event.hpp>
+#include <Models/Event/Event.hpp>
 #include <vector>
 #include <sstream>
 #include <client_http.hpp>
 
-class DataSource {
+class WebDataSourceInterface {
 public:
     virtual std::vector<Event> requestEvents();
 
