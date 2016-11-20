@@ -65,7 +65,7 @@ namespace FCMServer {
                 cout<<esit<<"\n";
 
                 long newId = UserPreferenceProvider().handleNewUserRequest(user);
-                stringstream ss; ss<<"new id: "<<newId;
+                stringstream ss; ss<<"{ \"id\":"<<newId<<"}";
                 std::string resp = ss.str();
 
                 *response << "HTTP/1.1 200 OK\r\n"

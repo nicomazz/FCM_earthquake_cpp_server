@@ -73,8 +73,9 @@ int main() {
     //Wait for server to start so that the client can connect
     this_thread::sleep_for(chrono::seconds(1));
 
+    cout<<"Server initialized.."<<endl;
     //Client examples
-    HttpClient client("localhost:8080");
+    /*HttpClient client("localhost:8080");
     auto r1 = client.request("GET", "/match/123");
     cout << r1->content.rdbuf() << endl;
 
@@ -84,7 +85,7 @@ int main() {
 
     auto r3 = client.request("POST", "/json", json_string);
     cout << r3->content.rdbuf() << endl;
-
+*/
     boost::thread t{eventsParse};
     t.join();
 

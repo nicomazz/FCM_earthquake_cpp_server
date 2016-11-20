@@ -32,7 +32,7 @@ public:
         u.lng = getDouble(json_content, "lng");
         u.minMagPreference = getDouble(json_content, "minMagnitude");
         u.maxDistancePreference = getDouble(json_content, "maxDistance");
-        u.minMillisNotificationDelay = getLong(json_content, "minDistanceNotification");
+        u.minMillisNotificationDelay = getLong(json_content, "minTemporalDistanceBwNotification");
         u.lastNotificationMillis = 0;
 
         return u;
