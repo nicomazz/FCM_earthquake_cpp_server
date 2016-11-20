@@ -4,7 +4,7 @@ services:
 
 script:
   - sudo apt-get update
-  - sudo apt-get install --yes cmake make g\+\+ clang perl libssl-dev libboost-all-dev
+  - sudo apt-get install --yes cmake make g\+\+ clang perl libssl-dev libboost1.58-all-dev
   - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/odb_2.4.0-1_amd64.deb
   - sudo dpkg -i odb_2.4.0-1_amd64.deb
   - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/libodb-2.4.0.tar.gz
