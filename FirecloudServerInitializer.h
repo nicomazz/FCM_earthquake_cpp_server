@@ -51,6 +51,10 @@ namespace FCMServer {
 
     void initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
+        /**
+         * handle request to add/update user info.
+         * the respose is a json with the id of the new/updated user
+         */
         server.resource["^/addUser"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                                   shared_ptr<HttpServer::Request> request) {
             try {
@@ -59,9 +63,9 @@ namespace FCMServer {
 
                 std::string esit;
                 if (user.id  < 0) // non esisteva!
-                    esit = "creato nuovo utente";
+                    esit = "New user created";
                 else
-                    esit = "aggiornato utente!";
+                    esit = "user updated";
                 cout<<esit<<"\n";
 
                 long newId = UserPreferenceProvider().handleNewUserRequest(user);

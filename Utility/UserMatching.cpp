@@ -3,6 +3,7 @@
 //
 
 #include "UserMatching.hpp"
+#include "TimeUtility.hpp"
 #include <chrono>
 
 
@@ -21,8 +22,7 @@ bool UserMatching::respectMagnitudeConstraint() {
 
 bool UserMatching::respectNotifyDelayConstraint() {
     using namespace std::chrono;
-    long ms =  duration_cast<milliseconds>
-            (system_clock::now().time_since_epoch()).count();
+    long ms =  TimeUtils::getCurrentMillis();
     return abs(ms - mUser.lastNotificationMillis) >= mUser.minMillisNotificationDelay;
     return false;
 }

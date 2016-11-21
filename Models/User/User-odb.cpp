@@ -124,6 +124,10 @@ namespace odb
     //
     t[7UL] = false;
 
+    // lastModify
+    //
+    t[8UL] = false;
+
     return grew;
   }
 
@@ -199,6 +203,13 @@ namespace odb
     b[n].type = sqlite::bind::integer;
     b[n].buffer = &i.lastNotificationMillis_value;
     b[n].is_null = &i.lastNotificationMillis_null;
+    n++;
+
+    // lastModify
+    //
+    b[n].type = sqlite::bind::integer;
+    b[n].buffer = &i.lastModify_value;
+    b[n].is_null = &i.lastModify_null;
     n++;
   }
 
@@ -356,6 +367,22 @@ namespace odb
       i.lastNotificationMillis_null = is_null;
     }
 
+    // lastModify
+    //
+    {
+      long int const& v =
+        o.lastModify;
+
+      bool is_null (false);
+      sqlite::value_traits<
+          long int,
+          sqlite::id_integer >::set_image (
+        i.lastModify_value,
+        is_null,
+        v);
+      i.lastModify_null = is_null;
+    }
+
     return grew;
   }
 
@@ -480,6 +507,20 @@ namespace odb
         i.lastNotificationMillis_value,
         i.lastNotificationMillis_null);
     }
+
+    // lastModify
+    //
+    {
+      long int& v =
+        o.lastModify;
+
+      sqlite::value_traits<
+          long int,
+          sqlite::id_integer >::set_value (
+        v,
+        i.lastModify_value,
+        i.lastModify_null);
+    }
   }
 
   void access::object_traits_impl< ::User, id_sqlite >::
@@ -506,9 +547,10 @@ namespace odb
   "\"minMagPreference\", "
   "\"maxDistancePreference\", "
   "\"minMillisNotificationDelay\", "
-  "\"lastNotificationMillis\") "
+  "\"lastNotificationMillis\", "
+  "\"lastModify\") "
   "VALUES "
-  "(?, ?, ?, ?, ?, ?, ?, ?)";
+  "(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::User, id_sqlite >::find_statement[] =
   "SELECT "
@@ -519,7 +561,8 @@ namespace odb
   "\"User\".\"minMagPreference\", "
   "\"User\".\"maxDistancePreference\", "
   "\"User\".\"minMillisNotificationDelay\", "
-  "\"User\".\"lastNotificationMillis\" "
+  "\"User\".\"lastNotificationMillis\", "
+  "\"User\".\"lastModify\" "
   "FROM \"User\" "
   "WHERE \"User\".\"id\"=?";
 
@@ -532,7 +575,8 @@ namespace odb
   "\"minMagPreference\"=?, "
   "\"maxDistancePreference\"=?, "
   "\"minMillisNotificationDelay\"=?, "
-  "\"lastNotificationMillis\"=? "
+  "\"lastNotificationMillis\"=?, "
+  "\"lastModify\"=? "
   "WHERE \"id\"=?";
 
   const char access::object_traits_impl< ::User, id_sqlite >::erase_statement[] =
@@ -548,7 +592,8 @@ namespace odb
   "\"User\".\"minMagPreference\", "
   "\"User\".\"maxDistancePreference\", "
   "\"User\".\"minMillisNotificationDelay\", "
-  "\"User\".\"lastNotificationMillis\" "
+  "\"User\".\"lastNotificationMillis\", "
+  "\"User\".\"lastModify\" "
   "FROM \"User\"";
 
   const char access::object_traits_impl< ::User, id_sqlite >::erase_query_statement[] =
@@ -985,7 +1030,8 @@ namespace odb
                       "  \"minMagPreference\" REAL NULL,\n"
                       "  \"maxDistancePreference\" REAL NULL,\n"
                       "  \"minMillisNotificationDelay\" INTEGER NOT NULL,\n"
-                      "  \"lastNotificationMillis\" INTEGER NOT NULL)");
+                      "  \"lastNotificationMillis\" INTEGER NOT NULL,\n"
+                      "  \"lastModify\" INTEGER NOT NULL)");
           return false;
         }
       }

@@ -2,14 +2,6 @@
 // Created by nicomazz97 on 19/11/16.
 //
 
-
-// file      : c++11/database.hxx
-// copyright : not copyrighted - public domain
-
-//
-// Create concrete database instance based on the DATABASE_* macros.
-//
-
 #ifndef DATABASE_HXX
 #define DATABASE_HXX
 
@@ -20,16 +12,16 @@
 
 #include <odb/database.hxx>
 
-#define DATABASE_SQLITE
 
-#  include <odb/connection.hxx>
-#  include <odb/transaction.hxx>
-#  include <odb/schema-catalog.hxx>
-#  include <odb/sqlite/database.hxx>
+#include <odb/connection.hxx>
+#include <odb/transaction.hxx>
+#include <odb/schema-catalog.hxx>
+#include <odb/sqlite/database.hxx>
 #include <odb/sqlite/exceptions.hxx>
 
+#include "../Models/Event/Event-odb.hpp"
+
 #define DATABASE_NAME "database.sqlite"
-#define EVENT_DATABASE "Events.db"
 
 class Database {
 public:
@@ -43,10 +35,11 @@ public:
         if (db)
             return db;
 
-        db.reset(new odb::sqlite::database(EVENT_DATABASE, SQLITE_OPEN_READWRITE));
+        db.reset(new odb::sqlite::database(DATABASE_NAME, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE));
 
         if (!databaseExist())
             createDatabase();
+        return db;
     }
 
 

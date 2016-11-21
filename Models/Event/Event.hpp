@@ -13,7 +13,7 @@ public:
 	Event(int id, std::string location);
 
     #pragma db id
-    unsigned long id;
+	long id;
 	std::string date;
 	double depthKm;
 	std::string author;

@@ -11,10 +11,8 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
     using namespace odb::core;
     std::vector<User> results;
 
-    database *db = Database::getInstance().getUserDatabase();
-
+    std::shared_ptr<database> db = Database::getInstance().getDatabase();
     {
-        typedef odb::query<User> query;
         typedef odb::result<User> result;
 
         // session s;
@@ -38,9 +36,10 @@ void UserPreferenceProvider::persistUser(User& user, bool checkAlreadyPresent) {
         return;
 
     try {
-        database *db = Database::getInstance().getUserDatabase();
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
         {
             transaction t(db->begin());
+            user.lastModify = TimeUtils::getCurrentMillis();
             user.id = db->persist(user);
             std::cout<<"id nuovo: "<<user.id<<"\n";
             t.commit();
@@ -56,7 +55,7 @@ User UserPreferenceProvider::getUser(long  id) {
     typedef odb::result<User> result;
 
     try {
-        database *db = Database::getInstance().getUserDatabase();
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
 
         result r(db->query<User>(query::id == id));
@@ -80,30 +79,16 @@ bool UserPreferenceProvider::isUserPresent(long id) {
     return getUser(id).id == id;
 }
 
-std::vector<User> UserPreferenceProvider::requestUsersToNotify(Event event) {
-    std::vector<User> allUsers = requestUsersFromDB();
-    std::vector<User> toNotify;
-
-    for (User &user: toNotify)
-        if (isUserToBeNotified(user, event)) {
-            toNotify.push_back(user);
-        }
 
 
-    return std::vector<User>();
-}
 
-bool UserPreferenceProvider::isUserToBeNotified(User &u, Event &e) {
-    return UserMatching(u, e).toNotify();
-}
 
 void UserPreferenceProvider::updateUser(User &user) {
     using namespace odb::core;
-    typedef odb::query<User> query;
-    typedef odb::result<User> result;
     try {
-        database *db = Database::getInstance().getUserDatabase();
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
+        user.lastModify = TimeUtils::getCurrentMillis();
         db->update(user);
         t.commit();
     } catch (const odb::exception &e) {

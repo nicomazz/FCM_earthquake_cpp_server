@@ -13,7 +13,7 @@
 #include <vector>
 #include <algorithm>
 #include <DataSources/UserPreferenceProvider.hpp>
-#include <Firebase/FirebaseNotificationHandler.hpp>
+#include <Firebase/FirebaseNotificationManager.hpp>
 
 using namespace std;
 
@@ -24,26 +24,30 @@ void wait(int seconds) {
     boost::this_thread::sleep_for(boost::chrono::seconds{seconds});
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /**
- * ciclo di esecuzione principale del server
+ * Main server loop
  * */
 void eventsParse() {
     EventProvider dataSource;
-    FirebaseNotificationHandler notificationHandler;
+    FirebaseNotificationManager notificationHandler;
     for (;;) {
-        wait(30);
+
         std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
-        std::cout << "numero di nuovi eventi non presenti prima: " << newEvents.size() << "\n";
+        std::cout << "Number of new events: " << newEvents.size() << "\n";
         for (Event &e: newEvents) {
             dataSource.persistEvent(e);
             notificationHandler.handleEventNotification(e);
         }
 
         std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
-        std::cout << "eventi nel db attualmente: " << eventsInDb.size() << "\n";
-        std::cout << "esecuzione attuale terminata\n\n\n";
+        //test:
+        std::cout << "Events in db: " << eventsInDb.size() << "\n\n\n";
+        wait(10);
     }
 }
+#pragma clang diagnostic pop
 
 
 

@@ -26,6 +26,8 @@ public:
 
     Event getEvent(long id);
 
+    void deleteEvent(Event e);
+
     bool isEventPresent(long id);
 
 };

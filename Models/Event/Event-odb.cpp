@@ -49,7 +49,7 @@ namespace odb
     id_type id;
     {
       sqlite::value_traits<
-          long unsigned int,
+          long int,
           sqlite::id_integer >::set_value (
         id,
         i.id_value,
@@ -341,12 +341,12 @@ namespace odb
     //
     if (sk == statement_insert)
     {
-      long unsigned int const& v =
+      long int const& v =
         o.id;
 
       bool is_null (false);
       sqlite::value_traits<
-          long unsigned int,
+          long int,
           sqlite::id_integer >::set_image (
         i.id_value,
         is_null,
@@ -617,11 +617,11 @@ namespace odb
     // id
     //
     {
-      long unsigned int& v =
+      long int& v =
         o.id;
 
       sqlite::value_traits<
-          long unsigned int,
+          long int,
           sqlite::id_integer >::set_value (
         v,
         i.id_value,
@@ -839,7 +839,7 @@ namespace odb
     {
       bool is_null (false);
       sqlite::value_traits<
-          long unsigned int,
+          long int,
           sqlite::id_integer >::set_image (
         i.id_value,
         is_null,

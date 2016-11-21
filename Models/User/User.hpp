@@ -25,7 +25,6 @@ public:
 
     long lastNotificationMillis;
 
-#pragma db type("TIMESTAMP") not_null
     long lastModify;
 };
 

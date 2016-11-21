@@ -5,13 +5,13 @@
 #ifndef SIMPLE_WEB_SERVER_USERPROVIDER_H
 #define SIMPLE_WEB_SERVER_USERPROVIDER_H
 
-#include <Models/User/User-odb.hpp>
+#include "Models/User/User-odb.hpp"
+#include "Models/Event/Event.hpp"
+#include "Utility/TimeUtility.hpp"
+#include "Models/User/User.hpp"
 #include <vector>
-#include <Models/Event/Event.hpp>
-
 #include <iostream>
 #include <sqlite3.h>
-#include <Models/User/User.hpp>
 
 /**
  * da qui si effettueranno query al db sqlite per prendere gli utenti
@@ -23,7 +23,6 @@ public:
 
     std::vector<User> requestUsersFromDB();
 
-    std::vector<User> requestUsersToNotify(Event e);
 
     /**
      * salva lo stato dell'utente sul db  e aggiorna l'id di user

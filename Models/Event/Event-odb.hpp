@@ -51,7 +51,7 @@ namespace odb
 
     static const bool polymorphic = false;
 
-    typedef long unsigned int id_type;
+    typedef long int id_type;
 
     static const bool auto_id = false;
 
@@ -96,7 +96,7 @@ namespace odb
     typedef
     sqlite::query_column<
       sqlite::value_traits<
-        long unsigned int,
+        long int,
         sqlite::id_integer >::query_type,
       sqlite::id_integer >
     id_type_;

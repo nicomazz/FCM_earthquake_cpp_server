@@ -32,10 +32,9 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     using namespace odb::core;
     std::vector<Event> results;
 
-    database *db = Database::getInstance().getDatabase();
+    std::shared_ptr<database> db = Database::getInstance().getDatabase();
 
     {
-        typedef odb::query<Event> query;
         typedef odb::result<Event> result;
 
         // session s;
@@ -59,7 +58,7 @@ void EventProvider::persistEvent(Event e, bool checkAlreadyPresent) {
         return;
 
     try {
-        database *db = Database::getInstance().getDatabase();
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
         {
             transaction t(db->begin());
             db->persist(e);
@@ -76,11 +75,10 @@ Event EventProvider::getEvent(long id) {
     typedef odb::result<Event> result;
 
     try {
-        database *db = Database::getInstance().getDatabase();
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
 
         result r(db->query<Event>(query::id == id));
-        // result<Event> r(db->query<Event>());
 
 
         for (const Event e: r) {
@@ -98,5 +96,19 @@ Event EventProvider::getEvent(long id) {
 
 bool EventProvider::isEventPresent(long id) {
     return getEvent(id).id == id;
+}
+
+void EventProvider::deleteEvent(Event e) {
+    using namespace odb::core;
+
+    try {
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
+        transaction t(db->begin());
+        db->erase(e);
+        t.commit();
+
+    } catch (const odb::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
