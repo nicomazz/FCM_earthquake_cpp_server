@@ -32,7 +32,7 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     using namespace odb::core;
     std::vector<Event> results;
 
-    database *db = Database::getInstance().getEventDatabase();
+    database *db = Database::getInstance().getDatabase();
 
     {
         typedef odb::query<Event> query;
@@ -59,7 +59,7 @@ void EventProvider::persistEvent(Event e, bool checkAlreadyPresent) {
         return;
 
     try {
-        database *db = Database::getInstance().getEventDatabase();
+        database *db = Database::getInstance().getDatabase();
         {
             transaction t(db->begin());
             db->persist(e);
@@ -76,7 +76,7 @@ Event EventProvider::getEvent(long id) {
     typedef odb::result<Event> result;
 
     try {
-        database *db = Database::getInstance().getEventDatabase();
+        database *db = Database::getInstance().getDatabase();
         transaction t(db->begin());
 
         result r(db->query<Event>(query::id == id));

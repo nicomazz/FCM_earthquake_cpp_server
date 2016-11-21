@@ -7,7 +7,7 @@
 #include "Models/Event/Event.hpp"
 #include <iostream>
 #include <sqlite3.h>
-#include "INGVDataSource.hpp"
+#include "DataSources/EventsWebProvider/INGVDataSource.hpp"
 #include "Models/Event/Event-odb.hpp"
 
 #include "Database.hpp"
