@@ -14,8 +14,14 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_BOOST_REGEX")
     endif()
 endif()
-find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
+
+find_package(Boost)
+IF (Boost_FOUND)
+    INCLUDE_DIRECTORIES(SYSTEM ${Boost_INCLUDE_DIR})
+ENDIF()
+
+#find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
+#include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 if(APPLE)
     set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")

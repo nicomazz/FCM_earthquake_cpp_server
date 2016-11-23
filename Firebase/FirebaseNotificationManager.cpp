@@ -5,6 +5,10 @@
 #include "FirebaseNotificationManager.hpp"
 #include "secretKey.h"
 
+#ifndef SECRET_KEY
+#define SECRET_KEY "secret key must be provided by firebase!"
+#endif
+
 typedef SimpleWeb::Client<SimpleWeb::HTTPS> HttpsClient;
 
 void FirebaseNotificationManager::handleEventNotification(Event e) {
@@ -20,7 +24,7 @@ void FirebaseNotificationManager::handleEventNotification(Event e) {
 
 void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
     std::thread work_thread([&, &user, &e] {
-        std::cout<<"INVIO NOTIFICA IN CORSO a user con id: "<<user.id<<std::endl;
+        std::cout<<"sending notification at user id: "<<user.id<<std::endl;
         HttpsClient client("fcm.googleapis.com",false); //with false ignore certificate
         std::stringstream output;
 
