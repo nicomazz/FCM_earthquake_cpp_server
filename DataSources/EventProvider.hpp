@@ -22,7 +22,7 @@ public:
 
     std::vector<Event> requestEventFromDB();
 
-    void persistEvent(Event e, bool checkAlreadyPresent = false);
+    void persistEvent(Event &e, bool checkAlreadyPresent = false);
 
     Event getEvent(long id);
 

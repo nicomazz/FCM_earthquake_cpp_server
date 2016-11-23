@@ -10,7 +10,7 @@
 class Event{
 public:
     Event(){id = 0;}
-	Event(int id, std::string location);
+	Event(long id, std::string location);
 
     #pragma db id
 	long id;

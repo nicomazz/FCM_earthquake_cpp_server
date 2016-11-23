@@ -51,22 +51,25 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     return results;
 }
 
-void EventProvider::persistEvent(Event e, bool checkAlreadyPresent) {
+long  EventProvider::persistEvent(Event &e, bool checkAlreadyPresent) {
     using namespace odb::core;
 
     if (checkAlreadyPresent && isEventPresent(e.id)) // esiste già
-        return;
+        return e.id;
 
     try {
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         {
             transaction t(db->begin());
-            db->persist(e);
+            long inserted_id = db->persist(e);
+            e.id = inserted_id;
             t.commit();
+            return inserted_id;
         }
     } catch (const odb::exception &e) {
         std::cerr << e.what() << std::endl;
     }
+    return -1;
 }
 
 Event EventProvider::getEvent(long id) {
