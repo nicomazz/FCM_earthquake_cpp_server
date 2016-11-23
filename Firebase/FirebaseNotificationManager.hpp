@@ -34,6 +34,8 @@ private:
 
     bool isUserToBeNotified(User &u, Event &e);
 
+    static std::string firebase_key;
+    std::string getFirebaseKey();
 
 };
 

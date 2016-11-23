@@ -3,13 +3,18 @@
 //
 
 #include "FirebaseNotificationManager.hpp"
-#include "secretKey.h"
 
+//todo remove this
+#include "secretKey.h"
 #ifndef SECRET_KEY
 #define SECRET_KEY "secret key must be provided by firebase!"
 #endif
+//end to remove
 
 typedef SimpleWeb::Client<SimpleWeb::HTTPS> HttpsClient;
+
+std::string FirebaseNotificationManager::firebase_key = "";
+
 
 void FirebaseNotificationManager::handleEventNotification(Event e) {
 
@@ -31,7 +36,7 @@ void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
         auto r = client.request("POST",
                                 "/fcm/send",
                                 FirebaseNotificationManager::getJsonForUserEvent(user, e),
-                                {{"Authorization",SECRET_KEY},
+                                {{"Authorization",getFirebaseKey()},
                                  {"Content-Type","application/json"}});
         output << r->content.rdbuf();
         std::cout << "respose: " << output.str() << "\n";
@@ -40,14 +45,10 @@ void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
     work_thread.detach();
 }
 
-std::string FirebaseNotificationManager::getEventDetailsToSend(Event &e) {
-    using namespace std;
-    stringstream ss;
-    ss << e.eventLocation << " (" << e.magnitude << ") " << e.date;
-    return ss.str();
-}
+
 
 std::string FirebaseNotificationManager::getJsonForUserEvent(User &user, Event &event) {
+    //todo move this in notification formatter!
     json j;
     json data;
     data["details"] = getEventDetailsToSend(event);
@@ -69,6 +70,16 @@ std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event)
 
     return toNotify;
 }
+//todo rename this
 bool FirebaseNotificationManager::isUserToBeNotified(User &u, Event &e) {
     return UserMatching(u, e).toNotify();
+}
+
+std::string FirebaseNotificationManager::getFirebaseKey(){
+    if (firebase_key.size()) return firebase_key;
+    std::ifstream infile("secret_key.txt");
+    infile>>firebase_key;
+    assert(firebase_key.size() > 0,"firebase key not present!");
+    infile.close();
+    return firebase_key;
 }
