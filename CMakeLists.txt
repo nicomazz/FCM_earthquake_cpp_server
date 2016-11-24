@@ -15,10 +15,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     endif()
 endif()
 
-find_package(Boost)
-IF (Boost_FOUND)
-    INCLUDE_DIRECTORIES(SYSTEM ${Boost_INCLUDE_DIR})
-ENDIF()
+find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
+include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 #find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
 #include_directories(SYSTEM ${Boost_INCLUDE_DIR})
@@ -39,7 +37,7 @@ add_executable(http_web_server
         ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir}
         DataSources/Database.hpp
         Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp Utility/TimeUtility.hpp
-        FirecloudServerInitializer.h Firebase/secretKey.h Utility/TimeUtility.cpp)
+        FirecloudServerInitializer.h Firebase/secret_key.txt Utility/TimeUtility.cpp)
 
 #MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
 MESSAGE( STATUS "boost lib         " ${Boost_LIBRARIES} )
@@ -69,4 +67,5 @@ endif()
 enable_testing()
 add_subdirectory(tests)
 
+configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
 install(FILES server_http.hpp  DESTINATION include/simple-web-server)

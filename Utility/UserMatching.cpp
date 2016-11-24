@@ -5,6 +5,7 @@
 #include "UserMatching.hpp"
 #include "TimeUtility.hpp"
 #include <chrono>
+#include <iostream>
 
 
 bool UserMatching::toNotify() {
@@ -23,8 +24,9 @@ bool UserMatching::respectMagnitudeConstraint() {
 bool UserMatching::respectNotifyDelayConstraint() {
     using namespace std::chrono;
     long ms =  TimeUtils::getCurrentMillis();
-    return abs(ms - mUser.lastNotificationMillis) >= mUser.minMillisNotificationDelay;
-    return false;
+    long dt = abs(ms - mUser.lastNotificationMillis);
+    bool toNotify = dt > mUser.minMillisNotificationDelay;
+    return toNotify;
 }
 
 // This function converts decimal degrees to radians

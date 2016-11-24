@@ -34,7 +34,7 @@ private:
 
     bool isUserToBeNotified(User &u, Event &e);
 
-    void contolEsit(std::string respose);
+    void handleResults(std::string respose);
 
     static std::string firebase_key;
     std::string getFirebaseKey();
