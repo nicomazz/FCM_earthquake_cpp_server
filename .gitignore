@@ -6,6 +6,7 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 /Firebase/secret_key.txt
+secret_key.txt
 *.cmake
 #Additions to https://github.com/github/gitignore/blob/master/CMake.gitignore
 Testing

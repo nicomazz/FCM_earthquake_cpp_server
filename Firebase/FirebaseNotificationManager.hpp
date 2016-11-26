@@ -12,7 +12,7 @@
 #include "Models/User/User.hpp"
 #include "DataSources/UserPreferenceProvider.hpp"
 #include "Utility/UserMatching.hpp"
-#include "client_https.hpp"
+#include "ServerUtility/client_https.hpp"
 
 #include <thread>
 

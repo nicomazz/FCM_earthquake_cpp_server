@@ -8,7 +8,7 @@
 #include <Models/Event/Event.hpp>
 #include <vector>
 #include <sstream>
-#include <client_http.hpp>
+#include <ServerUtility/client_http.hpp>
 
 class WebDataSourceInterface {
 public:

@@ -34,13 +34,14 @@ file(GLOB Firebase_dir "Firebase/*.cpp")
 
 add_executable(http_web_server
         http_web_server.cpp
+        EarthquakeServer.cpp
+        ServerUtility/FirecloudServerInitializer.cpp
         ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir}
         DataSources/Database.hpp
-        Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp Utility/TimeUtility.hpp
-        FirecloudServerInitializer.h Firebase/secret_key.txt Utility/TimeUtility.cpp)
+        Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp
+        Firebase/secret_key.txt Utility/TimeUtility.cpp)
 
 #MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
-MESSAGE( STATUS "boost lib         " ${Boost_LIBRARIES} )
 
 
 #TODO: add requirement for version 1.0.1g (can it be done in one line?)
@@ -67,5 +68,6 @@ endif()
 enable_testing()
 add_subdirectory(tests)
 
+#to add secret firebase secret key
 configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
-install(FILES server_http.hpp  DESTINATION include/simple-web-server)
+install(FILES ServerUtility/server_http.hpp DESTINATION include/simple-web-server)

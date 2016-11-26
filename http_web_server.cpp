@@ -1,88 +1,70 @@
-#include "server_http.hpp"
-#include "client_http.hpp"
-#include "DataSources/EventProvider.hpp"
-#include "FirecloudServerInitializer.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <syslog.h>
+
+#include "ServerUtility/server_http.hpp"
+#include "ServerUtility/client_http.hpp"
+#include "EarthquakeServer.hpp"
 
 
-#include <boost/thread.hpp>
-#include <boost/chrono.hpp>
-#include <iostream>
-//Added for the default_resource example
-#include <fstream>
-//#include <boost/filesystem.hpp>
-#include <vector>
-#include <algorithm>
-#include <DataSources/UserPreferenceProvider.hpp>
-#include <Firebase/FirebaseNotificationManager.hpp>
+#define DAEMON_NAME "eqserverd"
+
+#define DEBUG
 
 using namespace std;
 
 typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
-void wait(int seconds) {
-    boost::this_thread::sleep_for(boost::chrono::seconds{seconds});
+void runServer() {
+    EarthquakeServer server;
+    server.startServer();
 }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-/**
- * Main server loop
- * */
-void eventsParse() {
-    EventProvider dataSource;
-    FirebaseNotificationManager notificationHandler;
-    for (;;) {
-
-        std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
-        std::cout << "Number of new events: " << newEvents.size() << "\n";
-        for (Event &e: newEvents) {
-            dataSource.persistEvent(e);
-            notificationHandler.handleEventNotification(e);
-        }
-
-        std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
-        //test:
-        std::cout << "Events in db: " << eventsInDb.size() << "\n\n\n";
-        wait(10);
-    }
-}
-#pragma clang diagnostic pop
-
-
 
 int main() {
-    //HTTP-server at port 8080 using 1 thread
-    //Unless you do more heavy non-threaded processing in the resources,
-    //1 thread is usually faster than several threads
-    HttpServer server(8080, 1);
+    //Set our Logging Mask and open the Log
+    setlogmask(LOG_UPTO(LOG_NOTICE));
+    openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
+#ifdef DEBUG
+    syslog(LOG_INFO, "Starting Earthquake web server!");
+#else
+    syslog(LOG_INFO, "Entering Daemon");
 
-    FCMServer::initServer(server);
+    pid_t pid, sid;
 
-    thread server_thread([&server]() {
-        server.start();
-    });
+    //Fork the Parent Process
+    pid = fork();
 
-    //Wait for server to start so that the client can connect
-    this_thread::sleep_for(chrono::seconds(1));
+    if (pid < 0) { exit(EXIT_FAILURE); }
 
-    cout<<"Server initialized.."<<endl;
-    //Client examples
-    boost::thread t{eventsParse};
-    t.join();
+    //We got a good pid, Close the Parent Process
+    if (pid > 0) { exit(EXIT_SUCCESS); }
 
-    server_thread.join();
-/*HttpClient client("localhost:8080");
-    auto r1 = client.request("GET", "/match/123");
-    cout << r1->content.rdbuf() << endl;
+    //Change File Mask
+    umask(0);
 
-    string json_string = "{\"firstName\": \"John\",\"lastName\": \"Smith\",\"age\": 25}";
-    auto r2 = client.request("POST", "/string", json_string);
-    cout << r2->content.rdbuf() << endl;
+    //Create a new Signature Id for our child
+    sid = setsid();
+    if (sid < 0) { exit(EXIT_FAILURE); }
 
-    auto r3 = client.request("POST", "/json", json_string);
-    cout << r3->content.rdbuf() << endl;
-*/
+    //Change Directory
+    //If we cant find the directory we exit with failure.
+   // if ((chdir("/")) < 0) { exit(EXIT_FAILURE); }
+
+    //Close Standard File Descriptors
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+#endif
+    //----------------
+    //Main Process
+    //----------------
+    runServer();
+
+    //Close the log
+    closelog();
 
     return 0;
 }

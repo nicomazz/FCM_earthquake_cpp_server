@@ -3,9 +3,9 @@
 // Created by nicomazz97 on 21/11/16.
 //
 
-#include "server_http.hpp"
-#include "client_http.hpp"
-#include "FirecloudServerInitializer.h"
+#include "ServerUtility/server_http.hpp"
+#include "ServerUtility/client_http.hpp"
+#include "ServerUtility/FirecloudServerInitializer.hpp"
 
 #include <cassert>
 
