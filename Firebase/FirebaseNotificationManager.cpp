@@ -12,7 +12,7 @@ typedef SimpleWeb::Client<SimpleWeb::HTTPS> HttpsClient;
 std::string FirebaseNotificationManager::firebase_key = "";
 
 
-void FirebaseNotificationManager::handleEventNotification(Event e) {
+void FirebaseNotificationManager::  handleEventNotification(Event e) {
     auto start = std::chrono::steady_clock::now();
     UserPreferenceProvider userProvider;
 

@@ -47,9 +47,9 @@ public:
 
     static json userToJson(User & u){
         json json_content;
-        json_content.push_back(json({"id",u.id}));
-        json_content.push_back(json({"lat",u.lat}));
-        json_content.push_back(json({"lng",u.lng}));
+        json_content["id"] = u.id;
+        json_content["lat"] = u.lat;
+        json_content["lng"] = u.lng;
         return json_content;
     }
 private:

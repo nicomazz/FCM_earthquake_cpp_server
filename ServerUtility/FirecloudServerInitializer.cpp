@@ -7,8 +7,8 @@
 
 
 void FCMServer::default_resource_send(const HttpServer &server,
-                                                       const shared_ptr<HttpServer::Response> &response,
-                                                       const shared_ptr<ifstream> &ifs) {
+                                      const shared_ptr<HttpServer::Response> &response,
+                                      const shared_ptr<ifstream> &ifs) {
     //read and send 128 KB at a time
     static vector<char> buffer(131072); // Safe when server is running on one thread
     streamsize read_length;
@@ -92,8 +92,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         for (User &u : allUsers)
             jsonObj.push_back(UserBuilder::userToJson(u));
 
-
-        content_stream<<jsonObj.dump(3);
+        content_stream << jsonObj.dump(3);
 
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);
@@ -127,6 +126,8 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     //Can for instance be used to retrieve an HTML 5 client that uses REST-resources on this server
     server.default_resource["GET"] = [&server](shared_ptr<HttpServer::Response> response,
                                                shared_ptr<HttpServer::Request> request) {
+        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << 0 << "\r\n\r\n";
+        return;
         try {
             auto web_root_path = boost::filesystem::canonical("web");
             auto path = boost::filesystem::canonical(web_root_path / request->path);
