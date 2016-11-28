@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (Simple-Web-Server)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -std=c++11 -Wall -Wextra -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -std=c++11 -Wall -Wextra -Wno-unknown-pragmas -lodb")
 
 include_directories(.)
 
