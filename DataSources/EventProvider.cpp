@@ -1,3 +1,4 @@
+#include <syslog.h>
 #include "EventProvider.hpp"
 
 
@@ -13,7 +14,7 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
         results.insert(results.end(), thisResults.begin(), thisResults.end());
     }
 
-    std::clog << "numero di eventi presi: " << results.size() << "\n";
+    syslog(LOG_INFO, "numero di eventi presi: %d", (int)results.size());
 
     return results;
 }

@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <syslog.h>
+#include <string>
+#include <limits.h>
+#include <unistd.h>
 
 #include "ServerUtility/server_http.hpp"
 #include "ServerUtility/client_http.hpp"
@@ -23,10 +26,22 @@ void runServer() {
     server.startServer();
 }
 
+std::string getexepath()
+{
+    char result[ 1000 ];
+    ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+    return std::string( result, (count > 0) ? count : 0 );
+}
 int main() {
+
     //Set our Logging Mask and open the Log
-    setlogmask(LOG_UPTO(LOG_NOTICE));
-    openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
+   // setlogmask(LOG_UPTO(LOG_NOTICE));
+    // openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
+    openlog(DAEMON_NAME, 0, LOG_USER);
+
+    syslog(LOG_INFO, "current path: %s",getexepath().c_str());
+
+
 #ifdef DEBUG
     syslog(LOG_INFO, "Starting Earthquake web server!");
 #else
@@ -49,15 +64,18 @@ int main() {
     sid = setsid();
     if (sid < 0) { exit(EXIT_FAILURE); }
 
-    //Change Directory
+    //Change Directory to executable default
     //If we cant find the directory we exit with failure.
-   // if ((chdir("/")) < 0) { exit(EXIT_FAILURE); }
+    string s1(getexepath());
+    s1 =  s1.substr(0, s1.find_last_of("\\/"));
+    if ((chdir(s1.c_str())) < 0) { exit(EXIT_FAILURE); }
 
     //Close Standard File Descriptors
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
 #endif
+
     //----------------
     //Main Process
     //----------------

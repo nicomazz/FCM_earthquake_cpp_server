@@ -49,7 +49,7 @@ namespace SimpleWeb {
         };
         
         std::shared_ptr<Response> request(const std::string& request_type, const std::string& path="/", boost::string_ref content="",
-                const std::map<std::string, std::string>& header=std::map<std::string, std::string>()) {
+                const std::map<std::string, std::string>& header=std::map<std::string, std::string>(), bool readRespose = true) {
             std::string corrected_path=path;
             if(corrected_path=="")
                 corrected_path="/";
@@ -77,8 +77,10 @@ namespace SimpleWeb {
                 socket_error=true;
                 throw std::invalid_argument(e.what());
             }
-            
-            return request_read();
+
+            if (readRespose)
+                return request_read();
+            return std::shared_ptr<Response>(new Response());
         }
         
         std::shared_ptr<Response> request(const std::string& request_type, const std::string& path, std::iostream& content,

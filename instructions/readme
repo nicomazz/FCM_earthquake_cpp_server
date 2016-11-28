@@ -1,0 +1,18 @@
+to run this as a service make new file in /usr/lib/systemd/system
+calld eq.service with this content:
+
+[Unit]
+Description=eqserver
+
+[Service]
+Type=forking
+ExecStart=/home/nicomazz97/.CLion2016.2/system/cmake/generated/Simple-Web-Server-e79ff158/e79ff158/Debug/http_web_server
+
+
+
+then
+systemctl enable eq
+
+systemctl start eq
+systemctl stop eq
+systemctl status eq

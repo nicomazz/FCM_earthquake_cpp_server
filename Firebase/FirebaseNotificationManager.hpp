@@ -37,7 +37,7 @@ private:
     void handleResults(std::string respose);
 
     static std::string firebase_key;
-    std::string getFirebaseKey();
+    static std::string getFirebaseKey();
 
 };
 

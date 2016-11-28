@@ -29,3 +29,4 @@ cd ..
 
 Run the server and client examples: `./build/http_web_server`
 Direct your favorite browser to for instance http://localhost:8080/
+To view the logs : "tail -f /var/log/syslog | grep eqserverd"

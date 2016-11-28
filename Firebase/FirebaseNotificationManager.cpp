@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <syslog.h>
 #include "FirebaseNotificationManager.hpp"
 #include "NotificationDataBuilder.hpp"
 
@@ -12,14 +13,23 @@ std::string FirebaseNotificationManager::firebase_key = "";
 
 
 void FirebaseNotificationManager::handleEventNotification(Event e) {
+    auto start = std::chrono::steady_clock::now();
+    UserPreferenceProvider userProvider;
 
     std::vector<User> toNotify = requestUsersToNotify(e);
-    std::cout << "Number of user to be notified: " << toNotify.size() << "\n";
+    std::vector<User> allUsers = userProvider.requestUsersFromDB();
+
+    syslog(LOG_INFO, "Number of user to be notified: %d / %d", (int) toNotify.size(), allUsers.size());
+
     for (User user: toNotify) {
         sendNotificationToUser(user, e);
         user.lastNotificationMillis = TimeUtils::getCurrentMillis();
         UserPreferenceProvider().updateUser(user);
     }
+
+    auto end = std::chrono::steady_clock::now();
+    int millis = std::chrono::duration<double, std::milli>(end - start).count();
+    syslog(LOG_INFO, "Time to send all notifications: %d", millis);
 }
 
 std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event) {
@@ -34,23 +44,35 @@ std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event)
     return toNotify;
 }
 
+// non leggiamo nemmeno la risposta
 void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
 
-    std::cout << "sending notification at user id: " << user.id << std::endl;
-    HttpsClient client("fcm.googleapis.com", false); //with false ignore certificate
-    std::stringstream output;
+    //std::cout << "sending notification at user id: " << user.id << std::endl;
+    syslog(LOG_INFO, "Sending notification to user: %d", (int) user.id);
+    // std::thread work_thread([&, &user, &e] {
+    try {
+        HttpsClient client("fcm.googleapis.com", false); //with false ignore certificate
+        std::stringstream output;
 
-    auto r = client.request("POST",
-                            "/fcm/send",
-                            NotificationDataBuilder::getJsonForUserEvent(user, e),
-                            {{"Authorization", getFirebaseKey()},
-                             {"Content-Type",  "application/json"}});
-    output << r->content.rdbuf();
-    handleResults(output.str());
+        auto r = client.request("POST",
+                                "/fcm/send",
+                                NotificationDataBuilder::getJsonForUserEvent(user, e),
+                                {{"Authorization", getFirebaseKey()},
+                                 {"Content-Type",  "application/json"}});
+        output << r->content.rdbuf();
+        handleResults(output.str());
+    } catch (std::invalid_argument e) { // no web connection
+        syslog(LOG_INFO, e.what());
+    }
+    //});
+    // work_thread.detach();
 }
 
 void FirebaseNotificationManager::handleResults(std::string respose) {
-    std::cout << "respose: " << respose << "\n";
+    if (respose.find("\"success\":1") == std::string::npos) {
+        std::string s = std::string("Problem in notification sending, respose: ") + respose;
+        syslog(LOG_INFO, s.c_str());
+    }
 }
 
 
@@ -63,6 +85,8 @@ std::string FirebaseNotificationManager::getFirebaseKey() {
     if (firebase_key.size()) return firebase_key;
     std::ifstream infile("secret_key.txt");
     infile >> firebase_key;
+    if (firebase_key.size() == 0)
+        syslog(LOG_INFO, "firebase key not found!");
     assert(firebase_key.size() > 0);
     infile.close();
     return firebase_key;

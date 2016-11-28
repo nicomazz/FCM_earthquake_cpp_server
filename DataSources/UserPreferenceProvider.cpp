@@ -5,13 +5,16 @@
 #include <Models/User/User.hpp>
 #include <DataSources/Database.hpp>
 #include <Utility/UserMatching.hpp>
+#include <syslog.h>
 #include "UserPreferenceProvider.hpp"
 
 std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
     using namespace odb::core;
     std::vector<User> results;
-
+    syslog(LOG_INFO, "before db connection");
     std::shared_ptr<database> db = Database::getInstance().getDatabase();
+    syslog(LOG_INFO, "after db connection");
+
     {
         typedef odb::result<User> result;
 
@@ -23,6 +26,7 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
         for (const User &e: r)
             results.push_back(e);
 
+        syslog(LOG_INFO, "utenti nel db: %d",results.size());
         t.commit();
     }
 
@@ -41,7 +45,7 @@ void UserPreferenceProvider::persistUser(User& user, bool checkAlreadyPresent) {
             transaction t(db->begin());
             user.lastModify = TimeUtils::getCurrentMillis();
             user.id = db->persist(user);
-            std::cout<<"id nuovo: "<<user.id<<"\n";
+            //std::cout<<"id nuovo: "<<user.id<<"\n";
             t.commit();
         }
     } catch (const odb::exception &e) {

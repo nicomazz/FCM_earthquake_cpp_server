@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (Simple-Web-Server)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -std=c++11 -Wall -Wextra -Wno-unknown-pragmas")
 
 include_directories(.)
 
@@ -70,4 +70,6 @@ add_subdirectory(tests)
 
 #to add secret firebase secret key
 configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
+configure_file(eqserverd eqserverd COPYONLY)
+
 install(FILES ServerUtility/server_http.hpp DESTINATION include/simple-web-server)

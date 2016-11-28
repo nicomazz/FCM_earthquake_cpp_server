@@ -9,7 +9,7 @@
 #include <memory>   // std::unique_ptr
 #include <cstdlib>  // std::exit
 #include <iostream>
-
+#include <syslog.h>
 #include <odb/database.hxx>
 
 
@@ -34,11 +34,23 @@ public:
     getDatabase() {
         if (db)
             return db;
+        syslog(LOG_INFO, "first of all");
 
-        db.reset(new odb::sqlite::database(DATABASE_NAME, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE));
+        odb::database *bad = new odb::sqlite::database(DATABASE_NAME, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+        if (!bad) {
+            syslog(LOG_INFO, "database nullo!!");
+        } else {
+            syslog(LOG_INFO, "database loaded, id: %d", db->id());
+        }
+        db.reset(bad);
+        syslog(LOG_INFO, "before exist?");
 
-        if (!databaseExist())
+        if (!databaseExist()) {
+            syslog(LOG_INFO, "creo nuovo database!");
             createDatabase();
+            syslog(LOG_INFO, "creato");
+
+        }
         return db;
     }
 

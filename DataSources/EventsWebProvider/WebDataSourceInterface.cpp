@@ -2,6 +2,7 @@
 // Created by nicomazz97 on 18/11/16.
 //
 #include <iostream>
+#include <syslog.h>
 #include "WebDataSourceInterface.hpp"
 
 std::vector<std::string> WebDataSourceInterface::split(std::string &str, char delimiter) {
@@ -25,15 +26,20 @@ std::vector<std::string> WebDataSourceInterface::split(std::string &str, char de
 }
 
 std::vector<Event> WebDataSourceInterface::requestEvents() {
-    SimpleWeb::Client<SimpleWeb::HTTP> client(getWebServiceUrl());
-    std::string respose;
-    {
-        std::stringstream output;
-        auto r = client.request("GET", getWebServiceUrlParams());
-        output << r->content.rdbuf();
-        respose = output.str();
+    try {
+        SimpleWeb::Client<SimpleWeb::HTTP> client(getWebServiceUrl());
+        std::string respose;
+        {
+            std::stringstream output;
+            auto r = client.request("GET", getWebServiceUrlParams());
+            output << r->content.rdbuf();
+            respose = output.str();
+        }
+        // todo check if it is a bad respose
+        return parseEvents(respose);
+    } catch (std::invalid_argument e){ // no web connection
+        syslog(LOG_INFO, e.what());
+        return std::vector<Event>();
     }
-    // todo check if it is a bad respose
-    return parseEvents(respose);
 }
 

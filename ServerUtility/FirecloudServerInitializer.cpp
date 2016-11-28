@@ -33,6 +33,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     server.resource["^/addUser"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                               shared_ptr<HttpServer::Request> request) {
         try {
+
             string content = request->content.string();
             User user = UserBuilder::buildFromJson(content);
 
@@ -41,7 +42,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
                 esit = "New user created";
             else
                 esit = "user updated";
-            cout << esit << "\n";
+            syslog(LOG_INFO, esit.c_str());
 
             long newId = UserPreferenceProvider().handleNewUserRequest(user);
             stringstream ss;
@@ -55,6 +56,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         }
         catch (exception &e) {
             string resp(e.what());
+            syslog(LOG_INFO, e.what());
             *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
                       << resp;
         }

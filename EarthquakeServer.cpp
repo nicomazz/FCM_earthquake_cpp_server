@@ -39,15 +39,22 @@ void EarthquakeServer::startServer() {
  * */
 void EarthquakeServer::serverMainLoop() {
     EventProvider dataSource;
+    UserPreferenceProvider userSource;
     FirebaseNotificationManager notificationHandler;
     for (;;) {
         boost::this_thread::sleep_for(boost::chrono::seconds{10});
+        syslog(LOG_INFO, "--------------------- New Loop started");
 
-        syslog(LOG_INFO, "\nNew Loop started");
+        std::vector<User> usersInDb = userSource.requestUsersFromDB();
+        std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
+        //test:
+        syslog(LOG_INFO, "Total events in db: %d\n", (int)eventsInDb.size());
+        syslog(LOG_INFO, "Total users in db: %d\n", (int)usersInDb.size());
+
 
         std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
         if (newEvents.size() == 0) {
-            syslog(LOG_INFO, "Nothing special..");
+            syslog(LOG_INFO, "Nothing special..\n");
             continue;
         }
         syslog(LOG_INFO, "Number of new events: %d", (int)newEvents.size());
@@ -57,11 +64,8 @@ void EarthquakeServer::serverMainLoop() {
             notificationHandler.handleEventNotification(e);
         }
 
-        std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
-        //test:
-        syslog(LOG_INFO, "Total events in db: %d\n", (int)eventsInDb.size());
 
-        //std::cout << "Events in db: " << eventsInDb.size() << "\n\n\n";
+
     }
 }
 
