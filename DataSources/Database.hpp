@@ -20,6 +20,7 @@
 #include <odb/sqlite/exceptions.hxx>
 
 #include "../Models/Event/Event-odb.hpp"
+#include "../Models/User/User-odb.hpp"
 
 #define DATABASE_NAME "database.sqlite"
 
@@ -36,13 +37,7 @@ public:
             return db;
         syslog(LOG_INFO, "first of all");
 
-        odb::database *bad = new odb::sqlite::database(DATABASE_NAME, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-        if (!bad) {
-            syslog(LOG_INFO, "database nullo!!");
-        } else {
-            syslog(LOG_INFO, "database loaded, id: %d", db->id());
-        }
-        db.reset(bad);
+        db.reset(new odb::sqlite::database(DATABASE_NAME, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
         syslog(LOG_INFO, "before exist?");
 
         if (!databaseExist()) {

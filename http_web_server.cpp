@@ -14,7 +14,7 @@
 
 #define DAEMON_NAME "eqserverd"
 
-#define DEBUG
+//#define DEBUG
 
 using namespace std;
 
