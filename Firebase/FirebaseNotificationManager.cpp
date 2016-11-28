@@ -19,7 +19,7 @@ void FirebaseNotificationManager::handleEventNotification(Event e) {
     std::vector<User> toNotify = requestUsersToNotify(e);
     std::vector<User> allUsers = userProvider.requestUsersFromDB();
 
-    syslog(LOG_INFO, "Number of user to be notified: %d / %d", (int) toNotify.size(), allUsers.size());
+    syslog(LOG_INFO, "Number of user to be notified: %d / %d", (int) toNotify.size(), (int)allUsers.size());
 
     for (User user: toNotify) {
         sendNotificationToUser(user, e);

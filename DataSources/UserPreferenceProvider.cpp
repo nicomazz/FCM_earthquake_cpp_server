@@ -26,7 +26,7 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
         for (const User &e: r)
             results.push_back(e);
 
-        syslog(LOG_INFO, "utenti nel db: %d",results.size());
+        syslog(LOG_INFO, "utenti nel db: %d",(int)results.size());
         t.commit();
     }
 

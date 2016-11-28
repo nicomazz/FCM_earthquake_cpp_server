@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (Simple-Web-Server)
 SET(CMAKE_CXX_COMPILER c++)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -std=c++11 -Wall -Wextra -Wno-unknown-pragmas -lodb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unknown-pragmas -Wno-format-security")
 
 include_directories(.)
 
@@ -18,9 +18,6 @@ endif()
 
 find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-
-#find_package(Boost 1.53.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
-#include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 if(APPLE)
     set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
@@ -66,8 +63,8 @@ if(MSYS) #TODO: Is MSYS true when MSVC is true?
     target_link_libraries(http_web_server ws2_32 wsock32)
 endif()
 
-enable_testing()
-add_subdirectory(tests)
+#enable_testing()
+#add_subdirectory(tests)
 
 #to add secret firebase secret key
 configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
