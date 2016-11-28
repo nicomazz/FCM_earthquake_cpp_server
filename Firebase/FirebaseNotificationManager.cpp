@@ -17,9 +17,11 @@ void FirebaseNotificationManager::handleEventNotification(Event e) {
     UserPreferenceProvider userProvider;
 
     std::vector<User> toNotify = requestUsersToNotify(e);
-    std::vector<User> allUsers = userProvider.requestUsersFromDB();
+    if (toNotify.size() == 0)
+        return;
 
-    syslog(LOG_INFO, "Number of user to be notified: %d / %d", (int) toNotify.size(), (int)allUsers.size());
+    syslog(LOG_INFO, "Number of user to be notified: %d / %d",
+           (int) toNotify.size(), (int) userProvider.requestUsersFromDB().size());
 
     for (User user: toNotify) {
         sendNotificationToUser(user, e);
@@ -29,6 +31,7 @@ void FirebaseNotificationManager::handleEventNotification(Event e) {
 
     auto end = std::chrono::steady_clock::now();
     int millis = std::chrono::duration<double, std::milli>(end - start).count();
+
     syslog(LOG_INFO, "Time to send all notifications: %d", millis);
 }
 
@@ -46,10 +49,7 @@ std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event)
 
 // non leggiamo nemmeno la risposta
 void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
-
-    //std::cout << "sending notification at user id: " << user.id << std::endl;
     syslog(LOG_INFO, "Sending notification to user: %d", (int) user.id);
-    // std::thread work_thread([&, &user, &e] {
     try {
         HttpsClient client("fcm.googleapis.com", false); //with false ignore certificate
         std::stringstream output;
@@ -64,8 +64,6 @@ void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
     } catch (std::invalid_argument e) { // no web connection
         syslog(LOG_INFO, e.what());
     }
-    //});
-    // work_thread.detach();
 }
 
 void FirebaseNotificationManager::handleResults(std::string respose) {

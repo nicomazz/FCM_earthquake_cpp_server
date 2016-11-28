@@ -2,6 +2,7 @@
 // Created by nicomazz97 on 26/11/16.
 //
 
+#include <Firebase/NotificationDataBuilder.hpp>
 #include "FirecloudServerInitializer.hpp"
 
 
@@ -39,9 +40,9 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
             std::string esit;
             if (user.id < 0) // non esisteva!
-                esit = "New user created";
+                esit = "################################################################# New user created";
             else
-                esit = "user updated";
+                esit = "################################################################# User updated";
             syslog(LOG_INFO, esit.c_str());
 
             long newId = UserPreferenceProvider().handleNewUserRequest(user);
@@ -73,6 +74,26 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         for (auto &header: request->header) {
             content_stream << header.first << ": " << header.second << "<br>";
         }
+
+        //find length of content_stream (length received using content_stream.tellp())
+        content_stream.seekp(0, ios::end);
+
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
+                  << content_stream.rdbuf();
+    };
+    //GET-example for the path /info
+    //Responds with request-information
+    server.resource["^/users"]["GET"] = [](shared_ptr<HttpServer::Response> response,
+                                           shared_ptr<HttpServer::Request> request) {
+        stringstream content_stream;
+        UserPreferenceProvider userProvider;
+        std::vector<User> allUsers = userProvider.requestUsersFromDB();
+        json jsonObj;
+        for (User &u : allUsers)
+            jsonObj.push_back(UserBuilder::userToJson(u));
+
+
+        content_stream<<jsonObj.dump(3);
 
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);

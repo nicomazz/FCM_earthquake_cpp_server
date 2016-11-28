@@ -3,6 +3,8 @@ project (Simple-Web-Server)
 #SET(CMAKE_CXX_COMPILER gcc)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unknown-pragmas -Wno-format-security -L/usr/local/lib -L/usr/lib64 -lstdc++")
 
+# il problema era che non riusciva ad effettuare il linking perchè non aveva la directort alle librerie, che era -L/usr/local/lib
+
 include_directories(.)
 
 find_package(Threads REQUIRED)
@@ -27,7 +29,7 @@ endif()
 
 file(GLOB DataSources_dir  "DataSources/*.cpp")
 file(GLOB EventsWebProvider_dir  "DataSources/*/*.cpp")
-file(GLOB Models_dir "Models/*/*.cpp")
+file(GLOB Models_dir "Models/*/*")
 file(GLOB Firebase_dir "Firebase/*.cpp")
 
 add_executable(http_web_server
@@ -52,10 +54,11 @@ endif()
 
 
 target_link_libraries(http_web_server
+        odb-sqlite
         ${Boost_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         odb
-        odb-sqlite
+
         )
 
 

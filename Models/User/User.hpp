@@ -26,6 +26,7 @@ public:
     long lastNotificationMillis;
 
     long lastModify;
+
 };
 
 

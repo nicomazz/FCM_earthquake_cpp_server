@@ -11,10 +11,7 @@
 std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
     using namespace odb::core;
     std::vector<User> results;
-    syslog(LOG_INFO, "before db connection");
     std::shared_ptr<database> db = Database::getInstance().getDatabase();
-    syslog(LOG_INFO, "after db connection");
-
     {
         typedef odb::result<User> result;
 
@@ -26,7 +23,6 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
         for (const User &e: r)
             results.push_back(e);
 
-        syslog(LOG_INFO, "utenti nel db: %d",(int)results.size());
         t.commit();
     }
 
