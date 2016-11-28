@@ -8,10 +8,10 @@ add_executable(parse_test parse_test.cpp)
 target_link_libraries(parse_test ${Boost_LIBRARIES})
 target_link_libraries(parse_test ${CMAKE_THREAD_LIBS_INIT})
 
-add_executable(event_provider_test event_provider_test.cpp )
-target_link_libraries(event_provider_test ${Boost_LIBRARIES})
-target_link_libraries(event_provider_test ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(event_provider_test odb odb-sqlite)
+#add_executable(event_provider_test event_provider_test.cpp )
+#target_link_libraries(event_provider_test ${Boost_LIBRARIES})
+#target_link_libraries(event_provider_test ${CMAKE_THREAD_LIBS_INIT})
+#target_link_libraries(event_provider_test odb odb-sqlite)
 
 
 if(MSYS) #TODO: Is MSYS true when MSVC is true?
@@ -22,4 +22,4 @@ endif()
 
 add_test(io_test io_test)
 add_test(parse_test parse_test)
-add_test(event_provider_test event_provider_test)
+#add_test(event_provider_test event_provider_test)
