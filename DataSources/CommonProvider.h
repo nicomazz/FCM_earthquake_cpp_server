@@ -5,24 +5,20 @@
 #ifndef SIMPLE_WEB_SERVER_COMMONPROVIDER_H
 #define SIMPLE_WEB_SERVER_COMMONPROVIDER_H
 
-
+template<class T>
 class CommonProvider {
-    public:
-        EventProvider() {}
+public:
+    CommonProvider() {}
 
-        std::vector<Event> requestEventWebUpdate();
+    std::vector <T> get();
 
-        std::vector<Event> requestNewEventNotInDB();
+    long persist(T &e, bool checkAlreadyPresent = false);
 
-        std::vector<Event> requestEventFromDB();
+    T get(long id);
 
-        long persistEvent(Event &e, bool checkAlreadyPresent = false);
+    void erase(long id);
 
-        Event getEvent(long id);
-
-        void deleteEvent(Event e);
-
-        bool isEventPresent(long id);
+    bool isPresent(long id);
 
 };
 
