@@ -3,7 +3,7 @@ sudo: required
 services:
 
 script:
-  - sudo add-apt-repository ppa:apokluda/boost1.53
+  - sudo add-apt-repository ppa:apokluda/boost1.53 -y
   - sudo apt-get update
   - sudo apt-get install --yes cmake make g\+\+ clang perl libssl-dev libboost1.53-all-dev
   - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/odb_2.4.0-1_amd64.deb
