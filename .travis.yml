@@ -7,9 +7,8 @@ script:
   - sudo add-apt-repository ppa:apokluda/boost1.53 -y
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update
-  - sudo apt-get install --yes cmake make g++ clang perl libssl-dev libboost1.53-all-dev gcc-4.9
-  - CXX=g++
-  - export CXX="g++-4.9" CC="gcc-4.9";
+  - sudo apt-get install --yes cmake make g++ clang perl libssl-dev libboost1.53-all-dev g++-4.8
+  - export CXX="g++-4.8" CC="gcc-4.8"
   - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/odb_2.4.0-1_amd64.deb
   - sudo dpkg -i odb_2.4.0-1_amd64.deb
   - sudo curl -O http://www.codesynthesis.com/download/odb/2.4/libodb-2.4.0.tar.gz
