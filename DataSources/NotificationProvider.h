@@ -1,0 +1,14 @@
+//
+// Created by nicomazz97 on 29/11/16.
+//
+
+#ifndef SIMPLE_WEB_SERVER_NOTIFICATIONPROVIDER_H
+#define SIMPLE_WEB_SERVER_NOTIFICATIONPROVIDER_H
+
+
+class NotificationProvider {
+
+};
+
+
+#endif //SIMPLE_WEB_SERVER_NOTIFICATIONPROVIDER_H
