@@ -27,6 +27,3 @@ script:
   - cd build
   - sudo  cmake  ..
   - sudo make
-  - sudo  cmake  ..
-  - sudo make
-  - sudo CTEST_OUTPUT_ON_FAILURE=1 make test

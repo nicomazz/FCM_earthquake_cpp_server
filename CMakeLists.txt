@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (Simple-Web-Server)
 #SET(CMAKE_CXX_COMPILER gcc)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unknown-pragmas -Wno-format-security -L/usr/local/lib -L/usr/lib64 -lstdc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra -Wno-unknown-pragmas -Wno-format-security -L/usr/local/lib -L/usr/lib64 -lstdc++")
 
 # il problema era che non riusciva ad effettuare il linking perchè non aveva la directort alle librerie, che era -L/usr/local/lib
 
