@@ -70,7 +70,9 @@ endif()
 #add_subdirectory(tests)
 
 #to add secret firebase secret key
-configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
+if(EXISTS Firebase/secret_key.txt)
+    configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
+endif()
 configure_file(eqserverd eqserverd COPYONLY)
 
 install(FILES ServerUtility/server_http.hpp DESTINATION include/simple-web-server)
