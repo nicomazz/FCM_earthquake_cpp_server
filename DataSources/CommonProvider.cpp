@@ -4,6 +4,7 @@
 
 #include "CommonProvider.h"
 //TODO CONTINUARE QUESTA COSA..
+/*
 std::vector <T> CommonProvider::get(){
     using namespace odb::core;
     std::vector<Event> results;
@@ -53,3 +54,4 @@ T get(long id);
 void erase(long id);
 
 bool isPresent(long id);
+*/

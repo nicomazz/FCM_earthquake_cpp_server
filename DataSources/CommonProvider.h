@@ -6,7 +6,7 @@
 #define SIMPLE_WEB_SERVER_COMMONPROVIDER_H
 
 template<class T>
-class CommonProvider {
+class CommonProvider {/*
 public:
     CommonProvider() {}
 
@@ -19,7 +19,7 @@ public:
     void erase(long id);
 
     bool isPresent(long id);
-
+*/
 };
 
 

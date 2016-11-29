@@ -39,7 +39,7 @@ add_executable(http_web_server
         ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir}
         DataSources/Database.hpp
         Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp
-        Firebase/secret_key.txt Utility/TimeUtility.cpp)
+        Utility/TimeUtility.cpp)
 
 #MESSAGE( STATUS "dir1 sources:         " ${Dir1_Sources} )
 
