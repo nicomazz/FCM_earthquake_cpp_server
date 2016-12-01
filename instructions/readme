@@ -6,7 +6,7 @@ Description=eqserver
 
 [Service]
 Type=forking
-ExecStart=/home/nicomazz97/.CLion2016.2/system/cmake/generated/Simple-Web-Server-e79ff158/e79ff158/Debug/http_web_server
+ExecStart=/path/to/http_web_server
 
 
 

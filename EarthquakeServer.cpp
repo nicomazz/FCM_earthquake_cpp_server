@@ -42,18 +42,18 @@ void EarthquakeServer::serverMainLoop() {
     FirebaseNotificationManager notificationHandler;
     for (;;) {
         boost::this_thread::sleep_for(boost::chrono::seconds{10});
-        syslog(LOG_INFO, "--------------------- New Loop started");
+        //syslog(LOG_INFO, "--------------------- New Loop started");
 
-        std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
+        //std::vector<Event> eventsInDb = dataSource.requestEventFromDB();
         //test:
-        syslog(LOG_INFO, "Total events in db: %d\n", (int)eventsInDb.size());
+        //syslog(LOG_INFO, "Total events in db: %d\n", (int)eventsInDb.size());
 
         std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
         if (newEvents.size() == 0) {
-            syslog(LOG_INFO, "Nothing special..\n");
+            //syslog(LOG_INFO, "Nothing special..\n");
             continue;
         }
-        syslog(LOG_INFO, "Number of new events: %d", (int)newEvents.size());
+        syslog(LOG_INFO, "%d new Events", (int)newEvents.size());
 
         for (Event &e: newEvents) {
             dataSource.persistEvent(e);
