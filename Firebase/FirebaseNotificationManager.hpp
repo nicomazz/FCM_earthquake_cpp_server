@@ -34,7 +34,13 @@ private:
 
     bool isUserToBeNotified(User &u, Event &e);
 
-    void handleResults(std::string respose);
+    void handleResults(User & u, std::string respose);
+
+    bool resultSucceded(std::string respose);
+
+    bool userUnistalledApp(std::string respose);
+
+    void removeUserFromDB(User & u);
 
     static std::string firebase_key;
     static std::string getFirebaseKey();

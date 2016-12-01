@@ -29,7 +29,7 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
     return results;
 }
 
-void UserPreferenceProvider::persistUser(User& user, bool checkAlreadyPresent) {
+void UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
     using namespace odb::core;
 
     if (checkAlreadyPresent && isUserPresent(user.id)) // esiste già
@@ -49,7 +49,7 @@ void UserPreferenceProvider::persistUser(User& user, bool checkAlreadyPresent) {
     }
 }
 
-User UserPreferenceProvider::getUser(long  id) {
+User UserPreferenceProvider::getUser(long id) {
     using namespace odb::core;
     typedef odb::query<User> query;
     typedef odb::result<User> result;
@@ -80,9 +80,6 @@ bool UserPreferenceProvider::isUserPresent(long id) {
 }
 
 
-
-
-
 void UserPreferenceProvider::updateUser(User &user) {
     using namespace odb::core;
     try {
@@ -106,4 +103,22 @@ long UserPreferenceProvider::handleNewUserRequest(User &user) {
         userPP.persistUser(user);
 
     return user.id;
+}
+
+void UserPreferenceProvider::removeUser(User &user) {
+    using namespace odb::core;
+
+    try {
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
+        transaction t(db->begin());
+        db->erase(user);
+        t.commit();
+
+    } catch (const odb::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+UserPreferenceProvider::UserPreferenceProvider() {
+
 }

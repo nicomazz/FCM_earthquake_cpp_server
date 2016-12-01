@@ -19,7 +19,7 @@
  */
 class UserPreferenceProvider {
 public:
-    UserPreferenceProvider() {}
+    UserPreferenceProvider();
 
     std::vector<User> requestUsersFromDB();
 
@@ -40,6 +40,7 @@ public:
 
     User getUser(long id);
 
+    void removeUser(User & user);
     bool isUserPresent(long id);
 
     /**

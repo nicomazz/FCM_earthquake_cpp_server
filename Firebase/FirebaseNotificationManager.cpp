@@ -12,7 +12,7 @@ typedef SimpleWeb::Client<SimpleWeb::HTTPS> HttpsClient;
 std::string FirebaseNotificationManager::firebase_key = "";
 
 
-void FirebaseNotificationManager::  handleEventNotification(Event e) {
+void FirebaseNotificationManager::handleEventNotification(Event e) {
     auto start = std::chrono::steady_clock::now();
     UserPreferenceProvider userProvider;
 
@@ -47,7 +47,6 @@ std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event)
     return toNotify;
 }
 
-// non leggiamo nemmeno la risposta
 void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
     syslog(LOG_INFO, "Sending notification to user: %d", (int) user.id);
     try {
@@ -60,27 +59,30 @@ void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
                                 {{"Authorization", getFirebaseKey()},
                                  {"Content-Type",  "application/json"}});
         output << r->content.rdbuf();
-        handleResults(output.str());
+        handleResults(user, output.str());
     } catch (std::invalid_argument e) { // no web connection
         syslog(LOG_INFO, e.what());
     }
 }
 
-void FirebaseNotificationManager::handleResults(std::string respose) {
-    if (respose.find("\"success\":1") == std::string::npos) {
-        std::string s = std::string("Problem in notification sending, respose: ") + respose;
-        syslog(LOG_INFO, s.c_str());
+void FirebaseNotificationManager::handleResults(User &user, std::string respose) {
+    if (resultSucceded(respose)) return;
+
+    if (userUnistalledApp(respose)) {
+        removeUserFromDB(user);
+        return;
     }
+    std::string s = std::string("Problem in notification sending, respose: ") + respose;
+    syslog(LOG_INFO, s.c_str());
 }
 
-
-//todo rename this
 bool FirebaseNotificationManager::isUserToBeNotified(User &u, Event &e) {
     return UserMatching(u, e).toNotify();
 }
 
 std::string FirebaseNotificationManager::getFirebaseKey() {
-    if (firebase_key.size()) return firebase_key;
+    if (firebase_key.size())
+        return firebase_key;
     std::ifstream infile("secret_key.txt");
     infile >> firebase_key;
     if (firebase_key.size() == 0)
@@ -89,3 +91,19 @@ std::string FirebaseNotificationManager::getFirebaseKey() {
     infile.close();
     return firebase_key;
 }
+
+bool FirebaseNotificationManager::resultSucceded(std::string respose) {
+    return respose.find("\"success\":1") != std::string::npos;
+}
+
+bool FirebaseNotificationManager::userUnistalledApp(std::string respose) {
+    return respose.find("NotRegistered") != std::string::npos;
+}
+
+void FirebaseNotificationManager::removeUserFromDB(User &u) {
+    UserPreferenceProvider userProvider;
+    long id = u.id;
+    userProvider.removeUser(u);
+    syslog(LOG_INFO, "Removed user with id: %d", (int) id);
+}
+
