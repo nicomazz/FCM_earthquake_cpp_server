@@ -31,12 +31,14 @@ file(GLOB DataSources_dir  "DataSources/*.cpp")
 file(GLOB EventsWebProvider_dir  "DataSources/*/*.cpp")
 file(GLOB Models_dir "Models/*/*")
 file(GLOB Firebase_dir "Firebase/*.cpp")
+file(GLOB Detector_dir "Detector/*")
+file(GLOB Utility_dir "Utility/*")
 
 add_executable(http_web_server
         http_web_server.cpp
         EarthquakeServer.cpp
         ServerUtility/FirecloudServerInitializer.cpp
-        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir}
+        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         DataSources/Database.hpp
         Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp
         Utility/TimeUtility.cpp)
@@ -73,6 +75,5 @@ endif()
 if(EXISTS Firebase/secret_key.txt)
     configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
 endif()
-configure_file(eqserverd eqserverd COPYONLY)
 
 install(FILES ServerUtility/server_http.hpp DESTINATION include/simple-web-server)

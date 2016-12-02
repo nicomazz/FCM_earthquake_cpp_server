@@ -30,13 +30,13 @@ public:
         try {
             json json_content = json::parse(json_string);
             User u;
-            try { u.id = getLong(json_content, "id"); } catch (...) { u.id = -1; } // può non esserci
-            u.firebaseID = getString(json_content, "idFirebase");
-            u.lat = getDouble(json_content, "lat");
-            u.lng = getDouble(json_content, "lng");
-            u.minMagPreference = getDouble(json_content, "minMagnitude");
-            u.maxDistancePreference = getDouble(json_content, "maxDistance");
-            u.minMillisNotificationDelay = getLong(json_content, "minTemporalDistanceBwNotification");
+            try { u.id = json_content["id"].get<long>(); } catch (...) { u.id = -1; } // può non esserci
+            u.firebaseID = json_content["idFirebase"].get<std::string>();
+            u.lat = json_content["lat"].get<double>();
+            u.lng = json_content["lng"].get<double>();
+            u.minMagPreference = json_content["minMagnitude"].get<double>();
+            u.maxDistancePreference = json_content["maxDistance"].get<double>();
+            u.minMillisNotificationDelay = json_content["minTemporalDistanceBwNotification"].get<double>();
             u.lastNotificationMillis = 0;
             return u;
         } catch (std::exception e) {
@@ -52,36 +52,6 @@ public:
         json_content["lng"] = u.lng;
         return json_content;
     }
-private:
-
-//TODO usare template!
-    static std::string getString(json &j, string key) {
-        auto i = j.find(key);
-        if (i != j.end()) {
-            //cout<<"i.value: "<<i.value()<<"\n";
-            return i.value();
-        }
-        throw std::invalid_argument("Missing argument: " + key + "!");
-    }
-
-    static double getDouble(json &j, string key) {
-        auto i = j.find(key);
-        if (i != j.end()) {
-            //cout<<"i.value: "<<i.value()<<"\n";
-            return i.value();
-        }
-        throw std::invalid_argument("Missing argument: " + key + "!");
-    }
-
-    static long getLong(json &j, string key) {
-        auto i = j.find(key);
-        if (i != j.end()) {
-            // cout<<"i.value: "<<i.value()<<"\n";
-            return i.value();
-        }
-        throw std::invalid_argument("Missing argument: " + key + "!");
-    }
-
 };
 
 

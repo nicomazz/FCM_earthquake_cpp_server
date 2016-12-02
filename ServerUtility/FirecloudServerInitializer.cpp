@@ -3,6 +3,7 @@
 //
 
 #include <Firebase/NotificationDataBuilder.hpp>
+#include <Detector/ReportParserHTTP.hpp>
 #include "FirecloudServerInitializer.hpp"
 
 
@@ -37,7 +38,6 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
             string content = request->content.string();
             User user = UserBuilder::buildFromJson(content);
-
             std::string esit;
             if (user.id < 0) // non esisteva!
                 esit = "################################################################# New user created";
@@ -84,7 +84,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     //GET-example for the path /info
     //Responds with request-information
     server.resource["^/users"]["GET"] = [](shared_ptr<HttpServer::Response> response,
-                                           shared_ptr<HttpServer::Request> request) {
+                                           shared_ptr<HttpServer::Request> /*request*/) {
         stringstream content_stream;
         UserPreferenceProvider userProvider;
         std::vector<User> allUsers = userProvider.requestUsersFromDB();
@@ -100,7 +100,36 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
                   << content_stream.rdbuf();
     };
+    //GET-example for the path /match/[number], responds with the matched string in path (number)
+    //For instance a request GET /match/123 will receive: 123
+    server.resource["^/user/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
+                                                           shared_ptr<HttpServer::Request> request) {
+        thread work_thread([response, request] {
+            try {
+                int user_id = std::stoi(request->path_match[1]);
 
+                stringstream content_stream;
+                UserPreferenceProvider userProvider;
+                User user = userProvider.getUser(user_id);
+                json jsonObj = UserBuilder::userToJson(user);
+
+                content_stream << jsonObj.dump(3);
+
+                //find length of content_stream (length received using content_stream.tellp())
+                content_stream.seekp(0, ios::end);
+
+                *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
+                          << content_stream.rdbuf();
+            }
+            catch (exception &e) {
+                string resp(e.what());
+                syslog(LOG_INFO, e.what());
+                *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
+                          << resp;
+            }
+        });
+        work_thread.detach();
+    };
     //GET-example for the path /match/[number], responds with the matched string in path (number)
     //For instance a request GET /match/123 will receive: 123
     server.resource["^/match/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
@@ -118,6 +147,28 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
             *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
         });
         work_thread.detach();
+    };
+
+    server.resource["^/report"]["POST"] = [](shared_ptr<HttpServer::Response> response,
+                                             shared_ptr<HttpServer::Request> request) {
+        try {
+            static SimpleEQDetector detector;
+            string content = request->content.string();
+            Report r = ReportParserHTTP::parseRequest(content);
+
+            thread work_thread([response, r] {
+                string message = "Report send!";
+                *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
+
+                detector.addReports(r);
+            });
+            work_thread.detach();
+        } catch (exception &e) {
+            string resp(e.what());
+            syslog(LOG_INFO, e.what());
+            *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
+                      << resp;
+        }
     };
 
     //Default GET-example. If no other matches, this anonymous function will be called.

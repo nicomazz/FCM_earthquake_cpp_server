@@ -22,6 +22,7 @@
 #include <DataSources/UserPreferenceProvider.hpp>
 #include <Models/User/UserBuilder.h>
 #include "Utility/json.hpp"
+#include "../Detector/SimpleEQDetector.hpp"
 
 namespace FCMServer {
     typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
