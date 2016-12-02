@@ -82,10 +82,11 @@ std::string FirebaseNotificationManager::getFirebaseKey() {
     if (firebase_key.size())
         return firebase_key;
     std::ifstream infile("secret_key.txt");
-    infile >> firebase_key;
-    if (firebase_key.size() == 0)
+    if (!infile){
         syslog(LOG_INFO, "firebase key not found!");
-    assert(firebase_key.size() > 0);
+        assert(firebase_key.size() > 0 && "firebase key not found!");
+    }
+    infile >> firebase_key;
     infile.close();
     return firebase_key;
 }
