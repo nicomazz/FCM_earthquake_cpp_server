@@ -12,7 +12,7 @@
 #define  NEAR_METERS 20 * 1000
 #define  MIN_NEAR_REPORTS 3
 
-void SimpleEQDetector::addReports(Report &report) {
+void SimpleEQDetector::addReports(const Report &report) {
     {
         std::lock_guard<std::mutex> guard(v_mutex);
         reports.insert(report);
@@ -39,8 +39,7 @@ void SimpleEQDetector::elaborateActualReports() {
 }
 
 double SimpleEQDetector::getDistance(const Report & a, const Report & b){
-    GeoUtility::distanceEarth(a.u.lat,a.u.lng,b.u.lat,b.u.lng);
-
+    return GeoUtility::distanceEarth(a.u.lat,a.u.lng,b.u.lat,b.u.lng);
 }
 
 void SimpleEQDetector::removeOldReports() {

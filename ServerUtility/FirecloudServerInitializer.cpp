@@ -159,8 +159,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
             thread work_thread([response, r] {
                 string message = "Report send!";
                 *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
-
-                detector.addReports(r);
+                detector.addReports( r);
             });
             work_thread.detach();
         } catch (exception &e) {

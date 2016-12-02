@@ -11,7 +11,7 @@
 #pragma db object
 class User {
 public:
-    User(){}
+    User(){id = -1;}
 #pragma db id auto
     long id;
 

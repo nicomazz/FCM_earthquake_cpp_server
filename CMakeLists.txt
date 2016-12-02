@@ -60,7 +60,6 @@ target_link_libraries(http_web_server
         ${Boost_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         odb
-
         )
 
 
@@ -68,8 +67,8 @@ if(MSYS) #TODO: Is MSYS true when MSVC is true?
     target_link_libraries(http_web_server ws2_32 wsock32)
 endif()
 
-#enable_testing()
-#add_subdirectory(tests)
+enable_testing()
+add_subdirectory(tests)
 
 #to add secret firebase secret key
 if(EXISTS Firebase/secret_key.txt)

@@ -6,6 +6,7 @@
 #include "ServerUtility/server_http.hpp"
 #include "ServerUtility/client_http.hpp"
 #include "ServerUtility/FirecloudServerInitializer.hpp"
+#include "../DataSources/EventProvider.hpp"
 
 #include <cassert>
 
@@ -15,14 +16,6 @@ typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
 int main() {
-    HttpServer server(8080, 1);
-
-    FCMServer::initServer(server);
-
-    thread server_thread([&server](){
-        //Start server
-        server.start();
-    });
 
     EventProvider ep;
 
@@ -32,9 +25,13 @@ int main() {
     Event e1 = Event();
     assert(e1.id <= 0);
     e1.eventLocation = "testEvent";
-    long inserted = ep.persist(e1);
+    e1.id = TimeUtils::getCurrentMillis();
+
+    int pre_size = (int) ep.requestEventFromDB().size();
+    long inserted = ep.persistEvent(e1);
     assert(e1.id > 0);
     assert(inserted > 0);
+    assert((int) ep.requestEventFromDB().size() == pre_size + 1);
 
     //ispresent
     assert(ep.isEventPresent(e1.id));
@@ -45,9 +42,7 @@ int main() {
     assert(deleted.id<=0);
 
 
-    //todo
-    server.stop();
-    server_thread.join();
+    std::cerr<<"All is working For Event!";
 
     return 0;
 }

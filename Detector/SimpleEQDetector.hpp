@@ -19,7 +19,7 @@
  */
 class SimpleEQDetector : public GenericEQDetector {
 public:
-    virtual void addReports(Report &r) override;
+    virtual void addReports(const Report &r) override;
 
 private:
     std::set<Report> reports;

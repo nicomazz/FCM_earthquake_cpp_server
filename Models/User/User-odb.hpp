@@ -187,6 +187,18 @@ namespace odb
 
     static const lastNotificationMillis_type_ lastNotificationMillis;
 
+    // receiveRealTimeNotification
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        bool,
+        sqlite::id_integer >::query_type,
+      sqlite::id_integer >
+    receiveRealTimeNotification_type_;
+
+    static const receiveRealTimeNotification_type_ receiveRealTimeNotification;
+
     // lastModify
     //
     typedef
@@ -239,6 +251,11 @@ namespace odb
   const typename query_columns< ::User, id_sqlite, A >::lastNotificationMillis_type_
   query_columns< ::User, id_sqlite, A >::
   lastNotificationMillis (A::table_name, "\"lastNotificationMillis\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::User, id_sqlite, A >::receiveRealTimeNotification_type_
+  query_columns< ::User, id_sqlite, A >::
+  receiveRealTimeNotification (A::table_name, "\"receiveRealTimeNotification\"", 0);
 
   template <typename A>
   const typename query_columns< ::User, id_sqlite, A >::lastModify_type_
@@ -307,6 +324,11 @@ namespace odb
       long long lastNotificationMillis_value;
       bool lastNotificationMillis_null;
 
+      // receiveRealTimeNotification
+      //
+      long long receiveRealTimeNotification_value;
+      bool receiveRealTimeNotification_null;
+
       // lastModify
       //
       long long lastModify_value;
@@ -354,7 +376,7 @@ namespace odb
 
     typedef sqlite::query_base query_base_type;
 
-    static const std::size_t column_count = 9UL;
+    static const std::size_t column_count = 10UL;
     static const std::size_t id_column_count = 1UL;
     static const std::size_t inverse_column_count = 0UL;
     static const std::size_t readonly_column_count = 0UL;

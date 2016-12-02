@@ -30,7 +30,7 @@ public:
      * @param user
      * @param checkAlreadyPresent
      */
-    void persistUser(User &user, bool checkAlreadyPresent = false);
+    long persistUser(User &user, bool checkAlreadyPresent = false);
 
     /**
      *

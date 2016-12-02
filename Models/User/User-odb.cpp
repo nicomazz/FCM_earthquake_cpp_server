@@ -124,9 +124,13 @@ namespace odb
     //
     t[7UL] = false;
 
-    // lastModify
+    // receiveRealTimeNotification
     //
     t[8UL] = false;
+
+    // lastModify
+    //
+    t[9UL] = false;
 
     return grew;
   }
@@ -203,6 +207,13 @@ namespace odb
     b[n].type = sqlite::bind::integer;
     b[n].buffer = &i.lastNotificationMillis_value;
     b[n].is_null = &i.lastNotificationMillis_null;
+    n++;
+
+    // receiveRealTimeNotification
+    //
+    b[n].type = sqlite::bind::integer;
+    b[n].buffer = &i.receiveRealTimeNotification_value;
+    b[n].is_null = &i.receiveRealTimeNotification_null;
     n++;
 
     // lastModify
@@ -367,6 +378,22 @@ namespace odb
       i.lastNotificationMillis_null = is_null;
     }
 
+    // receiveRealTimeNotification
+    //
+    {
+      bool const& v =
+        o.receiveRealTimeNotification;
+
+      bool is_null (false);
+      sqlite::value_traits<
+          bool,
+          sqlite::id_integer >::set_image (
+        i.receiveRealTimeNotification_value,
+        is_null,
+        v);
+      i.receiveRealTimeNotification_null = is_null;
+    }
+
     // lastModify
     //
     {
@@ -508,6 +535,20 @@ namespace odb
         i.lastNotificationMillis_null);
     }
 
+    // receiveRealTimeNotification
+    //
+    {
+      bool& v =
+        o.receiveRealTimeNotification;
+
+      sqlite::value_traits<
+          bool,
+          sqlite::id_integer >::set_value (
+        v,
+        i.receiveRealTimeNotification_value,
+        i.receiveRealTimeNotification_null);
+    }
+
     // lastModify
     //
     {
@@ -548,9 +589,10 @@ namespace odb
   "\"maxDistancePreference\", "
   "\"minMillisNotificationDelay\", "
   "\"lastNotificationMillis\", "
+  "\"receiveRealTimeNotification\", "
   "\"lastModify\") "
   "VALUES "
-  "(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::User, id_sqlite >::find_statement[] =
   "SELECT "
@@ -562,6 +604,7 @@ namespace odb
   "\"User\".\"maxDistancePreference\", "
   "\"User\".\"minMillisNotificationDelay\", "
   "\"User\".\"lastNotificationMillis\", "
+  "\"User\".\"receiveRealTimeNotification\", "
   "\"User\".\"lastModify\" "
   "FROM \"User\" "
   "WHERE \"User\".\"id\"=?";
@@ -576,6 +619,7 @@ namespace odb
   "\"maxDistancePreference\"=?, "
   "\"minMillisNotificationDelay\"=?, "
   "\"lastNotificationMillis\"=?, "
+  "\"receiveRealTimeNotification\"=?, "
   "\"lastModify\"=? "
   "WHERE \"id\"=?";
 
@@ -593,6 +637,7 @@ namespace odb
   "\"User\".\"maxDistancePreference\", "
   "\"User\".\"minMillisNotificationDelay\", "
   "\"User\".\"lastNotificationMillis\", "
+  "\"User\".\"receiveRealTimeNotification\", "
   "\"User\".\"lastModify\" "
   "FROM \"User\"";
 
@@ -1031,6 +1076,7 @@ namespace odb
                       "  \"maxDistancePreference\" REAL NULL,\n"
                       "  \"minMillisNotificationDelay\" INTEGER NOT NULL,\n"
                       "  \"lastNotificationMillis\" INTEGER NOT NULL,\n"
+                      "  \"receiveRealTimeNotification\" INTEGER NOT NULL,\n"
                       "  \"lastModify\" INTEGER NOT NULL)");
           return false;
         }

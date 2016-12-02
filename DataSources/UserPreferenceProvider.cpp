@@ -29,11 +29,11 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
     return results;
 }
 
-void UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
+long UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
     using namespace odb::core;
 
     if (checkAlreadyPresent && isUserPresent(user.id)) // esiste già
-        return;
+        return user.id;
 
     try {
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
@@ -43,10 +43,12 @@ void UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
             user.id = db->persist(user);
             //std::cout<<"id nuovo: "<<user.id<<"\n";
             t.commit();
+            return user.id;
         }
     } catch (const odb::exception &e) {
         std::cerr << e.what() << std::endl;
     }
+    return -1;
 }
 
 User UserPreferenceProvider::getUser(long id) {
