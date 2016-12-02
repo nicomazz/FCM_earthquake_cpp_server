@@ -27,10 +27,10 @@ void FirebaseNotificationManager::handleEventNotification(Event e) {
     }
 
     auto end = std::chrono::steady_clock::now();
-    int millis = std::chrono::duration<double, std::milli>(end - start).count();
+    int millis = (int)std::chrono::duration<double, std::milli>(end - start).count();
 
-    int totalUsers = (int) userProvider.requestUsersFromDB().size();
-    syslog(LOG_INFO, "Time to send  notifications to %d users: %d", toNotify.size(), millis);
+//    int totalUsers = (int) userProvider.requestUsersFromDB().size();
+    syslog(LOG_INFO, "Time to send  notifications to %d users: %d", (int)toNotify.size(), millis);
 }
 
 std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event) {

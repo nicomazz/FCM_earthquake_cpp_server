@@ -64,12 +64,34 @@ target_link_libraries(user_server_test ${Boost_LIBRARIES})
 target_link_libraries(user_server_test ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(user_server_test odb odb-sqlite)
 find_package(OpenSSL)
-
 if(OPENSSL_FOUND)
     include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
     target_link_libraries(user_server_test ${OPENSSL_LIBRARIES})
 endif()
 
+#SIMPLE EQDETECTOR TESTS
+
+add_executable(simple_detector_test
+        simple_detector_test.cpp
+        ../EarthquakeServer.cpp
+        ../ServerUtility/FirecloudServerInitializer.cpp
+        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
+        ../DataSources/Database.hpp
+        ../Utility/UserMatching.cpp
+        ../Utility/UserMatching.hpp
+        ../Utility/json.hpp
+        ../Utility/TimeUtility.cpp)
+
+target_link_libraries(simple_detector_test ${Boost_LIBRARIES})
+target_link_libraries(simple_detector_test ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(simple_detector_test odb odb-sqlite)
+find_package(OpenSSL)
+if(OPENSSL_FOUND)
+    include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(simple_detector_test ${OPENSSL_LIBRARIES})
+endif()
+
+########################################
 
 if(MSYS) #TODO: Is MSYS true when MSVC is true?
     target_link_libraries(io_test ws2_32 wsock32)
@@ -81,3 +103,4 @@ add_test(io_test io_test)
 add_test(parse_test parse_test)
 add_test(event_provider_test event_provider_test)
 add_test(user_server_test user_server_test)
+add_test(simple_detector_test simple_detector_test)

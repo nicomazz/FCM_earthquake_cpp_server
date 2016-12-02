@@ -45,17 +45,6 @@ public:
             throw std::invalid_argument("json string with bad format, cannot create the user");
         }
     }
-    /**
-      try { u.id = get<long>(json_content,USER_ID); } catch (...) { u.id = -1; } // può non esserci
-            u.firebaseID = get<std::string>(json_content,USER_ID_FIREBASE);
-            u.lat = get<double>(json_content,USER_LAT);
-            u.lng = get<double>(json_content,USER_LNG);
-            u.minMagPreference = get<double>(json_content,USER_MIN_MAG);
-            u.maxDistancePreference = get<double>(json_content,USER_MAX_DIST);
-            u.minMillisNotificationDelay = get<long>(json_content,USER_DELAY_NOTIFICATION);
-
-
-     */
 
     static json userToJson(User & u){
         json json_content;
@@ -64,16 +53,7 @@ public:
         json_content[USER_LNG] = u.lng;
         return json_content;
     }
-private:
 
-    template<typename T>
-    static T get(json &j, string key) {
-        auto i = j.find(key);
-        if (i != j.end()) {
-            return j[key].get<T>();
-        }
-        throw std::invalid_argument("Missing argument: " + key + "!");
-    }
 };
 
 

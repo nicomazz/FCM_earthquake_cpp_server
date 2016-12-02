@@ -17,7 +17,7 @@ public:
 	 * Add a user shake detection
 	 * @param
 	 */
-	virtual void addReports(const Report &r) = 0;
+	virtual void addReport(const Report &r) = 0;
 
 protected:
     virtual void elaborateActualReports() = 0;

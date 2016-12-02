@@ -10,6 +10,14 @@
 
 class ReportParserHTTP {
 public:
+    /**
+     * Every report must have:
+     * user_id
+     * user firebase key
+     * power (an integer)
+     * @param body
+     * @return
+     */
     static Report parseRequest(std::string body);
 };
 #endif //SIMPLE_WEB_SERVER_HTTPREQUESTPARSER_H
