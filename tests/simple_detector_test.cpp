@@ -14,7 +14,6 @@ using namespace std;
 typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
-#define TEST_FIREBASE_ID  "1234"
 
 json generateRequest(const User &user) {
     json j;
@@ -196,11 +195,9 @@ int main() {
         assert(timeDiff < 100);
     }
 
-
-    //todo
     server.stop();
     server_thread.join();
 
-    cerr << "All is working for user_server!";
+    cerr << "All is working for simple detector test!";
     return 0;
 }

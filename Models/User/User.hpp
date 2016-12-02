@@ -25,10 +25,11 @@ public:
 
     long lastNotificationMillis;
 
-    //TODO RECREATE USER ODB FILES
     bool receiveRealTimeNotification;
 
     long lastModify;
+
+    //todo add state (reporting, idle...)
 
 };
 
