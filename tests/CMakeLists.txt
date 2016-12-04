@@ -21,7 +21,7 @@ file(GLOB Detector_dir "../Detector/*")
 
 #EVENT PROVIDER TESTS
 add_executable(event_provider_test event_provider_test.cpp
-         ${Models_dir}   ${Utility_dir}
+        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.cpp
         ../DataSources/EventProvider.cpp
         ../DataSources/EventsWebProvider/INGVDataSource.cpp
@@ -32,12 +32,16 @@ add_executable(event_provider_test event_provider_test.cpp
 target_link_libraries(event_provider_test ${Boost_LIBRARIES})
 target_link_libraries(event_provider_test ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(event_provider_test odb odb-sqlite)
-
+find_package(OpenSSL)
+if(OPENSSL_FOUND)
+    include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(event_provider_test ${OPENSSL_LIBRARIES})
+endif()
 
 #USER PROVIDER TESTS
 
 add_executable(user_provider_test user_provider_test.cpp
-        ${Models_dir}   ${Utility_dir}
+        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.cpp
         ../DataSources/UserPreferenceProvider.cpp
         ../Utility/UserMatching.cpp ../Utility/UserMatching.hpp
@@ -46,7 +50,11 @@ add_executable(user_provider_test user_provider_test.cpp
 target_link_libraries(user_provider_test ${Boost_LIBRARIES})
 target_link_libraries(user_provider_test ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(user_provider_test odb odb-sqlite)
-
+find_package(OpenSSL)
+if(OPENSSL_FOUND)
+    include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+    target_link_libraries(user_provider_test ${OPENSSL_LIBRARIES})
+endif()
 #USER SERVER TEST
 
 add_executable(user_server_test

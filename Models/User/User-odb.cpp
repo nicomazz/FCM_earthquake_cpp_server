@@ -132,6 +132,14 @@ namespace odb
     //
     t[9UL] = false;
 
+    // secretKey
+    //
+    if (t[10UL])
+    {
+      i.secretKey_value.capacity (i.secretKey_size);
+      grew = true;
+    }
+
     return grew;
   }
 
@@ -221,6 +229,17 @@ namespace odb
     b[n].type = sqlite::bind::integer;
     b[n].buffer = &i.lastModify_value;
     b[n].is_null = &i.lastModify_null;
+    n++;
+
+    // secretKey
+    //
+    b[n].type = sqlite::image_traits<
+      ::std::string,
+      sqlite::id_text>::bind_value;
+    b[n].buffer = i.secretKey_value.data ();
+    b[n].size = &i.secretKey_size;
+    b[n].capacity = i.secretKey_value.capacity ();
+    b[n].is_null = &i.secretKey_null;
     n++;
   }
 
@@ -410,6 +429,25 @@ namespace odb
       i.lastModify_null = is_null;
     }
 
+    // secretKey
+    //
+    {
+      ::std::string const& v =
+        o.secretKey;
+
+      bool is_null (false);
+      std::size_t cap (i.secretKey_value.capacity ());
+      sqlite::value_traits<
+          ::std::string,
+          sqlite::id_text >::set_image (
+        i.secretKey_value,
+        i.secretKey_size,
+        is_null,
+        v);
+      i.secretKey_null = is_null;
+      grew = grew || (cap != i.secretKey_value.capacity ());
+    }
+
     return grew;
   }
 
@@ -562,6 +600,21 @@ namespace odb
         i.lastModify_value,
         i.lastModify_null);
     }
+
+    // secretKey
+    //
+    {
+      ::std::string& v =
+        o.secretKey;
+
+      sqlite::value_traits<
+          ::std::string,
+          sqlite::id_text >::set_value (
+        v,
+        i.secretKey_value,
+        i.secretKey_size,
+        i.secretKey_null);
+    }
   }
 
   void access::object_traits_impl< ::User, id_sqlite >::
@@ -590,9 +643,10 @@ namespace odb
   "\"minMillisNotificationDelay\", "
   "\"lastNotificationMillis\", "
   "\"receiveRealTimeNotification\", "
-  "\"lastModify\") "
+  "\"lastModify\", "
+  "\"secretKey\") "
   "VALUES "
-  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::User, id_sqlite >::find_statement[] =
   "SELECT "
@@ -605,7 +659,8 @@ namespace odb
   "\"User\".\"minMillisNotificationDelay\", "
   "\"User\".\"lastNotificationMillis\", "
   "\"User\".\"receiveRealTimeNotification\", "
-  "\"User\".\"lastModify\" "
+  "\"User\".\"lastModify\", "
+  "\"User\".\"secretKey\" "
   "FROM \"User\" "
   "WHERE \"User\".\"id\"=?";
 
@@ -620,7 +675,8 @@ namespace odb
   "\"minMillisNotificationDelay\"=?, "
   "\"lastNotificationMillis\"=?, "
   "\"receiveRealTimeNotification\"=?, "
-  "\"lastModify\"=? "
+  "\"lastModify\"=?, "
+  "\"secretKey\"=? "
   "WHERE \"id\"=?";
 
   const char access::object_traits_impl< ::User, id_sqlite >::erase_statement[] =
@@ -638,7 +694,8 @@ namespace odb
   "\"User\".\"minMillisNotificationDelay\", "
   "\"User\".\"lastNotificationMillis\", "
   "\"User\".\"receiveRealTimeNotification\", "
-  "\"User\".\"lastModify\" "
+  "\"User\".\"lastModify\", "
+  "\"User\".\"secretKey\" "
   "FROM \"User\"";
 
   const char access::object_traits_impl< ::User, id_sqlite >::erase_query_statement[] =
@@ -1077,7 +1134,8 @@ namespace odb
                       "  \"minMillisNotificationDelay\" INTEGER NOT NULL,\n"
                       "  \"lastNotificationMillis\" INTEGER NOT NULL,\n"
                       "  \"receiveRealTimeNotification\" INTEGER NOT NULL,\n"
-                      "  \"lastModify\" INTEGER NOT NULL)");
+                      "  \"lastModify\" INTEGER NOT NULL,\n"
+                      "  \"secretKey\" TEXT NOT NULL)");
           return false;
         }
       }

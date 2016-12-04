@@ -39,7 +39,11 @@ private:
 
     virtual void elaborateActualReports() override;
 
+    virtual Event generateEventFromReport(const Report & r) override;
+
     void removeOldReports();
+
+    std::vector<Report> getNearReports(const Report &r);
 
     bool isToRemove(const Report &r);
 
@@ -48,6 +52,7 @@ private:
     void sendNotification(const Report &r);
 
     void removeNear(const Report & r);
+
 };
 
 

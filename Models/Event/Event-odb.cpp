@@ -148,15 +148,15 @@ namespace odb
     //
     t[11UL] = false;
 
-    // distance
+    // lat
     //
     t[12UL] = false;
 
-    // lat
+    // lng
     //
     t[13UL] = false;
 
-    // lng
+    // isRealTimeReport
     //
     t[14UL] = false;
 
@@ -293,13 +293,6 @@ namespace odb
     b[n].is_null = &i.millis_null;
     n++;
 
-    // distance
-    //
-    b[n].type = sqlite::bind::real;
-    b[n].buffer = &i.distance_value;
-    b[n].is_null = &i.distance_null;
-    n++;
-
     // lat
     //
     b[n].type = sqlite::bind::real;
@@ -312,6 +305,13 @@ namespace odb
     b[n].type = sqlite::bind::real;
     b[n].buffer = &i.lng_value;
     b[n].is_null = &i.lng_null;
+    n++;
+
+    // isRealTimeReport
+    //
+    b[n].type = sqlite::bind::integer;
+    b[n].buffer = &i.isRealTimeReport_value;
+    b[n].is_null = &i.isRealTimeReport_null;
     n++;
   }
 
@@ -554,22 +554,6 @@ namespace odb
       i.millis_null = is_null;
     }
 
-    // distance
-    //
-    {
-      double const& v =
-        o.distance;
-
-      bool is_null (true);
-      sqlite::value_traits<
-          double,
-          sqlite::id_real >::set_image (
-        i.distance_value,
-        is_null,
-        v);
-      i.distance_null = is_null;
-    }
-
     // lat
     //
     {
@@ -600,6 +584,22 @@ namespace odb
         is_null,
         v);
       i.lng_null = is_null;
+    }
+
+    // isRealTimeReport
+    //
+    {
+      bool const& v =
+        o.isRealTimeReport;
+
+      bool is_null (false);
+      sqlite::value_traits<
+          bool,
+          sqlite::id_integer >::set_image (
+        i.isRealTimeReport_value,
+        is_null,
+        v);
+      i.isRealTimeReport_null = is_null;
     }
 
     return grew;
@@ -790,20 +790,6 @@ namespace odb
         i.millis_null);
     }
 
-    // distance
-    //
-    {
-      double& v =
-        o.distance;
-
-      sqlite::value_traits<
-          double,
-          sqlite::id_real >::set_value (
-        v,
-        i.distance_value,
-        i.distance_null);
-    }
-
     // lat
     //
     {
@@ -830,6 +816,20 @@ namespace odb
         v,
         i.lng_value,
         i.lng_null);
+    }
+
+    // isRealTimeReport
+    //
+    {
+      bool& v =
+        o.isRealTimeReport;
+
+      sqlite::value_traits<
+          bool,
+          sqlite::id_integer >::set_value (
+        v,
+        i.isRealTimeReport_value,
+        i.isRealTimeReport_null);
     }
   }
 
@@ -862,9 +862,9 @@ namespace odb
   "\"magAuthor\", "
   "\"eventLocation\", "
   "\"millis\", "
-  "\"distance\", "
   "\"lat\", "
-  "\"lng\") "
+  "\"lng\", "
+  "\"isRealTimeReport\") "
   "VALUES "
   "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -882,9 +882,9 @@ namespace odb
   "\"Event\".\"magAuthor\", "
   "\"Event\".\"eventLocation\", "
   "\"Event\".\"millis\", "
-  "\"Event\".\"distance\", "
   "\"Event\".\"lat\", "
-  "\"Event\".\"lng\" "
+  "\"Event\".\"lng\", "
+  "\"Event\".\"isRealTimeReport\" "
   "FROM \"Event\" "
   "WHERE \"Event\".\"id\"=?";
 
@@ -902,9 +902,9 @@ namespace odb
   "\"magAuthor\"=?, "
   "\"eventLocation\"=?, "
   "\"millis\"=?, "
-  "\"distance\"=?, "
   "\"lat\"=?, "
-  "\"lng\"=? "
+  "\"lng\"=?, "
+  "\"isRealTimeReport\"=? "
   "WHERE \"id\"=?";
 
   const char access::object_traits_impl< ::Event, id_sqlite >::erase_statement[] =
@@ -925,9 +925,9 @@ namespace odb
   "\"Event\".\"magAuthor\", "
   "\"Event\".\"eventLocation\", "
   "\"Event\".\"millis\", "
-  "\"Event\".\"distance\", "
   "\"Event\".\"lat\", "
-  "\"Event\".\"lng\" "
+  "\"Event\".\"lng\", "
+  "\"Event\".\"isRealTimeReport\" "
   "FROM \"Event\"";
 
   const char access::object_traits_impl< ::Event, id_sqlite >::erase_query_statement[] =
@@ -1354,9 +1354,9 @@ namespace odb
                       "  \"magAuthor\" TEXT NOT NULL,\n"
                       "  \"eventLocation\" TEXT NOT NULL,\n"
                       "  \"millis\" INTEGER NOT NULL,\n"
-                      "  \"distance\" REAL NULL,\n"
                       "  \"lat\" REAL NULL,\n"
-                      "  \"lng\" REAL NULL)");
+                      "  \"lng\" REAL NULL,\n"
+                      "  \"isRealTimeReport\" INTEGER NOT NULL)");
           return false;
         }
       }

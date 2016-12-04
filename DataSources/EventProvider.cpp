@@ -98,7 +98,7 @@ Event EventProvider::getEvent(long id) {
     return Event();
 }
 
-bool EventProvider::isEventPresent(long id) {
+ bool EventProvider::isEventPresent(long id) {
     return getEvent(id).id == id;
 }
 

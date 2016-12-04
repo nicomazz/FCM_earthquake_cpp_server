@@ -16,19 +16,19 @@ class EventProvider {
 public:
     EventProvider() {}
 
-    std::vector<Event> requestEventWebUpdate();
+    static std::vector<Event> requestEventWebUpdate();
 
-    std::vector<Event> requestNewEventNotInDB();
+    static std::vector<Event> requestNewEventNotInDB();
 
-    std::vector<Event> requestEventFromDB();
+    static std::vector<Event> requestEventFromDB();
 
-    long persistEvent(Event &e, bool checkAlreadyPresent = false);
+    static long persistEvent(Event &e, bool checkAlreadyPresent = false);
 
-    Event getEvent(long id);
+    static Event getEvent(long id);
 
-    void deleteEvent(Event e);
+    static void deleteEvent(Event e);
 
-    bool isEventPresent(long id);
+    static bool isEventPresent(long id);
 
 };
 

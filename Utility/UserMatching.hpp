@@ -34,8 +34,7 @@ private:
 
     bool respectNotifyDelayConstraint();
 
-
-
+    bool respectRealtimeReport();
 };
 
 

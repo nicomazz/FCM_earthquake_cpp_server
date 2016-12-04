@@ -9,7 +9,7 @@
 #pragma db object
 class Event{
 public:
-    Event(){id = 0;}
+    Event(){id = 0;isRealTimeReport= false;}
 	Event(long id, std::string location);
 
     #pragma db id
@@ -25,9 +25,9 @@ public:
 	std::string magAuthor;
 	std::string eventLocation;
 	long millis;
-	double distance;
 	double lat;
 	double lng;
+	bool isRealTimeReport;
 private:
     friend class odb::access;
 

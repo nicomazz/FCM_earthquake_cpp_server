@@ -2,8 +2,8 @@
 // compiler for C++.
 //
 
-#ifndef EVENT_ODB_HXX
-#define EVENT_ODB_HXX
+#ifndef EVENT_ODB_HPP
+#define EVENT_ODB_HPP
 
 #include <odb/version.hxx>
 
@@ -235,18 +235,6 @@ namespace odb
 
     static const millis_type_ millis;
 
-    // distance
-    //
-    typedef
-    sqlite::query_column<
-      sqlite::value_traits<
-        double,
-        sqlite::id_real >::query_type,
-      sqlite::id_real >
-    distance_type_;
-
-    static const distance_type_ distance;
-
     // lat
     //
     typedef
@@ -270,6 +258,18 @@ namespace odb
     lng_type_;
 
     static const lng_type_ lng;
+
+    // isRealTimeReport
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        bool,
+        sqlite::id_integer >::query_type,
+      sqlite::id_integer >
+    isRealTimeReport_type_;
+
+    static const isRealTimeReport_type_ isRealTimeReport;
   };
 
   template <typename A>
@@ -333,11 +333,6 @@ namespace odb
   millis (A::table_name, "\"millis\"", 0);
 
   template <typename A>
-  const typename query_columns< ::Event, id_sqlite, A >::distance_type_
-  query_columns< ::Event, id_sqlite, A >::
-  distance (A::table_name, "\"distance\"", 0);
-
-  template <typename A>
   const typename query_columns< ::Event, id_sqlite, A >::lat_type_
   query_columns< ::Event, id_sqlite, A >::
   lat (A::table_name, "\"lat\"", 0);
@@ -346,6 +341,11 @@ namespace odb
   const typename query_columns< ::Event, id_sqlite, A >::lng_type_
   query_columns< ::Event, id_sqlite, A >::
   lng (A::table_name, "\"lng\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::Event, id_sqlite, A >::isRealTimeReport_type_
+  query_columns< ::Event, id_sqlite, A >::
+  isRealTimeReport (A::table_name, "\"isRealTimeReport\"", 0);
 
   template <typename A>
   struct pointer_query_columns< ::Event, id_sqlite, A >:
@@ -436,11 +436,6 @@ namespace odb
       long long millis_value;
       bool millis_null;
 
-      // distance
-      //
-      double distance_value;
-      bool distance_null;
-
       // lat
       //
       double lat_value;
@@ -450,6 +445,11 @@ namespace odb
       //
       double lng_value;
       bool lng_null;
+
+      // isRealTimeReport
+      //
+      long long isRealTimeReport_value;
+      bool isRealTimeReport_null;
 
       std::size_t version;
     };
@@ -562,4 +562,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // EVENT_ODB_HXX
+#endif // EVENT_ODB_HPP

@@ -30,7 +30,7 @@ json generateNewUserJson() {
     j[USER_MIN_MAG] = 4;
     j[USER_MAX_DIST] = 1000;
     j[USER_DELAY_NOTIFICATION] = 1000;
-    j[USER_RECEIVE_TEST] = 1;
+    j[USER_RECEIVE_TEST] = true;
     return j;
 }
 

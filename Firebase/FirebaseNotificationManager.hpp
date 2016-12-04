@@ -28,10 +28,6 @@ public:
 private:
     void sendNotificationToUser(User user, Event e);
 
-    std::string getJsonForUserEvent(User &user, Event &event);
-
-    std::string getEventDetailsToSend(Event &e);
-
     bool isUserToBeNotified(User &u, Event &e);
 
     void handleResults(User & u, std::string respose);

@@ -12,6 +12,6 @@
 #define USER_MIN_MAG "minMagnitude"
 #define USER_MAX_DIST "maxDistance"
 #define USER_DELAY_NOTIFICATION  "minTemporalDistanceBwNotification"
-#define USER_RECEIVE_TEST  "testNotification"
+#define USER_RECEIVE_TEST  "receiveRealTimeReports"
 
 #endif //SIMPLE_WEB_SERVER_USER_FIELD_H_HPP

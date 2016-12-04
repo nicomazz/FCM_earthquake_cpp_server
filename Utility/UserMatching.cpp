@@ -10,7 +10,8 @@
 
 
 bool UserMatching::toNotify() {
-    return respectMagnitudeConstraint() &&
+    return respectRealtimeReport() &&
+           respectMagnitudeConstraint() &&
            respectNotifyDelayConstraint() &&
            respectDistanceConstraint();
 }
@@ -18,22 +19,25 @@ bool UserMatching::toNotify() {
 bool UserMatching::respectDistanceConstraint() {
     return getDistance() <= mUser.maxDistancePreference;
 }
+
 bool UserMatching::respectMagnitudeConstraint() {
     return mEvent.magnitude >= mUser.minMagPreference;
 }
 
 bool UserMatching::respectNotifyDelayConstraint() {
     using namespace std::chrono;
-    long ms =  TimeUtils::getCurrentMillis();
+    long ms = TimeUtils::getCurrentMillis();
     long dt = abs(ms - mUser.lastNotificationMillis);
     bool toNotify = dt > mUser.minMillisNotificationDelay;
     return toNotify;
 }
 
 
-
-
-
 double UserMatching::getDistance() {
-    return GeoUtility::distanceEarth(mEvent.lat,mEvent.lng, mUser.lat,mUser.lng);
+    return GeoUtility::distanceEarth(mEvent.lat, mEvent.lng, mUser.lat, mUser.lng);
+}
+
+bool UserMatching::respectRealtimeReport() {
+    if (!mEvent.isRealTimeReport) return true;
+    return mUser.receiveRealTimeNotification;
 }

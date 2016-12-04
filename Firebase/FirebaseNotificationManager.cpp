@@ -14,7 +14,6 @@ std::string FirebaseNotificationManager::firebase_key = "";
 
 void FirebaseNotificationManager::handleEventNotification(Event e) {
     auto start = std::chrono::steady_clock::now();
-    UserPreferenceProvider userProvider;
 
     std::vector<User> toNotify = requestUsersToNotify(e);
     if (toNotify.size() == 0)

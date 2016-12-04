@@ -31,14 +31,15 @@ public:
         try {
             json json_content = json::parse(json_string);
             User u;
-            try { u.id = json_content["id"].get<long>(); } catch (...) { u.id = -1; } // può non esserci
-            u.firebaseID = json_content["idFirebase"].get<std::string>();
-            u.lat = json_content["lat"].get<double>();
-            u.lng = json_content["lng"].get<double>();
-            u.minMagPreference = json_content["minMagnitude"].get<double>();
-            u.maxDistancePreference = json_content["maxDistance"].get<double>();
-            u.minMillisNotificationDelay = json_content["minTemporalDistanceBwNotification"].get<double>();
+            try { u.id = json_content[USER_ID].get<long>(); } catch (...) { u.id = -1; } // può non esserci
+            u.firebaseID = json_content[USER_ID_FIREBASE].get<std::string>();
+            u.lat = json_content[USER_LAT].get<double>();
+            u.lng = json_content[USER_LNG].get<double>();
+            u.minMagPreference = json_content[USER_MIN_MAG].get<double>();
+            u.maxDistancePreference = json_content[USER_MAX_DIST].get<double>();
+            u.minMillisNotificationDelay = json_content[USER_DELAY_NOTIFICATION].get<long>();
             u.lastNotificationMillis = 0;
+            u.receiveRealTimeNotification = json_content[USER_RECEIVE_TEST].get<bool>();
             return u;
         } catch (std::exception e) {
             syslog(LOG_INFO, e.what());

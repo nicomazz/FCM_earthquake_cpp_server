@@ -22,7 +22,7 @@ public:
 protected:
     virtual void elaborateActualReports() = 0;
 
-
+    virtual Event generateEventFromReport(const Report &r) = 0;
 
 };
 

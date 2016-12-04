@@ -7,6 +7,7 @@
 #include "ServerUtility/FirecloudServerInitializer.hpp"
 #include <cassert>
 #include <Detector/ReportParserHTTP.hpp>
+#include <DataSources/EventProvider.hpp>
 #include "../Detector/SimpleEQDetector.hpp"
 
 using namespace std;
@@ -183,6 +184,7 @@ int main() {
         User newUser = generateNewUser();
         string goodRequest = generateRequest(newUser).dump();
         Report r1 = ReportParserHTTP::parseRequest(goodRequest);
+        int startEventNumber = EventProvider::requestEventFromDB().size();
         detector.clear();
         for (int i = 0; i < MIN_NEAR_REPORTS+1 ; i++) { // put different same report to trigger a notification
             detector.addReport(r1);
@@ -193,6 +195,7 @@ int main() {
         // must have send a notify in the previous 100 ms
         long timeDiff = TimeUtils::getCurrentMillis() - detector.millisLastNotifySend;
         assert(timeDiff < 100);
+        assert(startEventNumber +1 == EventProvider::requestEventFromDB().size());
     }
 
     server.stop();
