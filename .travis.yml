@@ -30,4 +30,3 @@ script:
   - cd build
   - sudo  cmake  ..
   - sudo make
-  - sudo make test
