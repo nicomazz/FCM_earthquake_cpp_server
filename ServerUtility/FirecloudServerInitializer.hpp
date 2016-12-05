@@ -36,5 +36,7 @@ namespace FCMServer {
                                const shared_ptr<ifstream> &ifs);
 
     void initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server);
+
+    std::string generateRandomKey();
 }
 #endif //SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H

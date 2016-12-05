@@ -39,21 +39,23 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
             string content = request->content.string();
             User user = UserBuilder::buildFromJson(content);
             std::string esit;
-            if (user.id < 0) // non esisteva!
+            json respose_json;
+            if (user.id < 0){ // new user, send secret key
                 esit = "################################################################# New user created";
+                respose_json["secretKey"] = user.secretKey;
+            }
             else
                 esit = "################################################################# User updated";
             syslog(LOG_INFO, esit.c_str());
 
             long newId = UserPreferenceProvider().handleNewUserRequest(user);
-            stringstream ss;
-            ss << "{ \"id\":" << newId << "}";
-            std::string resp = ss.str();
+            respose_json["id"] = newId;
+            std::string repose_str = respose_json.dump();
 
             *response << "HTTP/1.1 200 OK\r\n"
                       << "Content-Type: application/json\r\n"
-                      << "Content-Length: " << resp.length() << "\r\n\r\n"
-                      << resp;
+                      << "Content-Length: " << repose_str.length() << "\r\n\r\n"
+                      << repose_str;
         }
         catch (exception &e) {
             string resp(e.what());
