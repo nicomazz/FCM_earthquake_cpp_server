@@ -1,4 +1,4 @@
-FCM-earthquake-cpp-server [![Build Status](https://travis-ci.org/nicomazz/Simple-Web-Server.svg?branch=master)](https://travis-ci.org/eidheim/Simple-Web-Server)
+FCM-earthquake-cpp-server [![Build Status](https://travis-ci.org/nicomazz/FCM_earthquake_cpp_server.svg?branch=master)](https://travis-ci.org/nicomazz/FCM_earthquake_cpp_server)
 =================
 
 [This was a Fork of https://github.com/eidheim/Simple-Web-Server]
