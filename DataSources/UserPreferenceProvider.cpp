@@ -96,12 +96,14 @@ void UserPreferenceProvider::updateUser(User &user) {
 
 }
 
-long UserPreferenceProvider::handleNewUserRequest(User &user) {
+long UserPreferenceProvider::updateOrInsertUser(User &user) {
     UserPreferenceProvider userPP;
 
-    if (user.id > 0 && userPP.isUserPresent(user.id))
+    if (user.hasId()){
+        checkValidUserInDB(user); // throw exception if is not valid
         userPP.updateUser(user);
-    else
+    }
+    else // new user
         userPP.persistUser(user);
 
     return user.id;
@@ -121,6 +123,12 @@ void UserPreferenceProvider::removeUser(User &user) {
     }
 }
 
-UserPreferenceProvider::UserPreferenceProvider() {
 
+
+void UserPreferenceProvider::checkValidUserInDB(User &user) {
+    User inDB = getUser(user.id);
+    if (inDB.id < 0)
+        throw std::invalid_argument("User not in database!");
+    if (inDB.secretKey != user.secretKey)
+        throw std::invalid_argument("secretKey mismatch!");
 }

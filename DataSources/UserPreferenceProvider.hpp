@@ -19,9 +19,8 @@
  */
 class UserPreferenceProvider {
 public:
-    UserPreferenceProvider();
 
-    std::vector<User> requestUsersFromDB();
+    static std::vector<User> requestUsersFromDB();
 
 
     /**
@@ -30,28 +29,33 @@ public:
      * @param user
      * @param checkAlreadyPresent
      */
-    long persistUser(User &user, bool checkAlreadyPresent = false);
+    static long persistUser(User &user, bool checkAlreadyPresent = false);
 
     /**
      *
      * @param user
      */
-    void updateUser(User &user);
+    static void updateUser(User &user);
 
-    User getUser(long id);
+    static User getUser(long id);
 
-    void removeUser(User & user);
-    bool isUserPresent(long id);
+    static void removeUser(User & user);
+    static bool isUserPresent(long id);
 
     /**
      * gestisce cosa fare dopo una richiesta web di aggiungere un utente
      * o aggiornare il suo firebase id
      * @return id dell'utente aggiunto/aggiornato
      */
-    long handleNewUserRequest(User & user);
+    static long updateOrInsertUser(User &user);
 
-private:
-    bool isUserToBeNotified(User &u, Event &e);
+    /**
+     * check that a user is in the database and has the right secret key.
+     * if there isn't a match throw std::invalid_argument exception
+     * @param user
+     */
+    static void checkValidUserInDB(User & user);
+
 };
 
 

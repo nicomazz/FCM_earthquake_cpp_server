@@ -19,5 +19,9 @@ public:
      * @return
      */
     static Report parseRequest(std::string body);
+
+private:
+
+    static User getUserFromReportJson(json & body);
 };
 #endif //SIMPLE_WEB_SERVER_HTTPREQUESTPARSER_H

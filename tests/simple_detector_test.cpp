@@ -15,41 +15,40 @@ using namespace std;
 typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
-
-json generateRequest(const User &user) {
+#define TEST_POWER 10
+json generateGoodRequest(const User &user) {
     json j;
     j[REPORT_USER_ID] = user.id;
-    j[REPORT_FIREBASE_ID] = user.firebaseID;
-    j[REPORT_POWER] = 10;
+    j[REPORT_SECRET_KEY] = user.secretKey;
+    j[REPORT_POWER] = TEST_POWER;
     return j;
 }
 
 json generateUserMismatchRequest() {
     json j;
     j[REPORT_USER_ID] = 215536524562265L;
-    j[REPORT_FIREBASE_ID] = "...";
-    j[REPORT_POWER] = 10;
+    j[REPORT_SECRET_KEY] = "...";
+    j[REPORT_POWER] = TEST_POWER;
     return j;
 }
 
-json generateUserMismatchFirebaseIdRequest(const User &user) {
+json generateUserMismatchSecretKeyRequest(const User &user) {
     json j;
     j[REPORT_USER_ID] = user.id;
-    j[REPORT_FIREBASE_ID] = "123";
-    j[REPORT_POWER] = 10;
+    j[REPORT_SECRET_KEY] = "123";
+    j[REPORT_POWER] = TEST_POWER;
     return j;
 }
-json generateBadRequest() {
+json generateMissingParamsRequest() {
     json j;
-    j[REPORT_POWER] = 10;
+    j[REPORT_POWER] = TEST_POWER;
     return j;
 }
 User generateNewUser() {
-    UserPreferenceProvider up;
     User newUser;
     newUser.lat = 45;
     newUser.lng = 12;
-    long insertedId = up.persistUser(newUser);
+    long insertedId = UserPreferenceProvider::persistUser(newUser);
     assert(insertedId >= 0);
     assert(newUser.id == insertedId);
     return newUser;
@@ -58,9 +57,9 @@ User generateNewUser() {
 void reportParserTests() {
     UserPreferenceProvider up;
 
-    //test bad request parse
+    //test missing params
     {
-        string bad = generateBadRequest().dump();
+        string bad = generateMissingParamsRequest().dump();
         try {
             ReportParserHTTP::parseRequest(bad);
             assert(false);
@@ -70,10 +69,16 @@ void reportParserTests() {
     }
     //test correct request parse
     {
-        User newUser = generateNewUser();
-        string good = generateRequest(newUser).dump();
-        Report r = ReportParserHTTP::parseRequest(good);
-        up.removeUser(newUser);
+        try {
+            User newUser = generateNewUser();
+            string good = generateGoodRequest(newUser).dump();
+            Report r = ReportParserHTTP::parseRequest(good);
+            assert(r.u.id == newUser.id);
+            assert(r.power == TEST_POWER);
+            up.removeUser(newUser);
+        } catch (std::exception e){
+            assert((false && "problems in correct request parse"));
+        }
     }
     //mismatch user id request
     {
@@ -82,13 +87,13 @@ void reportParserTests() {
             Report r = ReportParserHTTP::parseRequest(mismatch);
             assert(false);
         } catch (std::invalid_argument e) {
-            assert(string(e.what()).find("not found") != string::npos);
+            assert(string(e.what()).find("not in database") != string::npos);
         }
     }
-    //mismatch firebase id
+    //mismatch secreyKey id
     {
         User newUser = generateNewUser();
-        string mismatch = generateUserMismatchFirebaseIdRequest(newUser).dump();
+        string mismatch = generateUserMismatchSecretKeyRequest(newUser).dump();
         try {
             Report r = ReportParserHTTP::parseRequest(mismatch);
             assert(false);
@@ -102,7 +107,7 @@ void reportParserTests() {
 void sendReportToServer(User &u) {
     HttpClient client("localhost:8080");
 
-    auto r = client.request("POST", "/report", generateRequest(u).dump());
+    auto r = client.request("POST", "/report", generateGoodRequest(u).dump());
     assert(r->status_code.find("400") == string::npos);
 }
 
@@ -118,7 +123,7 @@ void removeOldReportsTest(){
     UserPreferenceProvider up;
 
     User newUser = generateNewUser();
-    string goodRequest = generateRequest(newUser).dump();
+    string goodRequest = generateGoodRequest(newUser).dump();
     Report r1 = ReportParserHTTP::parseRequest(goodRequest);
     r1.millis -= REPORT_TTL * 2 + 10;
     Report r2 = ReportParserHTTP::parseRequest(goodRequest);
@@ -162,7 +167,7 @@ int main() {
     //add request and clear
     {
         User newUser = generateNewUser();
-        string good = generateRequest(newUser).dump();
+        string good = generateGoodRequest(newUser).dump();
 
         Report r = ReportParserHTTP::parseRequest(good);
         detector.addReport(r);
@@ -182,7 +187,7 @@ int main() {
     // test send notification
     {
         User newUser = generateNewUser();
-        string goodRequest = generateRequest(newUser).dump();
+        string goodRequest = generateGoodRequest(newUser).dump();
         Report r1 = ReportParserHTTP::parseRequest(goodRequest);
         int startEventNumber = EventProvider::requestEventFromDB().size();
         detector.clear();
@@ -195,7 +200,7 @@ int main() {
         // must have send a notify in the previous 100 ms
         long timeDiff = TimeUtils::getCurrentMillis() - detector.millisLastNotifySend;
         assert(timeDiff < 100);
-        assert(startEventNumber +1 == EventProvider::requestEventFromDB().size());
+        assert(startEventNumber +1 == (int) EventProvider::requestEventFromDB().size());
     }
 
     server.stop();

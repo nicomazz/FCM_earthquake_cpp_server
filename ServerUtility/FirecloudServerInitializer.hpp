@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <Models/User/User.hpp>
 #include <DataSources/UserPreferenceProvider.hpp>
-#include <Models/User/UserBuilder.h>
+#include <Models/User/UserBuilder.hpp>
 #include "Utility/json.hpp"
 #include "../Detector/SimpleEQDetector.hpp"
 
@@ -32,11 +32,12 @@ namespace FCMServer {
     using namespace boost::property_tree;
 
 
-    void default_resource_send(const HttpServer &server, const shared_ptr<HttpServer::Response> &response,
-                               const shared_ptr<ifstream> &ifs);
-
     void initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server);
 
     std::string generateRandomKey();
+
+    void handleUserRequest(shared_ptr<HttpServer::Request> request, shared_ptr<SimpleWeb::ServerBase<SimpleWeb::HTTP>::Response> response);
+
+
 }
 #endif //SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H

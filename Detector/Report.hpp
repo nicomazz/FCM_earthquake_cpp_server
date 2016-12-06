@@ -4,7 +4,7 @@
 #define SIMPLE_WEB_REPORT
 
 #define REPORT_USER_ID "UserId"
-#define REPORT_FIREBASE_ID "FirebaseId"
+#define REPORT_SECRET_KEY "FirebaseId"
 #define REPORT_POWER "power"
 
 struct Report{

@@ -1,6 +1,6 @@
 #include <Models/User/User.hpp>
 #include <Models/Event/Event.hpp>
-#include <Models/User/UserBuilder.h>
+#include <Models/User/UserBuilder.hpp>
 #include "NotificationDataBuilder.hpp"
 #include "../Utility/json.hpp"
 

@@ -18,6 +18,7 @@ void SimpleEQDetector::addReport(const Report &report) {
         std::lock_guard<std::mutex> guard(v_mutex);
         reports.insert(report);
     }
+    //todo use conditional variable
     removeOldReports();
     elaborateActualReports();
 }
