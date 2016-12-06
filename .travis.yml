@@ -4,7 +4,6 @@ dist: trusty
 services:
 
 script:
-  - sudo add-apt-repository ppa:apokluda/boost1.53 -y
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update
   - sudo apt-get install --yes cmake make g++ clang perl libssl-dev libboost1.55-all-dev g++-4.9
@@ -29,4 +28,4 @@ script:
   - mkdir build
   - cd build
   - sudo  cmake  ..
-  - sudo make
+  - sudo make -j 8
