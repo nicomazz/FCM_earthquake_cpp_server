@@ -12,8 +12,7 @@ class ReportParserHTTP {
 public:
     /**
      * Every report must have:
-     * user_id
-     * user firebase key
+     * user
      * power (an integer)
      * @param body
      * @return

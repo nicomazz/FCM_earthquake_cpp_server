@@ -13,6 +13,10 @@
 
 long SimpleEQDetector::millisLastNotifySend = 0;
 
+std::string getDetectorName() {
+    return "SimpleEQDetector";
+}
+
 void SimpleEQDetector::addReport(const Report &report) {
     {
         std::lock_guard<std::mutex> guard(v_mutex);
@@ -62,9 +66,7 @@ void SimpleEQDetector::removeNear(const Report &r) {
         reports.erase(to_rem);
 }
 
-double SimpleEQDetector::getDistance(const Report &a, const Report &b) {
-    return GeoUtility::distanceEarth(a.u.lat, a.u.lng, b.u.lat, b.u.lng);
-}
+
 
 void SimpleEQDetector::sendNotification(const Report &r) {
     syslog(LOG_INFO, "Sending notification for detected earthquake!");
@@ -88,18 +90,7 @@ void SimpleEQDetector::clear() {
     reports.clear();
 }
 
-Event SimpleEQDetector::generateEventFromReport(const Report &r) {
-    Event e;
-    e.isRealTimeReport = true;
-    e.id = TimeUtils::getCurrentMillis();
-    e.millis = r.millis;
-    e.date = TimeUtils::getTimeStringFromMillis(r.millis);
-    e.author = "SimpleEQDetector";
-    e.magnitude = 10;
-    e.lat = r.u.lat;
-    e.lng = r.u.lng;
-    return e;
-}
+
 
 void SimpleEQDetector::addReports(const std::vector<Report> rs) {
     {

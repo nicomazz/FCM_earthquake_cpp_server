@@ -13,17 +13,35 @@
 
 class GenericEQDetector {
 public:
-	/**
-	 * Add a user shake detection
-	 * @param
-	 */
-	virtual void addReport(const Report &r) = 0;
+    /**
+     * Add a user shake detection
+     * @param
+     */
+     virtual void addReport(const Report &r) = 0;
+     virtual void addReports(const std::vector<Report> rs) = 0;
 
-protected:
+     virtual int size() = 0;
+     virtual void clear() = 0;
+
+     virtual std::string getDetectorName() = 0;
+
+ protected:
     virtual void elaborateActualReports() = 0;
-
-    virtual Event generateEventFromReport(const Report &r) = 0;
-
+    virtual Event generateEventFromReport(const Report &r)  {
+        Event e;
+        e.isRealTimeReport = true;
+        e.id = TimeUtils::getCurrentMillis();
+        e.millis = r.millis;
+        e.date = TimeUtils::getTimeStringFromMillis(r.millis);
+        e.author = getDetectorName();
+        e.magnitude = 10;
+        e.lat = r.u.lat;
+        e.lng = r.u.lng;
+        return e;
+    }
+    double getDistance(const Report &a, const Report &b) {
+        return GeoUtility::distanceEarth(a.u.lat, a.u.lng, b.u.lat, b.u.lng);
+    }
 };
 
 

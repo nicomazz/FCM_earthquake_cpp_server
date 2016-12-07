@@ -26,28 +26,24 @@ private:
     std::mutex v_mutex;
 
 public:
-    virtual void addReport(const Report &r) override;
-    void addReports(const std::vector<Report> rs);
+    void addReport(const Report &r) override;
+    void addReports(const std::vector<Report> rs) override;
 
     static long millisLastNotifySend;
 
-    int size();
-    void clear();
+    int size() override;
+    void clear() override;
 
-
+    std::string getDetectorName() override;
 private:
 
     virtual void elaborateActualReports() override;
-
-    virtual Event generateEventFromReport(const Report & r) override;
 
     void removeOldReports();
 
     std::vector<Report> getNearReports(const Report &r);
 
     bool isToRemove(const Report &r);
-
-    double getDistance(const Report &a, const Report &b);
 
     void sendNotification(const Report &r);
 

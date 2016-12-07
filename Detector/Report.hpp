@@ -1,7 +1,9 @@
-#include <Utility/TimeUtility.hpp>
-#include "../Models/User/User.hpp"
+
 #ifndef SIMPLE_WEB_REPORT
 #define SIMPLE_WEB_REPORT
+
+#include <Utility/TimeUtility.hpp>
+#include "../Models/User/User.hpp"
 
 #define REPORT_USER_ID "UserId"
 #define REPORT_SECRET_KEY "FirebaseId"
