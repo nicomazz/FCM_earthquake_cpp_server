@@ -34,6 +34,8 @@ public:
 
     static std::string generateRandomString(int l = SECRET_KEY_LENGTH);
 
+    template<typename T>
+    static T get(json j, std::string key);
 };
 
 

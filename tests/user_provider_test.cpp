@@ -5,7 +5,7 @@
 
 #include "ServerUtility/server_http.hpp"
 #include "ServerUtility/client_http.hpp"
-#include "ServerUtility/FirecloudServerInitializer.hpp"
+#include "ServerUtility/ServerInitializer.hpp"
 #include "../DataSources/EventProvider.hpp"
 
 #include <cassert>

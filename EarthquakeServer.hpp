@@ -11,7 +11,7 @@
 #include <Firebase/FirebaseNotificationManager.hpp>
 #include <ServerUtility/client_http.hpp>
 #include <ServerUtility/server_http.hpp>
-#include <ServerUtility/FirecloudServerInitializer.hpp>
+#include <ServerUtility/ServerInitializer.hpp>
 
 typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;

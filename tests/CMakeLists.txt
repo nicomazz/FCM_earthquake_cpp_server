@@ -60,7 +60,7 @@ endif()
 add_executable(user_server_test
         user_server_test.cpp
         ../EarthquakeServer.cpp
-        ../ServerUtility/FirecloudServerInitializer.cpp
+        ../ServerUtility/ServerInitializer.cpp
         ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.hpp
         ../Utility/UserMatching.cpp
@@ -82,7 +82,7 @@ endif()
 add_executable(simple_detector_test
         simple_detector_test.cpp
         ../EarthquakeServer.cpp
-        ../ServerUtility/FirecloudServerInitializer.cpp
+        ../ServerUtility/ServerInitializer.cpp
         ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.hpp
         ../Utility/UserMatching.cpp

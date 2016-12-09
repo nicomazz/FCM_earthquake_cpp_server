@@ -5,7 +5,7 @@
 
 #include "ServerUtility/server_http.hpp"
 #include "ServerUtility/client_http.hpp"
-#include "ServerUtility/FirecloudServerInitializer.hpp"
+#include "ServerUtility/ServerInitializer.hpp"
 #include "../DataSources/EventProvider.hpp"
 
 #include <cassert>
@@ -30,7 +30,7 @@ int main() {
     int pre_size = (int) ep.requestEventFromDB().size();
     long inserted = ep.persistEvent(e1);
     assert(e1.id > 0);
-    assert(inserted > 0);
+    assert(inserted >= 0);
     assert((int) ep.requestEventFromDB().size() == pre_size + 1);
 
     //ispresent

@@ -19,18 +19,18 @@ User UserBuilder::buildFromJson(std::string json_string) {
             u.id = NEW_USER_DEFAULT_ID;
             u.secretKey = generateRandomString(SECRET_KEY_LENGTH);
         }
-        u.firebaseID = json_content[USER_ID_FIREBASE].get<std::string>();
-        u.lat = json_content[USER_LAT].get<double>();
-        u.lng = json_content[USER_LNG].get<double>();
-        u.minMagPreference = json_content[USER_MIN_MAG].get<double>();
-        u.maxDistancePreference = json_content[USER_MAX_DIST].get<double>();
-        u.minMillisNotificationDelay = json_content[USER_DELAY_NOTIFICATION].get<long>();
+        u.firebaseID = get<std::string>(json_content,USER_ID_FIREBASE);
+        u.lat = get<double>(json_content,USER_LAT);
+        u.lng = get<double>(json_content,USER_LNG);
+        u.minMagPreference = get<double>(json_content,USER_MIN_MAG);
+        u.maxDistancePreference = get<double>(json_content,USER_MAX_DIST);
+        u.minMillisNotificationDelay = get<long>(json_content,USER_DELAY_NOTIFICATION);
         u.lastNotificationMillis = 0;
-        u.receiveRealTimeNotification = json_content[USER_RECEIVE_TEST].get<bool>();
+        u.receiveRealTimeNotification = get<bool>(json_content,USER_RECEIVE_TEST);
         return u;
     } catch (std::exception e) {
         syslog(LOG_INFO, e.what());
-        throw std::invalid_argument("json string with bad format, cannot parse the user");
+        throw std::invalid_argument("json string with bad format, cannot parse the user. "+string(e.what()));
     }
 }
 
@@ -52,6 +52,18 @@ std::string UserBuilder::generateRandomString(int l) {
     for (auto &c : result)
         c = (char) dis(gen);
     return result;
+}
+
+template<typename T>
+T UserBuilder::get(json j, std::string key) {
+    try {
+        T val = j[key].get<T>();
+        return val;
+    } catch (std::exception e){
+        stringstream ss;
+        ss<<"Missing value for key: "<<key;
+        throw std::invalid_argument(ss.str());
+    }
 }
 
 

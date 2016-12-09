@@ -4,7 +4,7 @@
 
 #include <Firebase/NotificationDataBuilder.hpp>
 #include <Detector/ReportParserHTTP.hpp>
-#include "FirecloudServerInitializer.hpp"
+#include "ServerInitializer.hpp"
 
 void FCMServer::handleUserRequest(shared_ptr<HttpServer::Request> request,
                                   shared_ptr<SimpleWeb::ServerBase<SimpleWeb::HTTP>::Response> response) {

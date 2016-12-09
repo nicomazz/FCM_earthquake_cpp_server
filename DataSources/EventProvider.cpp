@@ -14,8 +14,6 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
         results.insert(results.end(), thisResults.begin(), thisResults.end());
     }
 
-    syslog(LOG_INFO, "numero di eventi presi: %d", (int)results.size());
-
     return results;
 }
 
