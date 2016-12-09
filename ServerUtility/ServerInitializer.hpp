@@ -28,15 +28,23 @@ namespace FCMServer {
     typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
     typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
+    typedef shared_ptr<HttpServer::Request> Request;
+    typedef shared_ptr<SimpleWeb::ServerBase<SimpleWeb::HTTP>::Response> Response;
+
     using namespace std;
     using namespace boost::property_tree;
 
 
     void initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server);
 
-    std::string generateRandomKey();
+    void handleUserRequest(Request request, Response response);
 
-    void handleUserRequest(shared_ptr<HttpServer::Request> request, shared_ptr<SimpleWeb::ServerBase<SimpleWeb::HTTP>::Response> response);
+    void printAllUsers(Response response);
+
+    //id in url of request
+    void printUserWithId(Request request,Response response);
+
+    void handleReport(Request request,Response response);
 
 
 }

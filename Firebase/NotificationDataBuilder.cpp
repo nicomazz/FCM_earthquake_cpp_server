@@ -13,6 +13,7 @@ std::string NotificationDataBuilder::getJsonForUserEvent(User &user, Event &e){
 
 json NotificationDataBuilder::getJsonDetails(Event e){
 	json data;
+	data["realTime"] = e.isRealTimeReport;
 	data["location"] = e.eventLocation;
 	data["dateTime"] = e.date;
 	data["mag"] = e.magnitude;
