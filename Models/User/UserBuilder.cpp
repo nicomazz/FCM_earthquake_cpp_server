@@ -28,7 +28,7 @@ User UserBuilder::buildFromJson(std::string json_string) {
         u.lastNotificationMillis = 0;
         u.receiveRealTimeNotification = get<bool>(json_content,USER_RECEIVE_TEST);
         return u;
-    } catch (std::exception e) {
+   } catch (std::logic_error e) {
         syslog(LOG_INFO, e.what());
         throw std::invalid_argument("json string with bad format, cannot parse the user. "+string(e.what()));
     }
@@ -59,7 +59,7 @@ T UserBuilder::get(json j, std::string key) {
     try {
         T val = j[key].get<T>();
         return val;
-    } catch (std::exception e){
+    } catch (std::logic_error e){
         stringstream ss;
         ss<<"Missing value for key: "<<key;
         throw std::invalid_argument(ss.str());

@@ -15,16 +15,12 @@ std::shared_ptr <odb::database>
 Database::getDatabase() {
     if (db)
         return db;
-    syslog(LOG_INFO, "first of all");
 
     db.reset(new odb::sqlite::database(DATABASE_NAME, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
-    syslog(LOG_INFO, "before exist?");
 
     if (!databaseExist()) {
-        syslog(LOG_INFO, "creo nuovo database!");
+        syslog(LOG_INFO, "New db creation!");
         createDatabase();
-        syslog(LOG_INFO, "creato");
-
     }
     return db;
 }

@@ -72,6 +72,8 @@ void testBadAddUser() {
 
     stringstream output;
     auto r = client.request("POST", "/addUser", generateNewUserBadJson().dump());
+    output << r->content.rdbuf();
+    cerr<< output.str();
     assert(r->status_code.find("400") != string::npos);
 
 }
