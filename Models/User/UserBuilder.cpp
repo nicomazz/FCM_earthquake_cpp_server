@@ -6,8 +6,6 @@
 
 
 User UserBuilder::buildFromJson(std::string json_string) {
-    syslog(LOG_INFO, "building new user");
-
     try {
         json json_content = json::parse(json_string);
         User u;

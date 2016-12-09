@@ -134,6 +134,8 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
             string content = request->content.string();
             Report r = ReportParserHTTP::parseRequest(content);
 
+            syslog(LOG_INFO, "New report received!");
+
             json json_resp;
             json_resp["respose"] = "Report send!";
             string message = json_resp.dump(3);
@@ -145,7 +147,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
             work_thread.detach();
         } catch (exception &e) {
             string resp(e.what());
-            syslog(LOG_INFO, e.what());
+            syslog(LOG_INFO, resp.c_str());
             *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
                       << resp;
         }

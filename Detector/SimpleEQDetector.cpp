@@ -40,14 +40,17 @@ bool SimpleEQDetector::isToRemove(const Report &r) {
 
 void SimpleEQDetector::elaborateActualReports() {
     std::lock_guard<std::mutex> guard(v_mutex);
+    int max_near = 0;
     for (const Report &actual : reports) {
         std::vector<Report> near = getNearReports(actual);
+        max_near = std::max(max_near, (int) near.size());
         if (near.size() >= MIN_NEAR_REPORTS) {
             sendNotification(actual);
             removeNear(actual);
             return;
         }
     }
+    syslog(LOG_INFO, "Found at max %d people, not %d",max_near,MIN_NEAR_REPORTS);
 }
 
 std::vector<Report> SimpleEQDetector::getNearReports(const Report &r) {

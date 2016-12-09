@@ -29,4 +29,3 @@ script:
   - cd build
   - sudo  cmake  ..
   - sudo make -j 8
-  - sudo ctest
