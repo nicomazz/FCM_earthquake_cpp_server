@@ -11,15 +11,10 @@ User UserBuilder::buildFromJson(std::string json_string) {
     try {
         json json_content = json::parse(json_string);
         User u;
-        try {
-            u.id = json_content[USER_ID].get<long>();
-        } catch (...) {
-            //user id not found, generate it and a secret key
-            u.id = NEW_USER_DEFAULT_ID;
-            u.secretKey = generateRandomString(SECRET_KEY_LENGTH);
-        }
-        if (u.id != NEW_USER_DEFAULT_ID)
-            u.secretKey = json_content[USER_SECRET_KEY].get<std::string>();
+        u.id = json_content[USER_ID].get<long>();
+        u.secretKey = json_content[USER_SECRET_KEY].get<std::string>();
+        if (u.id == NEW_USER_DEFAULT_ID)
+            u.secretKey = generateRandomString();
         u.firebaseID = get<std::string>(json_content,USER_ID_FIREBASE);
         u.lat = get<double>(json_content,USER_LAT);
         u.lng = get<double>(json_content,USER_LNG);
