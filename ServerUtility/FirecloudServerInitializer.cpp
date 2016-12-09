@@ -134,7 +134,9 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
             string content = request->content.string();
             Report r = ReportParserHTTP::parseRequest(content);
 
-            string message = "Report send!";
+            json json_resp;
+            json_resp["respose"] = "Report send!";
+            string message = json_resp.dump(3);
             *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
 
             thread work_thread([response, r] {

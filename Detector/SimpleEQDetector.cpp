@@ -13,7 +13,7 @@
 
 long SimpleEQDetector::millisLastNotifySend = 0;
 
-std::string getDetectorName() {
+std::string SimpleEQDetector::getDetectorName() {
     return "SimpleEQDetector";
 }
 

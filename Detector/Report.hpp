@@ -5,8 +5,8 @@
 #include <Utility/TimeUtility.hpp>
 #include "../Models/User/User.hpp"
 
-#define REPORT_USER_ID "UserId"
-#define REPORT_SECRET_KEY "FirebaseId"
+#define REPORT_USER_ID "userId"
+#define REPORT_SECRET_KEY "secretKey"
 #define REPORT_POWER "power"
 
 struct Report{

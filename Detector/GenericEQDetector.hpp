@@ -5,6 +5,7 @@
 #ifndef SIMPLE_WEB_SERVER_DETECTOR_H
 #define SIMPLE_WEB_SERVER_DETECTOR_H
 
+#include <Utility/GeoUtility.hpp>
 #include "../Models/User/User.hpp"
 #include "Report.hpp"
 
