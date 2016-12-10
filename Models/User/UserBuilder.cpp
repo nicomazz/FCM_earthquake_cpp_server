@@ -2,6 +2,7 @@
 // Created by nicomazz97 on 20/11/16.
 //
 
+#include <DataSources/UserPreferenceProvider.hpp>
 #include "UserBuilder.hpp"
 
 
@@ -20,7 +21,10 @@ User UserBuilder::buildFromJson(std::string json_string) {
         u.maxDistancePreference = get<double>(json_content,USER_MAX_DIST);
         u.minMillisNotificationDelay = get<long>(json_content,USER_DELAY_NOTIFICATION);
         u.lastNotificationMillis = 0;
+        u.lastModify = TimeUtils::getCurrentMillis();
         u.receiveRealTimeNotification = get<bool>(json_content,USER_RECEIVE_TEST);
+        if (u.hasId())
+            addDBFields(u);
         return u;
    } catch (std::logic_error e) {
         syslog(LOG_INFO, e.what());
@@ -58,6 +62,15 @@ T UserBuilder::get(json j, std::string key) {
         ss<<"Missing value for key: "<<key;
         throw std::invalid_argument(ss.str());
     }
+}
+
+void UserBuilder::addDBFields(User &user) {
+    try {
+        UserPreferenceProvider::checkValidUserInDB(user);
+        User inDb = UserPreferenceProvider::getUser(user.id);
+        user.lastNotificationMillis = inDb.lastNotificationMillis;
+        user.lastActivity = inDb.lastActivity;
+    } catch (...){}
 }
 
 

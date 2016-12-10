@@ -36,6 +36,8 @@ public:
 
     template<typename T>
     static T get(json j, std::string key);
+
+    static void addDBFields(User& user);
 };
 
 
