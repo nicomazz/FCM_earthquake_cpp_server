@@ -128,13 +128,17 @@ namespace odb
     //
     t[8UL] = false;
 
-    // lastModify
+    // lastActivity
     //
     t[9UL] = false;
 
+    // lastModify
+    //
+    t[10UL] = false;
+
     // secretKey
     //
-    if (t[10UL])
+    if (t[11UL])
     {
       i.secretKey_value.capacity (i.secretKey_size);
       grew = true;
@@ -222,6 +226,13 @@ namespace odb
     b[n].type = sqlite::bind::integer;
     b[n].buffer = &i.receiveRealTimeNotification_value;
     b[n].is_null = &i.receiveRealTimeNotification_null;
+    n++;
+
+    // lastActivity
+    //
+    b[n].type = sqlite::bind::integer;
+    b[n].buffer = &i.lastActivity_value;
+    b[n].is_null = &i.lastActivity_null;
     n++;
 
     // lastModify
@@ -413,6 +424,22 @@ namespace odb
       i.receiveRealTimeNotification_null = is_null;
     }
 
+    // lastActivity
+    //
+    {
+      long int const& v =
+        o.lastActivity;
+
+      bool is_null (false);
+      sqlite::value_traits<
+          long int,
+          sqlite::id_integer >::set_image (
+        i.lastActivity_value,
+        is_null,
+        v);
+      i.lastActivity_null = is_null;
+    }
+
     // lastModify
     //
     {
@@ -587,6 +614,20 @@ namespace odb
         i.receiveRealTimeNotification_null);
     }
 
+    // lastActivity
+    //
+    {
+      long int& v =
+        o.lastActivity;
+
+      sqlite::value_traits<
+          long int,
+          sqlite::id_integer >::set_value (
+        v,
+        i.lastActivity_value,
+        i.lastActivity_null);
+    }
+
     // lastModify
     //
     {
@@ -643,10 +684,11 @@ namespace odb
   "\"minMillisNotificationDelay\", "
   "\"lastNotificationMillis\", "
   "\"receiveRealTimeNotification\", "
+  "\"lastActivity\", "
   "\"lastModify\", "
   "\"secretKey\") "
   "VALUES "
-  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::User, id_sqlite >::find_statement[] =
   "SELECT "
@@ -659,6 +701,7 @@ namespace odb
   "\"User\".\"minMillisNotificationDelay\", "
   "\"User\".\"lastNotificationMillis\", "
   "\"User\".\"receiveRealTimeNotification\", "
+  "\"User\".\"lastActivity\", "
   "\"User\".\"lastModify\", "
   "\"User\".\"secretKey\" "
   "FROM \"User\" "
@@ -675,6 +718,7 @@ namespace odb
   "\"minMillisNotificationDelay\"=?, "
   "\"lastNotificationMillis\"=?, "
   "\"receiveRealTimeNotification\"=?, "
+  "\"lastActivity\"=?, "
   "\"lastModify\"=?, "
   "\"secretKey\"=? "
   "WHERE \"id\"=?";
@@ -694,6 +738,7 @@ namespace odb
   "\"User\".\"minMillisNotificationDelay\", "
   "\"User\".\"lastNotificationMillis\", "
   "\"User\".\"receiveRealTimeNotification\", "
+  "\"User\".\"lastActivity\", "
   "\"User\".\"lastModify\", "
   "\"User\".\"secretKey\" "
   "FROM \"User\"";
@@ -1134,6 +1179,7 @@ namespace odb
                       "  \"minMillisNotificationDelay\" INTEGER NOT NULL,\n"
                       "  \"lastNotificationMillis\" INTEGER NOT NULL,\n"
                       "  \"receiveRealTimeNotification\" INTEGER NOT NULL,\n"
+                      "  \"lastActivity\" INTEGER NOT NULL,\n"
                       "  \"lastModify\" INTEGER NOT NULL,\n"
                       "  \"secretKey\" TEXT NOT NULL)");
           return false;

@@ -16,3 +16,7 @@ systemctl enable eq
 systemctl start eq
 systemctl stop eq
 systemctl status eq
+
+
+//to generate odb files
+sudo odb -d sqlite --generate-query --generate-schema --hxx-suffix .hpp --cxx-suffix .cpp filename.hpp
