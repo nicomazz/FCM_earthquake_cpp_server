@@ -40,3 +40,24 @@ User ReportParserHTTP::getUserFromReportJson(json &json_content) {
     return requester;
 }
 
+long ReportParserHTTP::parseActiveRequest(std::string body) {
+    try {
+        json json_content = json::parse(body);
+        User requester = getUserFromReportJson(json_content);
+        UserPreferenceProvider::checkValidUserInDB(requester);
+
+        User userInDb = UserPreferenceProvider::getUser(requester.id);
+        userInDb.lastActivity = TimeUtils::getCurrentMillis();
+        UserPreferenceProvider::updateUser(userInDb);
+
+        return requester.id;
+    } catch (std::invalid_argument e) {
+        syslog(LOG_INFO, e.what());
+        throw std::invalid_argument("json string with bad format: " + string(e.what()) + ", cannot create the active request");
+    } catch (std::domain_error e) {
+        syslog(LOG_INFO, e.what());
+        throw std::invalid_argument("json string with bad format: missing fields, cannot create the active request");
+
+    }
+}
+

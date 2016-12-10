@@ -9,8 +9,8 @@ User UserBuilder::buildFromJson(std::string json_string) {
     try {
         json json_content = json::parse(json_string);
         User u;
-        u.id = json_content[USER_ID].get<long>();
-        u.secretKey = json_content[USER_SECRET_KEY].get<std::string>();
+        u.id = get<long>(json_content,USER_ID);
+        u.secretKey = get<std::string>(json_content,USER_SECRET_KEY);
         if (u.id == NEW_USER_DEFAULT_ID)
             u.secretKey = generateRandomString();
         u.firebaseID = get<std::string>(json_content,USER_ID_FIREBASE);

@@ -40,7 +40,10 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
                                              shared_ptr<HttpServer::Request> request) {
         handleReport(request, response);
     };
-
+    server.resource["^/active"]["POST"] = [](shared_ptr<HttpServer::Response> response,
+                                             shared_ptr<HttpServer::Request> request) {
+        handleUserActivity(request, response);
+    };
     //Default GET-example. If no other matches, this anonymous function will be called.
     //Will respond with content in the web/-directory, and its subdirectories.
     //Default file: index.html
@@ -153,6 +156,26 @@ void FCMServer::handleReport(FCMServer::Request request, FCMServer::Response res
             detector.addReport(r);
         });
         work_thread.detach();
+    } catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, resp.c_str());
+        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
+                  << resp;
+    }
+}
+
+void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Response response) {
+    try {
+        string content = request->content.string();
+        long id = ReportParserHTTP::parseActiveRequest(content);
+
+        syslog(LOG_INFO, "User %ld report to be active!",id);
+
+        json json_resp;
+        json_resp["respose"] = "Active notify succeded!";
+        string message = json_resp.dump(3);
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
+
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, resp.c_str());

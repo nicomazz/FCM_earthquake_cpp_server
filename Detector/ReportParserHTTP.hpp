@@ -19,6 +19,13 @@ public:
      */
     static Report parseRequest(std::string body);
 
+    /**
+     * message that the users send to notify their active status
+     * @param body
+     * @return
+     */
+    static long parseActiveRequest(std::string body);
+
 private:
 
     static User getUserFromReportJson(json & body);

@@ -9,7 +9,7 @@
 #pragma db object
 class Event{
 public:
-    Event(){id = 0;isRealTimeReport= false;}
+    Event(){id = millis = 0;isRealTimeReport= false;}
 	Event(long id, std::string location);
 
     #pragma db id

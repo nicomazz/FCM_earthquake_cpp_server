@@ -34,6 +34,8 @@ Event INGVDataSource::buildEvent(std::string s) {
     ss>>event.id>>event.date>>event.lat>>event.lng;
     ss>>event.depthKm>>event.author>>event.catalog>>event.contributor>>event.contributorId>>event.magType;
     ss>>event.magnitude>>event.author>>event.eventLocation;
+    if (event.author.size() == 0)
+        event.author = "INGV";
     return event;
 }
 

@@ -24,7 +24,9 @@ json generateNewUserBadJson() {
 
 json generateNewUserJson() {
     json j;
+    j[USER_ID] = -1;
     j[USER_ID_FIREBASE] = TEST_FIREBASE_ID;
+    j[USER_SECRET_KEY] = "";
     j[USER_LAT] = 12.34;
     j[USER_LNG] = 45.42;
     j[USER_MIN_MAG] = 4;
@@ -73,7 +75,6 @@ void testBadAddUser() {
     stringstream output;
     auto r = client.request("POST", "/addUser", generateNewUserBadJson().dump());
     output << r->content.rdbuf();
-    cerr<< output.str();
     assert(r->status_code.find("400") != string::npos);
 
 }

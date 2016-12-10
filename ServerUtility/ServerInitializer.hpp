@@ -42,9 +42,12 @@ namespace FCMServer {
     void printAllUsers(Response response);
 
     //id in url of request
-    void printUserWithId(Request request,Response response);
+    void printUserWithId(Request request, Response response);
 
-    void handleReport(Request request,Response response);
+    void handleReport(Request request, Response response);
+
+
+    void handleUserActivity(Request request, Response response);
 
 
 }
