@@ -30,10 +30,12 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
 }
 std::vector<User> UserPreferenceProvider::requestActiveUsers() {
     using namespace odb::core;
+    typedef odb::query<User> query;
+    typedef odb::result<User> result;
+
     std::vector<User> results;
     std::shared_ptr<database> db = Database::getInstance().getDatabase();
     {
-        typedef odb::result<User> result;
 
         // session s;
         transaction t(db->begin());
