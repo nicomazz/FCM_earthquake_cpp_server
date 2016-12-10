@@ -22,6 +22,8 @@ Database::getDatabase() {
         syslog(LOG_INFO, "New db creation!");
         createDatabase();
     }
+
+
     return db;
 }
 

@@ -28,7 +28,27 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
 
     return results;
 }
+std::vector<User> UserPreferenceProvider::requestActiveUsers() {
+    using namespace odb::core;
+    std::vector<User> results;
+    std::shared_ptr<database> db = Database::getInstance().getDatabase();
+    {
+        typedef odb::result<User> result;
 
+        // session s;
+        transaction t(db->begin());
+
+        long fromTime = TimeUtils::getCurrentMillis() - (1000*60*60); // millis of one hour ago
+        result r(db->query<User>(query::lastActivity > fromTime));
+
+        for (const User &e: r)
+            results.push_back(e);
+
+        t.commit();
+    }
+
+    return results;
+}
 long UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
     using namespace odb::core;
 

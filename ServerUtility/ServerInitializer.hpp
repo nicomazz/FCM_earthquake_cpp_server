@@ -50,5 +50,8 @@ namespace FCMServer {
     void handleUserActivity(Request request, Response response);
 
 
+    void getActiveUsers(Request request, Response response);
+
+
 }
 #endif //SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H

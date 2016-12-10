@@ -6,6 +6,9 @@
 #include <Detector/ReportParserHTTP.hpp>
 #include "ServerInitializer.hpp"
 
+// one hour
+#define USER_LAST_ACTIVITY_RECENT (1000*60*60)
+
 void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
     /**
@@ -43,6 +46,11 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     server.resource["^/active"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                              shared_ptr<HttpServer::Request> request) {
         handleUserActivity(request, response);
+    };
+
+    server.resource["^/getActive"]["GET"] = [](shared_ptr<HttpServer::Response> response,
+                                               shared_ptr<HttpServer::Request> request) {
+        getActiveUsers(request, response);
     };
     //Default GET-example. If no other matches, this anonymous function will be called.
     //Will respond with content in the web/-directory, and its subdirectories.
@@ -179,6 +187,33 @@ void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Respon
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, resp.c_str());
+        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
+                  << resp;
+    }
+}
+
+//todo function that every minutes update a string
+void FCMServer::getActiveUsers(FCMServer::Request request, FCMServer::Response response) {
+    try {
+        stringstream content_stream;
+        UserPreferenceProvider userProvider;
+        std::vector<User> allUsers = userProvider.requestActiveUsers();
+
+        json jsonObj;
+
+        for (User &u : allUsers)
+            jsonObj.push_back(UserBuilder::userToJson(u));
+
+        content_stream << jsonObj.dump(3);
+
+        //find length of content_stream (length received using content_stream.tellp())
+        content_stream.seekp(0, ios::end);
+
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
+                  << content_stream.rdbuf();
+    } catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, e.what());
         *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
                   << resp;
     }

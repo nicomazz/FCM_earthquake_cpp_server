@@ -1176,11 +1176,11 @@ namespace odb
                       "  \"lng\" REAL NULL,\n"
                       "  \"minMagPreference\" REAL NULL,\n"
                       "  \"maxDistancePreference\" REAL NULL,\n"
-                      "  \"minMillisNotificationDelay\" INTEGER NOT NULL,\n"
-                      "  \"lastNotificationMillis\" INTEGER NOT NULL,\n"
+                      "  \"minMillisNotificationDelay\" INTEGER NOT NULL DEFAULT 0,\n"
+                      "  \"lastNotificationMillis\" INTEGER NOT NULL DEFAULT 0,\n"
                       "  \"receiveRealTimeNotification\" INTEGER NOT NULL,\n"
-                      "  \"lastActivity\" INTEGER NOT NULL,\n"
-                      "  \"lastModify\" INTEGER NOT NULL,\n"
+                      "  \"lastActivity\" INTEGER NOT NULL DEFAULT 0,\n"
+                      "  \"lastModify\" INTEGER NOT NULL DEFAULT 0,\n"
                       "  \"secretKey\" TEXT NOT NULL)");
           return false;
         }

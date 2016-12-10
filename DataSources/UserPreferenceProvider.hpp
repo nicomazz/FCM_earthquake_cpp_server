@@ -22,13 +22,14 @@ public:
 
     static std::vector<User> requestUsersFromDB();
 
+    static std::vector<User> requestActiveUsers();
 
-    /**
-     * salva lo stato dell'utente sul db  e aggiorna l'id di user
-     * mettendo quello corrispondente nel db
-     * @param user
-     * @param checkAlreadyPresent
-     */
+        /**
+         * salva lo stato dell'utente sul db  e aggiorna l'id di user
+         * mettendo quello corrispondente nel db
+         * @param user
+         * @param checkAlreadyPresent
+         */
     static long persistUser(User &user, bool checkAlreadyPresent = false);
 
     /**
