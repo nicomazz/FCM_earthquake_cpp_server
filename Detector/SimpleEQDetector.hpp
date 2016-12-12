@@ -24,6 +24,13 @@ class SimpleEQDetector : public GenericEQDetector {
 private:
     std::set<Report> reports;
     std::mutex v_mutex;
+    /**
+     * map user id in user last millis report.
+     * Every user can have only one report in reports.
+     * When user make a report first we check if this is another
+     * report by that user
+     */
+    std::map<long,long> user_last_millis;
 
 public:
     void addReport(const Report &r) override;
@@ -48,6 +55,8 @@ private:
     void sendNotification(const Report &r);
 
     void removeNear(const Report & r);
+
+    void 
 
 };
 

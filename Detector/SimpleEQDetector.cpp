@@ -18,6 +18,7 @@ std::string SimpleEQDetector::getDetectorName() {
 }
 
 void SimpleEQDetector::addReport(const Report &report) {
+    removeAndUpdateUserReport(report);
     {
         std::lock_guard<std::mutex> guard(v_mutex);
         reports.insert(report);
@@ -27,6 +28,17 @@ void SimpleEQDetector::addReport(const Report &report) {
     elaborateActualReports();
 }
 
+void SimpleEQDetector::removeAndUpdateUserReport(const Report &report){
+    
+      std::lock_guard<std::mutex> guard(v_mutex);
+      long last_millis = user_last_millis[report.u.id];
+      if (last_millis != 0) {//remove precedent report
+          Report to_remove(last_millis);
+          reports.erase(to_remove);
+      }
+    user_last_millis[id] = report.millis;
+   
+}
 void SimpleEQDetector::removeOldReports() {
     std::lock_guard<std::mutex> guard(v_mutex);
     while (!reports.empty() && isToRemove(*(reports.begin())))
