@@ -150,7 +150,7 @@ void UserPreferenceProvider::removeUser(User &user) {
 void UserPreferenceProvider::checkValidUserInDB(User &user) {
     User inDB = getUser(user.id);
     if (inDB.id < 0)
-        throw std::invalid_argument("User not in database!");
+        throw std::invalid_argument("Error: User not in database!");
     if (inDB.secretKey != user.secretKey)
-        throw std::invalid_argument("secretKey mismatch!");
+        throw std::invalid_argument("Error: secretKey mismatch!");
 }
