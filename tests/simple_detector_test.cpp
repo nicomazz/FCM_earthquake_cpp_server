@@ -49,8 +49,8 @@ json generateMissingParamsRequest() {
 
 User generateNewUser() {
     User newUser;
-    newUser.lat = 45 + (rand() / 100 * 0.1f);
-    newUser.lng = 12 + (rand() / 100 * 0.1f);
+    newUser.lat = 45 + (rand() / 100 * 0.00001f);
+    newUser.lng = 12 + (rand() / 100 * 0.00001f);
     newUser.secretKey = "123";
     long insertedId = UserPreferenceProvider::persistUser(newUser);
     assert(insertedId >= 0);
@@ -189,7 +189,7 @@ int main() {
 
     // test send notification
     {
-        const int n_users = MIN_NEAR_REPORTS+1;
+        const int n_users = MIN_USER_DETECTED_EQ;
         vector<User> utenti;
         for (int i = 0; i < n_users; i++)
             utenti.push_back(generateNewUser());
@@ -203,8 +203,6 @@ int main() {
 
             detector.addReport(r);
             r.millis += i;
-            if (i != MIN_NEAR_REPORTS)
-                assert(detector.size() == i + 1);
         }
 
         // must have sent a notification in the previous 100 ms
@@ -215,7 +213,7 @@ int main() {
         Event notified = detector.getLastEventNotified();
         assert(notified.contributorId.size() != 0);
         //cerr << notified.contributorId << endl;
-        for (int i = 1; i < MIN_NEAR_REPORTS; i++) {
+        for (int i = 0; i < n_users; i++) {
             User u = utenti[i];
             stringstream ss;
             ss << u.id;

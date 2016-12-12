@@ -14,7 +14,11 @@
 
 #define  REPORT_TTL (1000*60*3)
 #define  NEAR_METERS 20 * 1000
+// at min the MIN_PERCENT users in range of NEAR_METER Must have detected an EQ to send the notify
+#define  MIN_PERCENT 0.30f
 #define  MIN_NEAR_REPORTS 10
+//min number of users that must have detected an EQ to send the notify
+#define  MIN_USER_DETECTED_EQ 3
 /**
  * based on a very simple and stupid idea, with many problem:
  * if there are al least N person who dist each other less than K KM
@@ -53,6 +57,8 @@ private:
     void removeOldReports();
 
     std::vector<Report> getNearReports(const Report &r);
+
+    int getNearActiveUsers(const User & u);
 
     bool isToRemove(const Report &r);
 

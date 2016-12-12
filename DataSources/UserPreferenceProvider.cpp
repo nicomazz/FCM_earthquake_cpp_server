@@ -40,7 +40,7 @@ std::vector<User> UserPreferenceProvider::requestActiveUsers() {
         // session s;
         transaction t(db->begin());
 
-        long fromTime = TimeUtils::getCurrentMillis() - (1000*60*60); // millis of one hour ago
+        long fromTime = TimeUtils::getCurrentMillis() - (1000*60); // millis of one minute ago
         result r(db->query<User>(query::lastActivity > fromTime));
 
         for (const User &e: r)

@@ -49,7 +49,10 @@ public:
         return ids.dump();
     }
     double getDistance(const Report &a, const Report &b) {
-        return GeoUtility::distanceEarth(a.u.lat, a.u.lng, b.u.lat, b.u.lng);
+        return getDistance(a.u,b.u);
+    }
+    double getDistance(const User &a, const User &b) {
+        return GeoUtility::distanceEarth(a.lat, a.lng, b.lat, b.lng);
     }
 };
 
