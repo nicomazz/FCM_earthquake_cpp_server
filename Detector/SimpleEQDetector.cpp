@@ -8,6 +8,7 @@
 #include <Firebase/FirebaseNotificationManager.hpp>
 #include <DataSources/EventProvider.hpp>
 #include "SimpleEQDetector.hpp"
+#include "../DataSources/ReportProvider.hpp"
 #include "Report.hpp"
 
 
@@ -18,24 +19,24 @@ std::string SimpleEQDetector::getDetectorName() {
 }
 
 void SimpleEQDetector::addReport(const Report &report) {
-    removeAndUpdateUserReport(report);
+    removeUserReport(report.u);
     {
         std::lock_guard<std::mutex> guard(v_mutex);
         reports.insert(report);
+        user_last_millis[report.u.id] = report.millis; // update user last report
     }
-    //todo use conditional variable
+    ReportProvider::persistReport(report);
     removeOldReports();
     elaborateActualReports();
 }
 
-void SimpleEQDetector::removeAndUpdateUserReport(const Report &report) {
+void SimpleEQDetector::removeUserReport(const User &u) {
     std::lock_guard<std::mutex> guard(v_mutex);
-    long last_millis = user_last_millis[report.u.id];
+    long last_millis = user_last_millis[u.id];
     if (last_millis != 0) {//remove precedent report
         Report to_remove(last_millis);
         reports.erase(to_remove);
     }
-    user_last_millis[id] = report.millis;
 }
 void SimpleEQDetector::removeOldReports() {
     std::lock_guard<std::mutex> guard(v_mutex);
@@ -55,7 +56,7 @@ void SimpleEQDetector::elaborateActualReports() {
         std::vector<Report> near = getNearReports(actual);
         max_near = std::max(max_near, (int) near.size());
         if (near.size() >= MIN_NEAR_REPORTS) {
-            sendNotification(actual);
+            sendNotification(near);
             removeNear(actual);
             return;
         }
@@ -80,13 +81,13 @@ void SimpleEQDetector::removeNear(const Report &r) {
 }
 
 
-
-void SimpleEQDetector::sendNotification(const Report &r) {
+void SimpleEQDetector::sendNotification(const std::vector<Report> &reports) {
     syslog(LOG_INFO, "Sending notification for detected earthquake!");
     millisLastNotifySend = TimeUtils::getCurrentMillis();
 
-    Event e = generateEventFromReport(r);
+    Event e = generateEventFromReports(reports);
     EventProvider::persistEvent(e);
+    lastNotified = e;
 
     //send notification:
     FirebaseNotificationManager notificationManager;
@@ -95,14 +96,13 @@ void SimpleEQDetector::sendNotification(const Report &r) {
 
 int SimpleEQDetector::size() {
     std::lock_guard<std::mutex> guard(v_mutex);
-    return reports.size();
+    return (int) reports.size();
 }
 
 void SimpleEQDetector::clear() {
     std::lock_guard<std::mutex> guard(v_mutex);
     reports.clear();
 }
-
 
 
 void SimpleEQDetector::addReports(const std::vector<Report> rs) {
@@ -113,6 +113,10 @@ void SimpleEQDetector::addReports(const std::vector<Report> rs) {
     }
     removeOldReports();
     elaborateActualReports();
+}
+
+Event SimpleEQDetector::getLastEventNotified() {
+    return lastNotified;
 }
 
 

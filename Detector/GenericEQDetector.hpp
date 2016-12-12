@@ -28,7 +28,8 @@ public:
 
  protected:
     virtual void elaborateActualReports() = 0;
-    virtual Event generateEventFromReport(const Report &r)  {
+    virtual Event generateEventFromReports(const std::vector<Report> & reports)  {
+        Report r = reports[0];
         Event e;
         e.isRealTimeReport = true;
         e.id = TimeUtils::getCurrentMillis();
@@ -38,7 +39,14 @@ public:
         e.magnitude = 10;
         e.lat = r.u.lat;
         e.lng = r.u.lng;
+        e.contributorId = getIdsString(reports);
         return e;
+    }
+    std::string getIdsString( const std::vector<Report> & reports){
+        json ids;
+        for (Report r: reports)
+            ids.push_back(r.u.id);
+        return ids.dump();
     }
     double getDistance(const Report &a, const Report &b) {
         return GeoUtility::distanceEarth(a.u.lat, a.u.lng, b.u.lat, b.u.lng);

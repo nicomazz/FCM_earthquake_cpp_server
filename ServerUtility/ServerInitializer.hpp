@@ -44,6 +44,16 @@ namespace FCMServer {
     //id in url of request
     void printUserWithId(Request request, Response response);
 
+    void printDetectedEvents(Request request, Response response);
+
+    /**
+     * read from request a json array of ids, and return a list of requested users.
+     * The request must be made by an user that provide a secret key
+     * @param request
+     * @param response
+     */
+    void getUsersDetails(Request request, Response response);
+
     void handleReport(Request request, Response response);
 
 

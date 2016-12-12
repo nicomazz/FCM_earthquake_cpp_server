@@ -4,6 +4,8 @@
 
 #include <Firebase/NotificationDataBuilder.hpp>
 #include <Detector/ReportParserHTTP.hpp>
+#include <DataSources/EventProvider.hpp>
+#include <Models/Event/EventBuilder.hpp>
 #include "ServerInitializer.hpp"
 
 // one hour
@@ -29,6 +31,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         });
         work_thread.detach();
     };
+
     //GET-example for the path /match/[number], responds with the matched string in path (number)
     //For instance a request GET /match/123 will receive: 123
     server.resource["^/user/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
@@ -51,6 +54,19 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     server.resource["^/getActive"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                shared_ptr<HttpServer::Request> request) {
         getActiveUsers(request, response);
+    };
+
+    server.resource["^/detected_events"]["POST"] = [](shared_ptr<HttpServer::Response> response,
+                                             shared_ptr<HttpServer::Request> request) {
+        printDetectedEvents(request, response);
+    };
+    // respond to a list of user id, with the details of all users
+    server.resource["^/users_info"]["POST"] = [](shared_ptr<HttpServer::Response> response,
+                                                 shared_ptr<HttpServer::Request> request) {
+        thread work_thread([request, response] {
+            getUsersDetails(request, response);
+        });
+        work_thread.detach();
     };
     //Default GET-example. If no other matches, this anonymous function will be called.
     //Will respond with content in the web/-directory, and its subdirectories.
@@ -193,7 +209,7 @@ void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Respon
 }
 
 //todo function that every minutes update a string
-void FCMServer::getActiveUsers(FCMServer::Request request, FCMServer::Response response) {
+void FCMServer::getActiveUsers(FCMServer::Request /*request*/, FCMServer::Response response) {
     try {
         stringstream content_stream;
         UserPreferenceProvider userProvider;
@@ -214,6 +230,57 @@ void FCMServer::getActiveUsers(FCMServer::Request request, FCMServer::Response r
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
+        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
+                  << resp;
+    }
+}
+
+void FCMServer::printDetectedEvents(FCMServer::Request /*request*/, FCMServer::Response response) {
+    try {
+        stringstream content_stream;
+        EventProvider userProvider;
+        std::vector<Event> realTimeEvents = userProvider.requestDetectorEvents();
+        json jsonObj;
+
+        for (Event &e : realTimeEvents)
+            jsonObj.push_back(EventBuilder::eventToJson(e));
+
+        content_stream << jsonObj.dump(3);
+
+        //find length of content_stream (length received using content_stream.tellp())
+        content_stream.seekp(0, ios::end);
+
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
+                  << content_stream.rdbuf();
+    } catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, e.what());
+        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
+                  << resp;
+    }
+}
+
+void FCMServer::getUsersDetails(FCMServer::Request request, FCMServer::Response response) {
+    try {
+        string content = request->content.string();
+        vector<long> ids = UserBuilder::getUserIdList(content);
+
+        json json_array;
+        for (long id : ids){
+            User u = UserPreferenceProvider::getUser(id);
+            if (u.hasId())
+                json_array.push_back(UserBuilder::userToJson(u));
+        }
+
+        json json_resp;
+        json_resp["response"] = "successfully";
+        json_resp["users"] = json_array;
+        string message = json_resp.dump(3);
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
+
+    } catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, resp.c_str());
         *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
                   << resp;
     }

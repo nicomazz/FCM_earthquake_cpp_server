@@ -22,6 +22,7 @@ User UserBuilder::buildFromJson(std::string json_string) {
         u.minMillisNotificationDelay = get<long>(json_content,USER_DELAY_NOTIFICATION);
         u.lastNotificationMillis = 0;
         u.lastModify = TimeUtils::getCurrentMillis();
+        u.lastActivity = TimeUtils::getCurrentMillis();
         u.receiveRealTimeNotification = get<bool>(json_content,USER_RECEIVE_TEST);
         if (u.hasId())
             addDBFields(u);
@@ -30,6 +31,14 @@ User UserBuilder::buildFromJson(std::string json_string) {
         syslog(LOG_INFO, e.what());
         throw std::invalid_argument("json string with bad format, cannot parse the user. "+string(e.what()));
     }
+}
+void UserBuilder::addDBFields(User &user) {
+    try {
+        UserPreferenceProvider::checkValidUserInDB(user);
+        User inDb = UserPreferenceProvider::getUser(user.id);
+        user.lastNotificationMillis = inDb.lastNotificationMillis;
+        user.lastActivity = inDb.lastActivity;
+    } catch (...){}
 }
 
 json UserBuilder::userToJson(User &u) {
@@ -64,13 +73,24 @@ T UserBuilder::get(json j, std::string key) {
     }
 }
 
-void UserBuilder::addDBFields(User &user) {
+std::vector<long> UserBuilder::getUserIdList(string json_array) {
     try {
-        UserPreferenceProvider::checkValidUserInDB(user);
-        User inDb = UserPreferenceProvider::getUser(user.id);
-        user.lastNotificationMillis = inDb.lastNotificationMillis;
-        user.lastActivity = inDb.lastActivity;
-    } catch (...){}
+        json json_content = json::parse(json_array);
+        User u;
+        u.id = json_content[USER_ID];
+        u.secretKey = json_content[USER_SECRET_KEY];
+        UserPreferenceProvider::checkValidUserInDB(u); // if not valid throw exception
+
+        json array_ids = json_content["ids"];
+        vector<long> res;
+        for (auto id : array_ids)
+            res.push_back(id);
+        return res;
+    } catch (std::logic_error e) {
+        syslog(LOG_INFO, e.what());
+        throw std::invalid_argument("json string with bad format, cannot parse the users list. "+string(e.what()));
+    }
 }
+
 
 

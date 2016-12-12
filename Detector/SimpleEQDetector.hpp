@@ -32,6 +32,8 @@ private:
      */
     std::map<long,long> user_last_millis;
 
+    Event lastNotified;
+
 public:
     void addReport(const Report &r) override;
     void addReports(const std::vector<Report> rs) override;
@@ -42,6 +44,8 @@ public:
     void clear() override;
 
     std::string getDetectorName() override;
+
+    Event getLastEventNotified();
 private:
 
     virtual void elaborateActualReports() override;
@@ -52,11 +56,11 @@ private:
 
     bool isToRemove(const Report &r);
 
-    void sendNotification(const Report &r);
+    void sendNotification(const std::vector<Report> &r);
 
     void removeNear(const Report & r);
 
-    void removeAndUpdateUserReport(const Report & r);
+    void removeUserReport(const User &u);
 
 };
 

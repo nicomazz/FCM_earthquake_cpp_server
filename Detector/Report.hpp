@@ -17,7 +17,8 @@ struct Report{
     }
 	User u;
     int power;
-	long millis;
+#pragma db id
+    long millis;
 	bool operator<(const Report & b) const{
 		return millis < b.millis;
 	}

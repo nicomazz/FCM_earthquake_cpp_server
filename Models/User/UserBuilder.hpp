@@ -34,6 +34,13 @@ public:
 
     static std::string generateRandomString(int l = SECRET_KEY_LENGTH);
 
+    /**
+     * id:
+     * secretKey:
+     * ids: []
+     * */
+    static std::vector<long> getUserIdList(string json_array);
+
     template<typename T>
     static T get(json j, std::string key);
 

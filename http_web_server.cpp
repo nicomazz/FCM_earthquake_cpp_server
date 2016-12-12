@@ -27,17 +27,29 @@ void runServer() {
     server.startServer();
 }
 
-std::string getexepath()
-{
-    char result[ 1000 ];
-    ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
-    return std::string( result, (count > 0) ? count : 0 );
+/**
+ * TODO:
+ * mettere millis a eventi in database
+ * -aggiungere al web server path per prendere solo i report generati
+ * -localizzare tutto in inglese
+ * -in simple detector prendere come condizione necessaria il 30 % degli attivi entro K Km, e consentire
+ *  una sola segnalazione per utente (se ne invia di nuove la precedente viene a meno)
+ * -aggiungere schermata nell'app per le segnalazioni inviate dagli utenti
+ * -migliorare fragment detector
+ * -verificare in caso il server sia spento cosa fanno i dispositivi
+ * */
+std::string getexepath() {
+    char result[1000];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    return std::string(result, (count > 0) ? count : 0);
 }
-std::string getCurrentDirectory(){
+
+std::string getCurrentDirectory() {
     string s1(getexepath());
-    s1 =  s1.substr(0, s1.find_last_of("\\/"));
+    s1 = s1.substr(0, s1.find_last_of("\\/"));
     return s1;
 }
+
 int main() {
     openlog(DAEMON_NAME, 0, LOG_USER);
 

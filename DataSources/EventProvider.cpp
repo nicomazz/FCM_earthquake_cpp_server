@@ -50,7 +50,31 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     return results;
 }
 
-long  EventProvider::persistEvent(Event &e, bool checkAlreadyPresent) {
+std::vector<Event> EventProvider::requestDetectorEvents() {
+    using namespace odb::core;
+    std::vector<Event> results;
+
+    std::shared_ptr<database> db = Database::getInstance().getDatabase();
+
+    {
+        typedef odb::result<Event> result;
+
+        // session s;
+        transaction t(db->begin());
+
+        result r(db->query<Event>(query<Event>::isRealTimeReport == true));
+
+        for (const Event &e: r)
+            results.push_back(e);
+
+        t.commit();
+    }
+
+    return results;
+}
+
+
+long EventProvider::persistEvent(Event &e, bool checkAlreadyPresent) {
     using namespace odb::core;
 
     if (checkAlreadyPresent && isEventPresent(e.id)) // esiste già
@@ -96,7 +120,7 @@ Event EventProvider::getEvent(long id) {
     return Event();
 }
 
- bool EventProvider::isEventPresent(long id) {
+bool EventProvider::isEventPresent(long id) {
     return getEvent(id).id == id;
 }
 

@@ -19,7 +19,7 @@ public:
 	std::string author;
 	std::string catalog; 
 	std::string contributor;
-	std::string contributorId;
+	std::string contributorId; // for generated events contain an json array of id's "[1,2,3,4]
 	std::string magType;
 	double magnitude;
 	std::string magAuthor;

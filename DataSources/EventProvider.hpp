@@ -22,6 +22,8 @@ public:
 
     static std::vector<Event> requestEventFromDB();
 
+    static std::vector<Event> requestDetectorEvents();
+
     static long persistEvent(Event &e, bool checkAlreadyPresent = false);
 
     static Event getEvent(long id);

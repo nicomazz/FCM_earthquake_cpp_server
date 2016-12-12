@@ -16,6 +16,7 @@ typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
 #define TEST_POWER 10
+
 json generateGoodRequest(const User &user) {
     json j;
     j[REPORT_USER_ID] = user.id;
@@ -35,19 +36,22 @@ json generateUserMismatchRequest() {
 json generateUserMismatchSecretKeyRequest(const User &user) {
     json j;
     j[REPORT_USER_ID] = user.id;
-    j[REPORT_SECRET_KEY] = "123";
+    j[REPORT_SECRET_KEY] = "";
     j[REPORT_POWER] = TEST_POWER;
     return j;
 }
+
 json generateMissingParamsRequest() {
     json j;
     j[REPORT_POWER] = TEST_POWER;
     return j;
 }
+
 User generateNewUser() {
     User newUser;
-    newUser.lat = 45;
-    newUser.lng = 12;
+    newUser.lat = 45 + (rand() / 100 * 0.1f);
+    newUser.lng = 12 + (rand() / 100 * 0.1f);
+    newUser.secretKey = "123";
     long insertedId = UserPreferenceProvider::persistUser(newUser);
     assert(insertedId >= 0);
     assert(newUser.id == insertedId);
@@ -63,7 +67,7 @@ void reportParserTests() {
         try {
             ReportParserHTTP::parseRequest(bad);
             assert(false);
-        } catch (std::invalid_argument e){
+        } catch (std::invalid_argument e) {
             assert(string(e.what()).find("missing") != string::npos);
         }
     }
@@ -76,7 +80,7 @@ void reportParserTests() {
             assert(r.u.id == newUser.id);
             assert(r.power == TEST_POWER);
             up.removeUser(newUser);
-        } catch (std::exception e){
+        } catch (std::exception e) {
             assert((false && "problems in correct request parse"));
         }
     }
@@ -109,6 +113,10 @@ void sendReportToServer(User &u) {
 
     auto r = client.request("POST", "/report", generateGoodRequest(u).dump());
     assert(r->status_code.find("400") == string::npos);
+    stringstream output;
+    output << r->content.rdbuf();
+    std::string respose = output.str();
+    assert(respose.find("Report send") != string::npos);
 }
 
 void sendReportTest() {
@@ -118,7 +126,7 @@ void sendReportTest() {
     up.removeUser(u);
 }
 
-void removeOldReportsTest(){
+void removeOldReportsTest() {
     SimpleEQDetector detector;
     UserPreferenceProvider up;
 
@@ -142,13 +150,11 @@ void removeOldReportsTest(){
     assert(detector.size() == 0);
     up.removeUser(newUser);
 }
+
 int main() {
     HttpServer server(8080, 1);
-
     FCMServer::initServer(server);
-
     thread server_thread([&server]() {
-        //Start server
         server.start();
     });
     this_thread::sleep_for(chrono::seconds(1));
@@ -173,9 +179,6 @@ int main() {
         detector.addReport(r);
         detector.addReport(r); // same as precedent, not size increace
         assert(detector.size() == 1);
-        r.millis++; //different millis, size increace
-        detector.addReport(r);
-        assert(detector.size() == 2);
         detector.clear();
         assert(detector.size() == 0);
         up.removeUser(newUser);
@@ -186,21 +189,43 @@ int main() {
 
     // test send notification
     {
-        User newUser = generateNewUser();
-        string goodRequest = generateGoodRequest(newUser).dump();
-        Report r1 = ReportParserHTTP::parseRequest(goodRequest);
+        const int n_users = MIN_NEAR_REPORTS+1;
+        vector<User> utenti;
+        for (int i = 0; i < n_users; i++)
+            utenti.push_back(generateNewUser());
+
         int startEventNumber = EventProvider::requestEventFromDB().size();
         detector.clear();
-        for (int i = 0; i < MIN_NEAR_REPORTS+1 ; i++) { // put different same report to trigger a notification
-            detector.addReport(r1);
-            r1.millis++;
-            if ( i != MIN_NEAR_REPORTS)
-                assert(detector.size() == i+1);
+        // generate n requests
+        for (int i = 0; i < n_users; i++) {
+            string goodRequest = generateGoodRequest(utenti[i]).dump();
+            Report r = ReportParserHTTP::parseRequest(goodRequest);
+
+            detector.addReport(r);
+            r.millis += i;
+            if (i != MIN_NEAR_REPORTS)
+                assert(detector.size() == i + 1);
         }
-        // must have send a notify in the previous 100 ms
+
+        // must have sent a notification in the previous 100 ms
         long timeDiff = TimeUtils::getCurrentMillis() - detector.millisLastNotifySend;
         assert(timeDiff < 100);
-        assert(startEventNumber +1 == (int) EventProvider::requestEventFromDB().size());
+        assert(startEventNumber + 1 == (int) EventProvider::requestEventFromDB().size());
+
+        Event notified = detector.getLastEventNotified();
+        assert(notified.contributorId.size() != 0);
+        //cerr << notified.contributorId << endl;
+        for (int i = 1; i < MIN_NEAR_REPORTS; i++) {
+            User u = utenti[i];
+            stringstream ss;
+            ss << u.id;
+            string user_id_s = ss.str();
+            assert(notified.contributorId.find(user_id_s) != string::npos);
+        }
+
+        detector.clear();
+        for (User &u: utenti)
+            up.removeUser(u);
     }
 
     server.stop();
