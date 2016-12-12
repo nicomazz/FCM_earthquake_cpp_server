@@ -56,7 +56,7 @@ private:
 
     void removeNear(const Report & r);
 
-    void 
+    void removeAndUpdateUserReport(const Report & r);
 
 };
 

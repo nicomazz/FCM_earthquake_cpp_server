@@ -28,16 +28,14 @@ void SimpleEQDetector::addReport(const Report &report) {
     elaborateActualReports();
 }
 
-void SimpleEQDetector::removeAndUpdateUserReport(const Report &report){
-    
-      std::lock_guard<std::mutex> guard(v_mutex);
-      long last_millis = user_last_millis[report.u.id];
-      if (last_millis != 0) {//remove precedent report
-          Report to_remove(last_millis);
-          reports.erase(to_remove);
-      }
+void SimpleEQDetector::removeAndUpdateUserReport(const Report &report) {
+    std::lock_guard<std::mutex> guard(v_mutex);
+    long last_millis = user_last_millis[report.u.id];
+    if (last_millis != 0) {//remove precedent report
+        Report to_remove(last_millis);
+        reports.erase(to_remove);
+    }
     user_last_millis[id] = report.millis;
-   
 }
 void SimpleEQDetector::removeOldReports() {
     std::lock_guard<std::mutex> guard(v_mutex);
@@ -62,12 +60,12 @@ void SimpleEQDetector::elaborateActualReports() {
             return;
         }
     }
-    syslog(LOG_INFO, "Found at max %d people, not %d",max_near,MIN_NEAR_REPORTS);
+    syslog(LOG_INFO, "Found at max %d people, not %d", max_near, MIN_NEAR_REPORTS);
 }
 
 std::vector<Report> SimpleEQDetector::getNearReports(const Report &r) {
     std::vector<Report> near_report;
-    for (const Report &other: reports) {
+    for (const Report &other : reports) {
         if (r == other) continue;
         if (getDistance(r, other) < NEAR_METERS)
             near_report.push_back(other);
@@ -77,7 +75,7 @@ std::vector<Report> SimpleEQDetector::getNearReports(const Report &r) {
 
 void SimpleEQDetector::removeNear(const Report &r) {
     std::vector<Report> to_remove = getNearReports(r);
-    for (Report &to_rem: to_remove)
+    for (Report &to_rem : to_remove)
         reports.erase(to_rem);
 }
 
@@ -110,7 +108,7 @@ void SimpleEQDetector::clear() {
 void SimpleEQDetector::addReports(const std::vector<Report> rs) {
     {
         std::lock_guard<std::mutex> guard(v_mutex);
-        for (Report r: rs)
+        for (Report r : rs)
             reports.insert(r);
     }
     removeOldReports();
