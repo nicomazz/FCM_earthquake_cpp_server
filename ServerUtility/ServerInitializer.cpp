@@ -240,7 +240,7 @@ void FCMServer::printDetectedEvents(FCMServer::Request /*request*/, FCMServer::R
         stringstream content_stream;
         EventProvider userProvider;
         std::vector<Event> realTimeEvents = userProvider.requestDetectorEvents();
-        json jsonObj;
+        json jsonObj = json::array();
 
         for (Event &e : realTimeEvents)
             jsonObj.push_back(EventBuilder::eventToJson(e));

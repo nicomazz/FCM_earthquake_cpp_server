@@ -7,6 +7,7 @@
 json EventBuilder::eventToJson(Event &e){
     json json_content;
     json_content[EVENT_ID] = e.id;
+    json_content[EVENT_DATE] = e.date;
     json_content[EVENT_DEPTH] = e.depthKm;
     json_content[EVENT_AUTHOR] = e.author;
     json_content[EVENT_CONTRIBUTOR_ID] = e.contributorId;
