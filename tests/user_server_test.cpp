@@ -125,6 +125,31 @@ void testGetUserDetails() {
 
 }
 
+void testGetUsersDetails() {
+    UserPreferenceProvider up;
+
+    User u;
+    u.secretKey = UserBuilder::generateRandomString();
+    long id = up.persistUser(u);
+    assert(u.id > 0);
+    assert(id > 0);
+    stringstream ss;
+    ss<<"["<<id<<"]";
+
+    json request;
+    request[USER_ID] = u.id;
+    request[USER_SECRET_KEY] = u.secretKey;
+    request["ids"] = ss.str();
+
+    string response = getRequestRespose("POST", "/users_info",request.dump());
+    assert(response.find("succ") != std::string::npos);
+
+    json resp_json = json::parse(response);
+    json users = resp_json["users"];
+    assert(users[0]["id"].get<long>() == id);
+    up.removeUser(u);
+}
+
 int main() {
     HttpServer server(8080, 1);
 
@@ -139,6 +164,7 @@ int main() {
     testBadAddUser();
     testUpdateUser();
     testGetUserDetails();
+    testGetUsersDetails();
 
     server.stop();
     server_thread.join();

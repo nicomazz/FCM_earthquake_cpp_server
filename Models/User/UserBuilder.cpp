@@ -77,14 +77,15 @@ std::vector<long> UserBuilder::getUserIdList(string json_array) {
     try {
         json json_content = json::parse(json_array);
         User u;
-        u.id = json_content[USER_ID];
-        u.secretKey = json_content[USER_SECRET_KEY];
+        u.id = get<long>(json_content,USER_ID);
+        u.secretKey = get<std::string>(json_content,USER_SECRET_KEY);
         UserPreferenceProvider::checkValidUserInDB(u); // if not valid throw exception
 
-        json array_ids = json_content["ids"];
+        json array_ids = json::parse(json_content["ids"].get<std::string>());
         vector<long> res;
-        for (auto id : array_ids)
+        for (int id : array_ids) {
             res.push_back(id);
+        }
         return res;
     } catch (std::logic_error e) {
         syslog(LOG_INFO, e.what());

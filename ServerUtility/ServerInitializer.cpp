@@ -61,6 +61,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         printDetectedEvents(request, response);
     };
     // respond to a list of user id, with the details of all users
+    // request must have user id, secret key
     server.resource["^/users_info"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                                  shared_ptr<HttpServer::Request> request) {
         thread work_thread([request, response] {
