@@ -58,12 +58,10 @@ void SimpleEQDetector::elaborateActualReports() {
         if (nearActiveUsers < MIN_USER_DETECTED_EQ) continue;
 
         std::vector<Report> near = getNearReports(actual);
-       // std::cout<<"tpercent: "<<near.size()<<"/"<<nearActiveUsers<<"\n";
         float percent = (float) near.size() / nearActiveUsers;
         max_percent = std::max(max_percent, percent);
         syslog(LOG_INFO, "att percent: %f", percent);
-       // std::cout<<"att percent: "<<percent<<"\n";
-        if (percent > MIN_PERCENT){
+        if (near.size() >= 2 && percent > MIN_PERCENT){
             sendNotification(near);
             removeNear(actual);
             return;

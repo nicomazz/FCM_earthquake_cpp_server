@@ -10,8 +10,10 @@
 
 
 bool UserMatching::toNotify() {
-    return respectRealtimeReport() &&
-           respectMagnitudeConstraint() &&
+    if (mEvent.isRealTimeReport)
+        return respectRealtimeReport();
+
+    return respectMagnitudeConstraint() &&
            respectNotifyDelayConstraint() &&
            respectDistanceConstraint();
 }

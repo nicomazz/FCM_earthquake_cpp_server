@@ -37,10 +37,16 @@ public:
         e.date = TimeUtils::getTimeStringFromMillis(r.millis);
         e.author = getDetectorName();
         e.magnitude = 10;
-        e.lat = r.u.lat;
-        e.lng = r.u.lng;
+        setMeanPosition(reports,e);
         e.contributorId = getIdsString(reports);
         return e;
+    }
+    void setMeanPosition(const std::vector<Report> & reports, Event & e){
+        double lat_sum = 0, lng_sum = 0;
+        for (const Report & r: reports)
+            lat_sum += r.u.lat, lng_sum+= r.u.lng;
+        e.lat = lat_sum / reports.size();
+        e.lng = lng_sum / reports.size();
     }
     std::string getIdsString( const std::vector<Report> & reports){
         json ids;
