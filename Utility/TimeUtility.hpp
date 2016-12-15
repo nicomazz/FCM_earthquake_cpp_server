@@ -10,7 +10,6 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 
-
 namespace TimeUtils{
     long getCurrentMillis();
     std::string getTimeStringFromMillis(unsigned long long millis);

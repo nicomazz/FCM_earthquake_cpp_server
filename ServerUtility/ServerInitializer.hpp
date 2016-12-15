@@ -62,6 +62,8 @@ namespace FCMServer {
 
     void getActiveUsers(Request request, Response response);
 
+    void getRecentUsers(Request request, Response response);
+
 
 }
 #endif //SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H

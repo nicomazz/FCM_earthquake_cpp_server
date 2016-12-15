@@ -23,6 +23,8 @@ public:
     static std::vector<User> requestUsersFromDB();
 
     static std::vector<User> requestActiveUsers();
+    //users who has last activity within 24 hours
+    static std::vector<User> requestRecentUsers();
 
         /**
          * salva lo stato dell'utente sul db  e aggiorna l'id di user
