@@ -242,7 +242,7 @@ void FCMServer::getRecentUsers(FCMServer::Request /*request*/, FCMServer::Respon
     try {
         stringstream content_stream;
         UserPreferenceProvider userProvider;
-        std::vector<User> allUsers = userProvider.requestActiveUsers();
+        std::vector<User> allUsers = userProvider.requestRecentUsers();
 
         json jsonObj = json::array();
 
