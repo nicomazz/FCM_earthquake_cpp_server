@@ -57,7 +57,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     };
     server.resource["^/getRecentUsers"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                shared_ptr<HttpServer::Request> request) {
-        getActiveUsers(request, response);
+        getRecentUsers(request, response);
     };
 
     server.resource["^/detected_events"]["GET"] = [](shared_ptr<HttpServer::Response> response,
