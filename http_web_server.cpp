@@ -29,15 +29,13 @@ void runServer() {
 
 /**
  * TODO:
- * mettere millis a eventi in database
- * -aggiungere al web server path per prendere solo i report generati
- * -localizzare tutto in inglese
- * -in simple detector prendere come condizione necessaria il 30 % degli attivi entro K Km, e consentire
- *  una sola segnalazione per utente (se ne invia di nuove la precedente viene a meno)
- * -aggiungere schermata nell'app per le segnalazioni inviate dagli utenti
- * -migliorare fragment detector
- * -verificare in caso il server sia spento cosa fanno i dispositivi
+ * - localizzare tutto in inglese
+ * - modificare soglie per detect terremoti (con le attuali ci sono troppe segnalazioni non giuste
+ * - il servizio ogni tanto deve aggiornare la posizione dell'utente, altrimenti si rischiano posizioni vecchie * -verificare in caso il server sia spento cosa fanno i dispositivi
+ * - impedire l'utilizzo del tutto agli utenti senza una posizione geografica
+ * - un sito per mostrare i dati in modo decente
  * */
+
 std::string getexepath() {
     char result[1000];
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
