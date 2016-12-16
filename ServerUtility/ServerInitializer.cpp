@@ -221,9 +221,10 @@ void FCMServer::getActiveUsers(FCMServer::Request /*request*/, FCMServer::Respon
 
         json jsonObj = json::array();
 
-        for (User &u : allUsers)
-            jsonObj.push_back(UserBuilder::userToJson(u));
-
+        for (User &u : allUsers){
+            if (u.hasPosition())
+                jsonObj.push_back(UserBuilder::userToJson(u));
+        }
         content_stream << jsonObj.dump(3);
 
         //find length of content_stream (length received using content_stream.tellp())
@@ -246,8 +247,10 @@ void FCMServer::getRecentUsers(FCMServer::Request /*request*/, FCMServer::Respon
 
         json jsonObj = json::array();
 
-        for (User &u : allUsers)
-            jsonObj.push_back(UserBuilder::userToJson(u));
+        for (User &u : allUsers) {
+            if (u.hasPosition())
+                jsonObj.push_back(UserBuilder::userToJson(u));
+        }
 
         content_stream << jsonObj.dump(3);
 

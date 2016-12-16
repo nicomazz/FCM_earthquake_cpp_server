@@ -74,5 +74,6 @@ add_subdirectory(tests)
 if(EXISTS Firebase/secret_key.txt)
     configure_file(Firebase/secret_key.txt secret_key.txt COPYONLY)
 endif()
+configure_file(Firebase/secret_key.txt key/secret_key.txt COPYONLY)
 
 install(FILES ServerUtility/server_http.hpp DESTINATION include/simple-web-server)

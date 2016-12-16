@@ -82,6 +82,7 @@ std::string FirebaseNotificationManager::getFirebaseKey() {
         return firebase_key;
     std::ifstream infile("secret_key.txt");
     if (!infile){
+        std::ofstream outTest("here_must_be_the_secret_key!");
         syslog(LOG_INFO, "firebase key not found!");
         assert(firebase_key.size() > 0 && "firebase key not found!");
     }
