@@ -49,7 +49,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     server.resource["^/active"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                              shared_ptr<HttpServer::Request> request) {
         handleUserActivity(request, response);
-    };
+    };printAllUsersprintAllUsers
 
     server.resource["^/getActive"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                shared_ptr<HttpServer::Request> request) {
@@ -122,13 +122,18 @@ void FCMServer::printAllUsers(Response response) {
     try {
         stringstream content_stream;
         UserPreferenceProvider userProvider;
-        std::vector<User> allUsers = userProvider.requestUsersFromDB();
-        json jsonObj;
+        std::function<std::string()> response_generator = 
+        []() {
+            std::vector<User> allUsers = userProvider.requestUsersFromDB();
+            json jsonObj;
 
-        for (User &u : allUsers)
-            jsonObj.push_back(UserBuilder::userToJson(u));
-
-        content_stream << jsonObj.dump(3);
+            for (User &u : allUsers)
+                jsonObj.push_back(UserBuilder::userToJson(u));
+            return jsonObj.dump(3);
+        };
+        static WebCacher userWebCacher(response_generator,5000);
+        
+        content_stream << userWebCacher.getResponse();
 
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);
