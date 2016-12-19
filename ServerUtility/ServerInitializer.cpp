@@ -121,9 +121,9 @@ void FCMServer::handleUserRequest(Request request,
 void FCMServer::printAllUsers(Response response) {
     try {
         stringstream content_stream;
-        UserPreferenceProvider userProvider;
         std::function<std::string()> response_generator = 
         []() {
+            UserPreferenceProvider userProvider;
             std::vector<User> allUsers = userProvider.requestUsersFromDB();
             json jsonObj;
 
@@ -221,16 +221,21 @@ void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Respon
 void FCMServer::getActiveUsers(FCMServer::Request /*request*/, FCMServer::Response response) {
     try {
         stringstream content_stream;
-        UserPreferenceProvider userProvider;
-        std::vector<User> allUsers = userProvider.requestActiveUsers();
+        std::function<std::string()> response_generator = 
+        []() {
+            UserPreferenceProvider userProvider;
+            std::vector<User> allUsers = userProvider.requestActiveUsers();
 
-        json jsonObj = json::array();
+            json jsonObj = json::array();
 
-        for (User &u : allUsers){
-            if (u.hasPosition())
-                jsonObj.push_back(UserBuilder::userToJson(u));
-        }
-        content_stream << jsonObj.dump(3);
+            for (User &u : allUsers){
+                if (u.hasPosition())
+                    jsonObj.push_back(UserBuilder::userToJson(u));
+            return jsonObj.dump(3);
+        };
+        static WebCacher activeUserWebCacher(response_generator,5000);
+        
+        content_stream << activeUserWebCacher.getResponse();
 
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);
@@ -247,17 +252,23 @@ void FCMServer::getActiveUsers(FCMServer::Request /*request*/, FCMServer::Respon
 void FCMServer::getRecentUsers(FCMServer::Request /*request*/, FCMServer::Response response) {
     try {
         stringstream content_stream;
-        UserPreferenceProvider userProvider;
-        std::vector<User> allUsers = userProvider.requestRecentUsers();
+        std::function<std::string()> response_generator = 
+        []() {
+            UserPreferenceProvider userProvider;
+            std::vector<User> allUsers = userProvider.requestRecentUsers();
 
-        json jsonObj = json::array();
+            json jsonObj = json::array();
 
-        for (User &u : allUsers) {
-            if (u.hasPosition())
-                jsonObj.push_back(UserBuilder::userToJson(u));
-        }
+            for (User &u : allUsers) {
+               if (u.hasPosition())
+                   jsonObj.push_back(UserBuilder::userToJson(u));
+            }
 
-        content_stream << jsonObj.dump(3);
+            return jsonObj.dump(3);
+        };
+        static WebCacher recentUserWebCacher(response_generator,5000);
+        
+        content_stream << activeUserWebCacher.getResponse();
 
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);
