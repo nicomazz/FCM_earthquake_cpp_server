@@ -21,8 +21,8 @@ User UserBuilder::buildFromJson(std::string json_string) {
         u.maxDistancePreference = get<double>(json_content,USER_MAX_DIST);
         u.minMillisNotificationDelay = get<long>(json_content,USER_DELAY_NOTIFICATION);
         u.lastNotificationMillis = 0;
-        u.lastModify = TimeUtils::getCurrentMillis();
-        u.lastActivity = TimeUtils::getCurrentMillis();
+        u.lastModify = TimeUtility::getCurrentMillis();
+        u.lastActivity = TimeUtility::getCurrentMillis();
         u.receiveRealTimeNotification = get<bool>(json_content,USER_RECEIVE_TEST);
         if (u.hasId())
             addDBFields(u);

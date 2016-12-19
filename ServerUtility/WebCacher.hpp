@@ -5,6 +5,9 @@
 #ifndef SIMPLE_WEB_SERVER_WEB_CACHER_H
 #define SIMPLE_WEB_SERVER_WEB_CACHER_H
 #include <string>
+#include <functional>
+#include <mutex>
+#include <Utility/TimeUtility.hpp>
 
 #define WEB_CACHER_TTL_DEFAULT 5000
 /**
@@ -15,7 +18,7 @@
  */
 class WebCacher {
 public:
-    WebCacher(std::function<std::string()> & generator, 
+    WebCacher(std::function<std::string()>  generator,
         int ttl_millis = WEB_CACHER_TTL_DEFAULT);
 
     std::string getResponse();

@@ -40,7 +40,7 @@ std::vector<User> UserPreferenceProvider::requestActiveUsers() {
         // session s;
         transaction t(db->begin());
 
-        long fromTime = TimeUtils::getCurrentMillis() - (1000*60); // millis of one minute ago
+        long fromTime = TimeUtility::getCurrentMillis() - (1000*60); // millis of one minute ago
         result r(db->query<User>(query::lastActivity > fromTime));
 
         for (const User &e: r)
@@ -63,7 +63,7 @@ std::vector<User> UserPreferenceProvider::requestRecentUsers() {
         // session s;
         transaction t(db->begin());
 
-        long fromTime = TimeUtils::getCurrentMillis() - (1000*60*60*24); // millis of one day ago
+        long fromTime = TimeUtility::getCurrentMillis() - (1000*60*60*24); // millis of one day ago
         result r(db->query<User>(query::lastActivity > fromTime));
 
         for (const User &e: r)
@@ -84,7 +84,7 @@ long UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         {
             transaction t(db->begin());
-            user.lastModify = TimeUtils::getCurrentMillis();
+            user.lastModify = TimeUtility::getCurrentMillis();
             user.id = db->persist(user);
             //std::cout<<"id nuovo: "<<user.id<<"\n";
             t.commit();
@@ -132,7 +132,7 @@ void UserPreferenceProvider::updateUser(User &user) {
     try {
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
-        user.lastModify = TimeUtils::getCurrentMillis();
+        user.lastModify = TimeUtility::getCurrentMillis();
         db->update(user);
         t.commit();
     } catch (const odb::exception &e) {

@@ -18,10 +18,11 @@ file(GLOB DataSources_dir  "../DataSources/*.cpp")
 file(GLOB EventsWebProvider_dir  "../DataSources/*/*.cpp")
 file(GLOB Firebase_dir "../Firebase/*.cpp")
 file(GLOB Detector_dir "../Detector/*")
+file(GLOB ServerUtility_dir "../ServerUtility/*")
 
 #EVENT PROVIDER TESTS
 add_executable(event_provider_test event_provider_test.cpp
-        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
+        ${ServerUtility_dir} ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.cpp
         ../DataSources/EventProvider.cpp
         ../DataSources/EventsWebProvider/INGVDataSource.cpp
@@ -41,7 +42,7 @@ endif()
 #USER PROVIDER TESTS
 
 add_executable(user_provider_test user_provider_test.cpp
-        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
+        ${ServerUtility_dir} ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.cpp
         ../DataSources/UserPreferenceProvider.cpp
         ../Utility/UserMatching.cpp ../Utility/UserMatching.hpp
@@ -61,7 +62,7 @@ add_executable(user_server_test
         user_server_test.cpp
         ../EarthquakeServer.cpp
         ../ServerUtility/ServerInitializer.cpp
-        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
+        ${ServerUtility_dir} ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.hpp
         ../Utility/UserMatching.cpp
         ../Utility/UserMatching.hpp
@@ -83,7 +84,7 @@ add_executable(simple_detector_test
         simple_detector_test.cpp
         ../EarthquakeServer.cpp
         ../ServerUtility/ServerInitializer.cpp
-        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
+        ${ServerUtility_dir} ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         ../DataSources/Database.hpp
         ../Utility/UserMatching.cpp
         ../Utility/UserMatching.hpp

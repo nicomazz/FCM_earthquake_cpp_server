@@ -28,7 +28,7 @@ bool UserMatching::respectMagnitudeConstraint() {
 
 bool UserMatching::respectNotifyDelayConstraint() {
     using namespace std::chrono;
-    long ms = TimeUtils::getCurrentMillis();
+    long ms = TimeUtility::getCurrentMillis();
     long dt = abs(ms - mUser.lastNotificationMillis);
     bool toNotify = dt > mUser.minMillisNotificationDelay;
     return toNotify;

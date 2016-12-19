@@ -33,12 +33,12 @@ file(GLOB Models_dir "Models/*/*")
 file(GLOB Firebase_dir "Firebase/*.cpp")
 file(GLOB Detector_dir "Detector/*")
 file(GLOB Utility_dir "Utility/*")
+file(GLOB ServerUtility_dir "ServerUtility/*")
 
 add_executable(http_web_server
         http_web_server.cpp
         EarthquakeServer.cpp
-        ServerUtility/ServerInitializer.cpp
-        ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
+        ${ServerUtility_dir} ${DataSources_dir} ${Models_dir} ${Firebase_dir} ${EventsWebProvider_dir} ${Detector_dir} ${Utility_dir}
         DataSources/Database.hpp
         Utility/UserMatching.cpp Utility/UserMatching.hpp Utility/json.hpp
         Utility/TimeUtility.cpp)

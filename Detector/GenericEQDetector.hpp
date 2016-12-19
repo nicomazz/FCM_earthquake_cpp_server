@@ -32,9 +32,9 @@ public:
         Report r = reports[0];
         Event e;
         e.isRealTimeReport = true;
-        e.id = TimeUtils::getCurrentMillis();
+        e.id = TimeUtility::getCurrentMillis();
         e.millis = r.millis;
-        e.date = TimeUtils::getTimeStringFromMillis(r.millis);
+        e.date = TimeUtility::getTimeStringFromMillis(r.millis);
         e.author = getDetectorName();
         e.magnitude = 10;
         setMeanPosition(reports,e);
