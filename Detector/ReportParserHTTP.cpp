@@ -15,7 +15,7 @@ Report ReportParserHTTP::parseRequest(std::string body) {
         UserPreferenceProvider::checkValidUserInDB(requester);
 
         User userInDb = UserPreferenceProvider::getUser(requester.id);
-        userInDb.lastActivity = TimeUtils::getCurrentMillis();
+        userInDb.lastActivity = TimeUtility::getCurrentMillis();
         UserPreferenceProvider::updateUser(userInDb);
 
         int power = json_content[REPORT_POWER].get<int>();
@@ -47,7 +47,7 @@ long ReportParserHTTP::parseActiveRequest(std::string body) {
         UserPreferenceProvider::checkValidUserInDB(requester);
 
         User userInDb = UserPreferenceProvider::getUser(requester.id);
-        userInDb.lastActivity = TimeUtils::getCurrentMillis();
+        userInDb.lastActivity = TimeUtility::getCurrentMillis();
         UserPreferenceProvider::updateUser(userInDb);
 
         return requester.id;

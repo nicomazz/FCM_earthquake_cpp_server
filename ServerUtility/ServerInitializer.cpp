@@ -7,9 +7,9 @@
 #include <DataSources/EventProvider.hpp>
 #include <Models/Event/EventBuilder.hpp>
 #include "ServerInitializer.hpp"
+#include "ServerFunctions.hpp"
+#include "WebCacher.hpp"
 
-// one hour
-#define USER_LAST_ACTIVITY_RECENT (1000*60*60)
 
 void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
@@ -49,19 +49,19 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     server.resource["^/active"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                              shared_ptr<HttpServer::Request> request) {
         handleUserActivity(request, response);
-    };printAllUsersprintAllUsers
+    };
 
     server.resource["^/getActive"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                shared_ptr<HttpServer::Request> request) {
         getActiveUsers(request, response);
     };
     server.resource["^/getRecentUsers"]["GET"] = [](shared_ptr<HttpServer::Response> response,
-                                               shared_ptr<HttpServer::Request> request) {
+                                                    shared_ptr<HttpServer::Request> request) {
         getRecentUsers(request, response);
     };
 
     server.resource["^/detected_events"]["GET"] = [](shared_ptr<HttpServer::Response> response,
-                                             shared_ptr<HttpServer::Request> request) {
+                                                     shared_ptr<HttpServer::Request> request) {
         printDetectedEvents(request, response);
     };
     // respond to a list of user id, with the details of all users
@@ -113,38 +113,18 @@ void FCMServer::handleUserRequest(Request request,
     catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        FCMServer::outputHttpBADStringResponse(resp, response);
     }
 }
 
 void FCMServer::printAllUsers(Response response) {
     try {
-        stringstream content_stream;
-        std::function<std::string()> response_generator = 
-        []() {
-            UserPreferenceProvider userProvider;
-            std::vector<User> allUsers = userProvider.requestUsersFromDB();
-            json jsonObj;
-
-            for (User &u : allUsers)
-                jsonObj.push_back(UserBuilder::userToJson(u));
-            return jsonObj.dump(3);
-        };
-        static WebCacher userWebCacher(response_generator,5000);
-        
-        content_stream << userWebCacher.getResponse();
-
-        //find length of content_stream (length received using content_stream.tellp())
-        content_stream.seekp(0, ios::end);
-
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
-                  << content_stream.rdbuf();
+        static WebCacher userWebCacher(generateAllUsers, 5000);
+        outputHttpOKStringResponse(userWebCacher.getResponse(), response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
     }
 }
 
@@ -152,24 +132,15 @@ void FCMServer::printUserWithId(Request request, Response response) {
     try {
         int user_id = std::stoi(request->path_match[1]);
 
-        stringstream content_stream;
-        UserPreferenceProvider userProvider;
-        User user = userProvider.getUser(user_id);
+        User user = UserPreferenceProvider::getUser(user_id);
         json jsonObj = UserBuilder::userToJson(user);
 
-        content_stream << jsonObj.dump(3);
-
-        //find length of content_stream (length received using content_stream.tellp())
-        content_stream.seekp(0, ios::end);
-
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
-                  << content_stream.rdbuf();
+        outputHttpOKStringResponse(jsonObj.dump(3), response);
     }
     catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
     }
 }
 
@@ -184,7 +155,7 @@ void FCMServer::handleReport(FCMServer::Request request, FCMServer::Response res
         json json_resp;
         json_resp["respose"] = "Report send!";
         string message = json_resp.dump(3);
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
+        outputHttpOKStringResponse(message, response);
 
         thread work_thread([response, r] {
             detector.addReport(r);
@@ -193,8 +164,8 @@ void FCMServer::handleReport(FCMServer::Request request, FCMServer::Response res
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, resp.c_str());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
+
     }
 }
 
@@ -203,108 +174,51 @@ void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Respon
         string content = request->content.string();
         long id = ReportParserHTTP::parseActiveRequest(content);
 
-        syslog(LOG_INFO, "User %ld report to be active!",id);
+        syslog(LOG_INFO, "User %ld report to be active!", id);
 
         json json_resp;
         json_resp["respose"] = "Active notify succeded!";
         string message = json_resp.dump(3);
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
-
+        outputHttpOKStringResponse(message, response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, resp.c_str());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
     }
 }
 
 void FCMServer::getActiveUsers(FCMServer::Request /*request*/, FCMServer::Response response) {
     try {
-        stringstream content_stream;
-        std::function<std::string()> response_generator = 
-        []() {
-            UserPreferenceProvider userProvider;
-            std::vector<User> allUsers = userProvider.requestActiveUsers();
-
-            json jsonObj = json::array();
-
-            for (User &u : allUsers){
-                if (u.hasPosition())
-                    jsonObj.push_back(UserBuilder::userToJson(u));
-            return jsonObj.dump(3);
-        };
-        static WebCacher activeUserWebCacher(response_generator,5000);
-        
-        content_stream << activeUserWebCacher.getResponse();
-
-        //find length of content_stream (length received using content_stream.tellp())
-        content_stream.seekp(0, ios::end);
-
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
-                  << content_stream.rdbuf();
+        static WebCacher activeUserWebCacher(FCMServer::generateActiveUsers, 5000);
+        outputHttpOKStringResponse(activeUserWebCacher.getResponse(), response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
+
     }
 }
+
 void FCMServer::getRecentUsers(FCMServer::Request /*request*/, FCMServer::Response response) {
     try {
-        stringstream content_stream;
-        std::function<std::string()> response_generator = 
-        []() {
-            UserPreferenceProvider userProvider;
-            std::vector<User> allUsers = userProvider.requestRecentUsers();
-
-            json jsonObj = json::array();
-
-            for (User &u : allUsers) {
-               if (u.hasPosition())
-                   jsonObj.push_back(UserBuilder::userToJson(u));
-            }
-
-            return jsonObj.dump(3);
-        };
-        static WebCacher recentUserWebCacher(response_generator,5000);
-        
-        content_stream << activeUserWebCacher.getResponse();
-
-        //find length of content_stream (length received using content_stream.tellp())
-        content_stream.seekp(0, ios::end);
-
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
-                  << content_stream.rdbuf();
+        static WebCacher recentUserWebCacher(FCMServer::generateRecentUsers, 5000);
+        outputHttpOKStringResponse(recentUserWebCacher.getResponse(), response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
     }
 }
 
 void FCMServer::printDetectedEvents(FCMServer::Request /*request*/, FCMServer::Response response) {
     try {
-        stringstream content_stream;
-        EventProvider userProvider;
-        std::vector<Event> realTimeEvents = userProvider.requestDetectorEvents();
-        json jsonObj = json::array();
-
-        for (Event &e : realTimeEvents)
-            jsonObj.push_back(EventBuilder::eventToJson(e));
-
-        content_stream << jsonObj.dump(3);
-
-        //find length of content_stream (length received using content_stream.tellp())
-        content_stream.seekp(0, ios::end);
-
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n"
-                  << content_stream.rdbuf();
+        static WebCacher detectedEventCacher(FCMServer::generateDetectedEvents,
+                                             5000);
+        outputHttpOKStringResponse(detectedEventCacher.getResponse(), response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
     }
 }
 
@@ -314,7 +228,7 @@ void FCMServer::getUsersDetails(FCMServer::Request request, FCMServer::Response 
         vector<long> ids = UserBuilder::getUserIdList(content);
 
         json json_array;
-        for (long id : ids){
+        for (long id : ids) {
             User u = UserPreferenceProvider::getUser(id);
             if (u.hasId())
                 json_array.push_back(UserBuilder::userToJson(u));
@@ -324,14 +238,12 @@ void FCMServer::getUsersDetails(FCMServer::Request request, FCMServer::Response 
         json_resp["response"] = "successfully";
         json_resp["users"] = json_array;
         string message = json_resp.dump(3);
-        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << message.length() << "\r\n\r\n" << message;
 
+        outputHttpOKStringResponse(message, response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, resp.c_str());
-        *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << resp.length() << "\r\n\r\n"
-                  << resp;
+        outputHttpBADStringResponse(resp, response);
+
     }
 }
-
-

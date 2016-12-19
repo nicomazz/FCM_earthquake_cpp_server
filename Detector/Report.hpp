@@ -10,10 +10,10 @@
 #define REPORT_POWER "power"
 
 struct Report{
-    Report(){millis = TimeUtils::getCurrentMillis();}
+    Report(){millis = TimeUtility::getCurrentMillis();}
     Report(long _millis){millis = _millis;}
     Report(User & _user, int _power):u(_user),power(_power){
-        millis = TimeUtils::getCurrentMillis();
+        millis = TimeUtility::getCurrentMillis();
     }
 	User u;
     int power;

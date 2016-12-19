@@ -46,7 +46,7 @@ void SimpleEQDetector::removeOldReports() {
 
 //todo tenere conto anche dell'intensità
 bool SimpleEQDetector::isToRemove(const Report &r) {
-    return TimeUtils::getCurrentMillis() - r.millis > REPORT_TTL;
+    return TimeUtility::getCurrentMillis() - r.millis > REPORT_TTL;
 }
 
 void SimpleEQDetector::elaborateActualReports() {
@@ -88,7 +88,7 @@ void SimpleEQDetector::removeNear(const Report &r) {
 
 void SimpleEQDetector::sendNotification(const std::vector<Report> &reports) {
     syslog(LOG_INFO, "Sending notification for detected earthquake!");
-    millisLastNotifySend = TimeUtils::getCurrentMillis();
+    millisLastNotifySend = TimeUtility::getCurrentMillis();
 
     Event e = generateEventFromReports(reports);
     EventProvider::persistEvent(e);

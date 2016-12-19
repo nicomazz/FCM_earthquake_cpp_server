@@ -21,7 +21,7 @@ void FirebaseNotificationManager::handleEventNotification(Event e) {
 
     for (User user: toNotify) {
         sendNotificationToUser(user, e);
-        user.lastNotificationMillis = TimeUtils::getCurrentMillis();
+        user.lastNotificationMillis = TimeUtility::getCurrentMillis();
         UserPreferenceProvider().updateUser(user);
     }
 

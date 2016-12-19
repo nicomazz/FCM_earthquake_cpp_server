@@ -25,7 +25,7 @@ int main() {
     Event e1 = Event();
     assert(e1.id <= 0);
     e1.eventLocation = "testEvent";
-    e1.id = TimeUtils::getCurrentMillis();
+    e1.id = TimeUtility::getCurrentMillis();
 
     int pre_size = (int) ep.requestEventFromDB().size();
     long inserted = ep.persistEvent(e1);

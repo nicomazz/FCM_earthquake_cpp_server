@@ -206,7 +206,7 @@ int main() {
         }
 
         // must have sent a notification in the previous 100 ms
-        long timeDiff = TimeUtils::getCurrentMillis() - detector.millisLastNotifySend;
+        long timeDiff = TimeUtility::getCurrentMillis() - detector.millisLastNotifySend;
         assert(timeDiff < 100);
         assert(startEventNumber + 1 == (int) EventProvider::requestEventFromDB().size());
 
