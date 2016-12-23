@@ -15,5 +15,6 @@
 #define USER_DELAY_NOTIFICATION  "minTemporalDistanceBwNotification"
 #define USER_RECEIVE_TEST  "receiveRealTimeReports"
 #define USER_SECRET_KEY "secretKey"
+#define USER_USERNAME "username"
 
 #endif //SIMPLE_WEB_SERVER_USER_FIELD_H_HPP

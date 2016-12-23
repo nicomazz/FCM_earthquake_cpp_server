@@ -43,15 +43,18 @@ public:
     }
     void setMeanPosition(const std::vector<Report> & reports, Event & e){
         double lat_sum = 0, lng_sum = 0;
+        int cnt = 0;
         for (const Report & r: reports)
-            lat_sum += r.u.lat, lng_sum+= r.u.lng;
-        e.lat = lat_sum / reports.size();
-        e.lng = lng_sum / reports.size();
+            if (r.u.lat != 0.0)
+                lat_sum += r.u.lat, lng_sum+= r.u.lng, cnt++;
+        e.lat = lat_sum / cnt;
+        e.lng = lng_sum / cnt;
     }
     std::string getIdsString( const std::vector<Report> & reports){
         json ids;
         for (Report r: reports)
-            ids.push_back(r.u.id);
+            if (r.u.lat != 0.0)
+                ids.push_back(r.u.id);
         return ids.dump();
     }
     double getDistance(const Report &a, const Report &b) {

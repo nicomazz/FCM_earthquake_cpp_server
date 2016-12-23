@@ -24,6 +24,9 @@ User UserBuilder::buildFromJson(std::string json_string) {
         u.lastModify = TimeUtility::getCurrentMillis();
         u.lastActivity = TimeUtility::getCurrentMillis();
         u.receiveRealTimeNotification = get<bool>(json_content,USER_RECEIVE_TEST);
+        try { // it can not have username
+            u.username = get<std::string>(json_content, USER_USERNAME);
+        } catch (...) {}
         if (u.hasId())
             addDBFields(u);
         return u;
@@ -47,6 +50,7 @@ json UserBuilder::userToJson(User &u) {
     json_content[USER_LAT] = u.lat;
     json_content[USER_LNG] = u.lng;
     json_content[USER_LAST_ACTIVITY] = u.lastActivity;
+    json_content[USER_USERNAME] = u.username;
     return json_content;
 }
 
