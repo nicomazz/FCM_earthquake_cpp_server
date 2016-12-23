@@ -173,8 +173,9 @@ void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Respon
     try {
         string content = request->content.string();
         long id = ReportParserHTTP::parseActiveRequest(content);
+        User user = UserPreferenceProvider::getUser(id);
 
-        syslog(LOG_INFO, "User %ld report to be active!", id);
+        syslog(LOG_INFO, "User %ld (%s) report to be active!", id, user.username.c_str() );
 
         json json_resp;
         json_resp["respose"] = "Active notify succeded!";
