@@ -14,6 +14,7 @@ class WebDataSourceInterface {
 public:
     virtual std::vector<Event> requestEvents();
 
+    virtual std::string getDataSourceName() = 0;
 protected:
     virtual std::string getWebServiceUrl() = 0;
 

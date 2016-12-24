@@ -1,4 +1,6 @@
 #include <syslog.h>
+#include <DataSources/EventsWebProvider/USGSDataSource.hpp>
+#include <Utility/TimeUtility.hpp>
 #include "EventProvider.hpp"
 
 
@@ -7,6 +9,7 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
 
     vector<unique_ptr<WebDataSourceInterface>> sources;
     sources.push_back(unique_ptr<WebDataSourceInterface>(new INGVDataSource));
+    sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
     vector<Event> results;
 
     for (unique_ptr<WebDataSourceInterface> &thisDatasource: sources) {
@@ -138,3 +141,17 @@ void EventProvider::deleteEvent(Event e) {
     }
 }
 
+void EventProvider::eraseOldEvents(){
+    using namespace odb::core;
+    typedef odb::query<Event> query;
+
+    try {
+        std::shared_ptr<database> db = Database::getInstance().getDatabase();
+        transaction t(db->begin());
+        long millis_threshold = TimeUtility::getNDaysAgoMillis(2);
+        db->erase_query<Event> (query::isRealTimeReport == false && query::millis < millis_threshold);
+        t.commit();
+    } catch (const odb::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}

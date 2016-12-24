@@ -35,7 +35,7 @@ Event INGVDataSource::buildEvent(std::string s) {
     ss>>event.depthKm>>event.author>>event.catalog>>event.contributor>>event.contributorId>>event.magType;
     ss>>event.magnitude>>event.author>>event.eventLocation;
     if (event.author.size() == 0)
-        event.author = "INGV";
+        event.author = getDataSourceName();
     return event;
 }
 
@@ -44,4 +44,7 @@ std::string INGVDataSource::getWebServiceUrlParams() {
 }
 std::string INGVDataSource::getWebServiceUrl() {
     return "webservices.ingv.it";
+}
+std::string INGVDataSource::getDataSourceName() {
+    return "INGV";
 }

@@ -42,7 +42,6 @@ void EarthquakeServer::serverMainLoop() {
     FirebaseNotificationManager notificationHandler;
     for (;;) {
         boost::this_thread::sleep_for(boost::chrono::seconds{10});
-
         std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
         if (newEvents.size() == 0) {
             continue;
@@ -52,8 +51,10 @@ void EarthquakeServer::serverMainLoop() {
 
         for (Event &e: newEvents) {
             dataSource.persistEvent(e);
-            notificationHandler.handleEventNotification(e);
+            if (TimeUtility::isInLastHour(e.millis))
+                notificationHandler.handleEventNotification(e);
         }
+        dataSource.eraseOldEvents();
     }
 }
 

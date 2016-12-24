@@ -1,7 +1,13 @@
+#ifndef SIMPLE_WEB_SERVER_INGVDATASOURCE_HPP
+#define SIMPLE_WEB_SERVER_INGVDATASOURCE_HPP
+
+
 #include "WebDataSourceInterface.hpp"
 
 class INGVDataSource : public WebDataSourceInterface{
-private:
+public:
+    virtual std::string getDataSourceName() override;
+protected:
     /**
      * costruisce un evento a partire da una stringa
      * @param s
@@ -24,3 +30,5 @@ private:
 
     ~INGVDataSource(){}
 };
+
+#endif // SIMPLE_WEB_SERVER_INGVDATASOURCE_HPP

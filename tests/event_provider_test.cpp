@@ -15,6 +15,16 @@ using namespace std;
 typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
+
+void timeTest(){
+    std::string date = "2016-12-22T23:31:39.237000";
+    unsigned long long millis_converted = TimeUtility::getMillisFromTimeString(date);
+    assert(TimeUtility::getTimeStringFromMillis(millis_converted) == date);
+
+    unsigned long long m = 10000000;
+    date = TimeUtility::getTimeStringFromMillis(m);
+    assert(TimeUtility::getMillisFromTimeString(date) == m);
+}
 int main() {
 
     EventProvider ep;
@@ -41,8 +51,9 @@ int main() {
     Event deleted = ep.getEvent(e1.id);
     assert(deleted.id<=0);
 
+    timeTest();
 
-    std::cerr<<"All is working For Event!";
+    std::cout<<"All is working For Event!";
 
     return 0;
 }

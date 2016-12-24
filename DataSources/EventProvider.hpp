@@ -32,6 +32,12 @@ public:
 
     static bool isEventPresent(long id);
 
+    /**
+     * erase old (2 days ago) event that are not real time ones;
+     * @return
+     * */
+    static void eraseOldEvents();
+
 };
 
 #endif	/* EVENT_DATA_SOURCE_HPP */
