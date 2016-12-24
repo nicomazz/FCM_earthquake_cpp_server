@@ -9,7 +9,7 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
 
     vector<unique_ptr<WebDataSourceInterface>> sources;
     sources.push_back(unique_ptr<WebDataSourceInterface>(new INGVDataSource));
-    sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
+   // sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
     vector<Event> results;
 
     for (unique_ptr<WebDataSourceInterface> &thisDatasource: sources) {

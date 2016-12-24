@@ -2,6 +2,7 @@
 #include <vector>
 #include <ServerUtility/client_http.hpp>
 #include <iostream>
+#include <Utility/TimeUtility.hpp>
 #include "INGVDataSource.hpp"
 
 
@@ -36,6 +37,7 @@ Event INGVDataSource::buildEvent(std::string s) {
     ss>>event.magnitude>>event.author>>event.eventLocation;
     if (event.author.size() == 0)
         event.author = getDataSourceName();
+    event.millis = TimeUtility::getMillisFromTimeString(event.date);
     return event;
 }
 
