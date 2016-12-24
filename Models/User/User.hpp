@@ -10,7 +10,7 @@
 //#include "UserBuilder.hpp"
 
 
-#pragma db model version(1, 4)
+//#pragma db model version(1, 6)
 
 #pragma db object
 
@@ -36,7 +36,7 @@ public:
     bool receiveRealTimeNotification;
 
     //last millis in who user send report with accelerometer
-    #pragma db added(4)
+   // #pragma db added(4)
     long lastActivity;
 
     long lastModify;

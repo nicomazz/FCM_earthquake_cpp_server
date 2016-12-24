@@ -234,6 +234,18 @@ namespace odb
     secretKey_type_;
 
     static const secretKey_type_ secretKey;
+
+    // username
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        ::std::string,
+        sqlite::id_text >::query_type,
+      sqlite::id_text >
+    username_type_;
+
+    static const username_type_ username;
   };
 
   template <typename A>
@@ -295,6 +307,11 @@ namespace odb
   const typename query_columns< ::User, id_sqlite, A >::secretKey_type_
   query_columns< ::User, id_sqlite, A >::
   secretKey (A::table_name, "\"secretKey\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::User, id_sqlite, A >::username_type_
+  query_columns< ::User, id_sqlite, A >::
+  username (A::table_name, "\"username\"", 0);
 
   template <typename A>
   struct pointer_query_columns< ::User, id_sqlite, A >:
@@ -379,6 +396,12 @@ namespace odb
       std::size_t secretKey_size;
       bool secretKey_null;
 
+      // username
+      //
+      details::buffer username_value;
+      std::size_t username_size;
+      bool username_null;
+
       std::size_t version;
     };
 
@@ -421,7 +444,7 @@ namespace odb
 
     typedef sqlite::query_base query_base_type;
 
-    static const std::size_t column_count = 12UL;
+    static const std::size_t column_count = 13UL;
     static const std::size_t id_column_count = 1UL;
     static const std::size_t inverse_column_count = 0UL;
     static const std::size_t readonly_column_count = 0UL;

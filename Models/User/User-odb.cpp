@@ -144,6 +144,14 @@ namespace odb
       grew = true;
     }
 
+    // username
+    //
+    if (t[12UL])
+    {
+      i.username_value.capacity (i.username_size);
+      grew = true;
+    }
+
     return grew;
   }
 
@@ -251,6 +259,17 @@ namespace odb
     b[n].size = &i.secretKey_size;
     b[n].capacity = i.secretKey_value.capacity ();
     b[n].is_null = &i.secretKey_null;
+    n++;
+
+    // username
+    //
+    b[n].type = sqlite::image_traits<
+      ::std::string,
+      sqlite::id_text>::bind_value;
+    b[n].buffer = i.username_value.data ();
+    b[n].size = &i.username_size;
+    b[n].capacity = i.username_value.capacity ();
+    b[n].is_null = &i.username_null;
     n++;
   }
 
@@ -475,6 +494,25 @@ namespace odb
       grew = grew || (cap != i.secretKey_value.capacity ());
     }
 
+    // username
+    //
+    {
+      ::std::string const& v =
+        o.username;
+
+      bool is_null (false);
+      std::size_t cap (i.username_value.capacity ());
+      sqlite::value_traits<
+          ::std::string,
+          sqlite::id_text >::set_image (
+        i.username_value,
+        i.username_size,
+        is_null,
+        v);
+      i.username_null = is_null;
+      grew = grew || (cap != i.username_value.capacity ());
+    }
+
     return grew;
   }
 
@@ -656,6 +694,21 @@ namespace odb
         i.secretKey_size,
         i.secretKey_null);
     }
+
+    // username
+    //
+    {
+      ::std::string& v =
+        o.username;
+
+      sqlite::value_traits<
+          ::std::string,
+          sqlite::id_text >::set_value (
+        v,
+        i.username_value,
+        i.username_size,
+        i.username_null);
+    }
   }
 
   void access::object_traits_impl< ::User, id_sqlite >::
@@ -686,9 +739,10 @@ namespace odb
   "\"receiveRealTimeNotification\", "
   "\"lastActivity\", "
   "\"lastModify\", "
-  "\"secretKey\") "
+  "\"secretKey\", "
+  "\"username\") "
   "VALUES "
-  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::User, id_sqlite >::find_statement[] =
   "SELECT "
@@ -703,7 +757,8 @@ namespace odb
   "\"User\".\"receiveRealTimeNotification\", "
   "\"User\".\"lastActivity\", "
   "\"User\".\"lastModify\", "
-  "\"User\".\"secretKey\" "
+  "\"User\".\"secretKey\", "
+  "\"User\".\"username\" "
   "FROM \"User\" "
   "WHERE \"User\".\"id\"=?";
 
@@ -720,7 +775,8 @@ namespace odb
   "\"receiveRealTimeNotification\"=?, "
   "\"lastActivity\"=?, "
   "\"lastModify\"=?, "
-  "\"secretKey\"=? "
+  "\"secretKey\"=?, "
+  "\"username\"=? "
   "WHERE \"id\"=?";
 
   const char access::object_traits_impl< ::User, id_sqlite >::erase_statement[] =
@@ -740,7 +796,8 @@ namespace odb
   "\"User\".\"receiveRealTimeNotification\", "
   "\"User\".\"lastActivity\", "
   "\"User\".\"lastModify\", "
-  "\"User\".\"secretKey\" "
+  "\"User\".\"secretKey\", "
+  "\"User\".\"username\" "
   "FROM \"User\"";
 
   const char access::object_traits_impl< ::User, id_sqlite >::erase_query_statement[] =
@@ -1176,12 +1233,13 @@ namespace odb
                       "  \"lng\" REAL NULL,\n"
                       "  \"minMagPreference\" REAL NULL,\n"
                       "  \"maxDistancePreference\" REAL NULL,\n"
-                      "  \"minMillisNotificationDelay\" INTEGER NOT NULL DEFAULT 0,\n"
-                      "  \"lastNotificationMillis\" INTEGER NOT NULL DEFAULT 0,\n"
+                      "  \"minMillisNotificationDelay\" INTEGER NOT NULL,\n"
+                      "  \"lastNotificationMillis\" INTEGER NOT NULL,\n"
                       "  \"receiveRealTimeNotification\" INTEGER NOT NULL,\n"
-                      "  \"lastActivity\" INTEGER NOT NULL DEFAULT 0,\n"
-                      "  \"lastModify\" INTEGER NOT NULL DEFAULT 0,\n"
-                      "  \"secretKey\" TEXT NOT NULL)");
+                      "  \"lastActivity\" INTEGER NOT NULL,\n"
+                      "  \"lastModify\" INTEGER NOT NULL,\n"
+                      "  \"secretKey\" TEXT NOT NULL,\n"
+                      "  \"username\" TEXT NOT NULL)");
           return false;
         }
       }
