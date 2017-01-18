@@ -19,13 +19,13 @@
 class WebCacher {
 public:
     WebCacher(std::function<std::string()>  generator,
-        int ttl_millis = WEB_CACHER_TTL_DEFAULT);
+        long ttl_millis = WEB_CACHER_TTL_DEFAULT);
 
     std::string getResponse();
 private:
     std::string response;
-    int ttl;
-    int lastUpdate;
+    long ttl;
+    long lastUpdate;
     std::mutex response_mutex;
     std::function<std::string()> generator;
 };

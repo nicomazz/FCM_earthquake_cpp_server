@@ -10,7 +10,7 @@ void EarthquakeServer::startServer() {
     //HTTP-server at port 8080 using 1 thread
     //Unless you do more heavy non-threaded processing in the resources,
     //1 thread is usually faster than several threads
-    HttpServer server(8080, 2);
+    HttpServer server(8080, 1);
 
 
     FCMServer::initServer(server);

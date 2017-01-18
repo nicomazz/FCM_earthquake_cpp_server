@@ -126,6 +126,7 @@ void FCMServer::printAllUsers(Response response) {
         syslog(LOG_INFO, e.what());
         outputHttpBADStringResponse(resp, response);
     }
+    syslog(LOG_INFO, "AllUsers printed!");
 }
 
 void FCMServer::printUserWithId(Request request, Response response) {
