@@ -153,7 +153,7 @@ void FCMServer::printAllUsers(Response response) {
 
 void FCMServer::printUserWithId(Request request, Response response) {
     try {
-        int user_id = std::stoi(request->path_match[1]);
+        int user_id = std::stol(request->path_match[1]);
 
         User user = UserPreferenceProvider::getUser(user_id);
         json jsonObj = UserBuilder::userToJson(user);
@@ -170,8 +170,8 @@ void FCMServer::printUserWithId(Request request, Response response) {
 void FCMServer::printReportsInInterval(Request request, Response response) {
     try {
         //todo fare questa cosa in modo più efficiente
-        long from_millis = std::stoi(request->path_match[1]);
-        long to_millis = std::stoi(request->path_match[2]);
+        long from_millis = std::stol(request->path_match[1]);
+        long to_millis = std::stol(request->path_match[2]);
         stringstream ss;
         ss << "from: " << from_millis << " to:" << to_millis;
         syslog(LOG_INFO, ss.str().c_str());
@@ -208,8 +208,8 @@ string FCMServer::getReportsFromToMillis(long from_millis, long to_millis) {
 void FCMServer::printEventIdRelatedEvents(Request request, Response response) {
     try {
         //todo fare questa cosa in modo più efficiente
-        long event_id = std::stoi(request->path_match[1]);
-        long millis = std::stoi(request->path_match[2]);
+        long event_id = std::stol(request->path_match[1]);
+        long millis = std::stol(request->path_match[2]);
         //caching response: if the server reboot we lose cached map, but we don't care
         static map<long, string> cached; //event_id, to_output
         string res = cached[event_id];

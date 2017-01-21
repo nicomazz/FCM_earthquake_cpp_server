@@ -184,6 +184,7 @@ void reportProviderTest(){
 
     HttpClient client("localhost:8080");
 
+    cout<<"start report server request"<<endl;
     auto r = client.request("GET", "/reports/5/35");
     assert(r->status_code.find("400") == string::npos);
     stringstream output;
@@ -193,6 +194,7 @@ void reportProviderTest(){
     assert(ReportProvider::getReportsFromToTime(5,35).size() == 3);
     assert(respJson.size() == 3);
 
+    cout<<"start event report server request"<<endl;
     r = client.request("GET", "/eventRelatedReports/63463/35");
     assert(r->status_code.find("400") == string::npos);
     stringstream output2; output2<< r->content.rdbuf();
@@ -213,6 +215,7 @@ void reportProviderTest(){
 
 
 int main() {
+
     HttpServer server(8080, 1);
     FCMServer::initServer(server);
     thread server_thread([&server]() {
