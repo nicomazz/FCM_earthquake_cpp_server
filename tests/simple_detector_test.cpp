@@ -8,6 +8,7 @@
 #include <cassert>
 #include <Detector/ReportParserHTTP.hpp>
 #include <DataSources/EventProvider.hpp>
+#include <DataSources/ReportProvider.hpp>
 #include "../Detector/SimpleEQDetector.hpp"
 
 using namespace std;
@@ -53,6 +54,7 @@ User generateNewUser() {
     newUser.lng = 12 + (rand() / 100 * 0.00001f);
     newUser.secretKey = "123";
     long insertedId = UserPreferenceProvider::persistUser(newUser);
+    insertedId++; insertedId--;
     assert(insertedId >= 0);
     assert(newUser.id == insertedId);
     return newUser;
@@ -126,6 +128,7 @@ void sendReportTest() {
     up.removeUser(u);
 }
 
+
 void removeOldReportsTest() {
     SimpleEQDetector detector;
     UserPreferenceProvider up;
@@ -150,6 +153,57 @@ void removeOldReportsTest() {
     assert(detector.size() == 0);
     up.removeUser(newUser);
 }
+
+//test of report storage
+void reportProviderTest(){
+    User u = generateNewUser();
+    string goodRequest = generateGoodRequest(u).dump();
+
+    Report r1 = ReportParserHTTP::parseRequest(goodRequest);
+    r1.millis = 10;
+    Report r2 = ReportParserHTTP::parseRequest(goodRequest);
+    r2.millis = 20;
+    Report r3 = ReportParserHTTP::parseRequest(goodRequest);
+    r3.millis = 30;
+    Report r4 = ReportParserHTTP::parseRequest(goodRequest);
+    r4.millis = 40;;
+    Report r5 = ReportParserHTTP::parseRequest(goodRequest);
+    r5.millis = 50;
+
+    ReportProvider::persistReport(r1);
+    ReportProvider::persistReport(r2);
+    ReportProvider::persistReport(r3);
+    ReportProvider::persistReport(r4);
+    ReportProvider::persistReport(r5);
+
+    assert(ReportProvider::getReportsFromToTime(0,5).size() == 0);
+    assert(ReportProvider::getReportsFromToTime(0,10).size() == 1);
+    assert(ReportProvider::getReportsFromToTime(10,11).size() == 1);
+    assert(ReportProvider::getReportsFromToTime(10,31).size() == 3);
+    assert(ReportProvider::getReportsFromToTime(0,100).size() == 5);
+
+    HttpClient client("localhost:8080");
+
+    auto r = client.request("GET", "/reports/5/35");
+    assert(r->status_code.find("400") == string::npos);
+    stringstream output;
+    output << r->content.rdbuf();
+    std::string respose = output.str();
+    json respJson = json::parse(respose);
+    assert(ReportProvider::getReportsFromToTime(5,35).size() == 3);
+    assert(respJson.size() == 3);
+
+
+
+    ReportProvider::deleteReport(r1);
+    ReportProvider::deleteReport(r2);
+    ReportProvider::deleteReport(r3);
+    ReportProvider::deleteReport(r4);
+    ReportProvider::deleteReport(r5);
+
+    UserPreferenceProvider::removeUser(u);
+}
+
 
 int main() {
     HttpServer server(8080, 1);
@@ -195,6 +249,7 @@ int main() {
             utenti.push_back(generateNewUser());
 
         int startEventNumber = EventProvider::requestEventFromDB().size();
+        startEventNumber++; startEventNumber--; // to fix unused warning
         detector.clear();
         // generate n requests
         for (int i = 0; i < n_users; i++) {
@@ -207,6 +262,7 @@ int main() {
 
         // must have sent a notification in the previous 100 ms
         long timeDiff = TimeUtility::getCurrentMillis() - detector.millisLastNotifySend;
+        timeDiff++;timeDiff--; // to fix unused warning
         assert(timeDiff < 100);
         assert(startEventNumber + 1 == (int) EventProvider::requestEventFromDB().size());
 
@@ -225,6 +281,9 @@ int main() {
         for (User &u: utenti)
             up.removeUser(u);
     }
+
+    reportProviderTest();
+
 
     server.stop();
     server_thread.join();

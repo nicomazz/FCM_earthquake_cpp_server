@@ -126,6 +126,30 @@ namespace odb
     power_type_;
 
     static const power_type_ power;
+
+    // lat
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        double,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    lat_type_;
+
+    static const lat_type_ lat;
+
+    // lng
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        double,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    lng_type_;
+
+    static const lng_type_ lng;
   };
 
   template <typename A>
@@ -142,6 +166,16 @@ namespace odb
   const typename query_columns< ::DBReport, id_sqlite, A >::power_type_
   query_columns< ::DBReport, id_sqlite, A >::
   power (A::table_name, "\"power\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::DBReport, id_sqlite, A >::lat_type_
+  query_columns< ::DBReport, id_sqlite, A >::
+  lat (A::table_name, "\"lat\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::DBReport, id_sqlite, A >::lng_type_
+  query_columns< ::DBReport, id_sqlite, A >::
+  lng (A::table_name, "\"lng\"", 0);
 
   template <typename A>
   struct pointer_query_columns< ::DBReport, id_sqlite, A >:
@@ -178,6 +212,16 @@ namespace odb
       //
       long long power_value;
       bool power_null;
+
+      // lat
+      //
+      double lat_value;
+      bool lat_null;
+
+      // lng
+      //
+      double lng_value;
+      bool lng_null;
 
       std::size_t version;
     };
@@ -218,7 +262,7 @@ namespace odb
 
     typedef sqlite::query_base query_base_type;
 
-    static const std::size_t column_count = 3UL;
+    static const std::size_t column_count = 5UL;
     static const std::size_t id_column_count = 1UL;
     static const std::size_t inverse_column_count = 0UL;
     static const std::size_t readonly_column_count = 0UL;

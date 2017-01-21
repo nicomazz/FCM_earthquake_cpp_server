@@ -6,12 +6,16 @@
 #include <DataSources/Database.hpp>
 #include <Utility/UserMatching.hpp>
 #include <syslog.h>
+#include <mutex>
 #include "UserPreferenceProvider.hpp"
 
 std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
     using namespace odb::core;
     std::vector<User> results;
     std::shared_ptr<database> db = Database::getInstance().getDatabase();
+
+    static std::mutex v_mutex;
+    std::lock_guard<std::mutex> guard(v_mutex);
     {
         typedef odb::result<User> result;
 
@@ -28,6 +32,7 @@ std::vector<User> UserPreferenceProvider::requestUsersFromDB() {
 
     return results;
 }
+
 std::vector<User> UserPreferenceProvider::requestActiveUsers() {
     using namespace odb::core;
     typedef odb::query<User> query;
@@ -35,12 +40,13 @@ std::vector<User> UserPreferenceProvider::requestActiveUsers() {
 
     std::vector<User> results;
     std::shared_ptr<database> db = Database::getInstance().getDatabase();
+    static std::mutex v_mutex;
+    std::lock_guard<std::mutex> guard(v_mutex);
     {
-
         // session s;
         transaction t(db->begin());
 
-        long fromTime = TimeUtility::getCurrentMillis() - (1000*60); // millis of one minute ago
+        long fromTime = TimeUtility::getCurrentMillis() - (1000 * 60); // millis of one minute ago
         result r(db->query<User>(query::lastActivity > fromTime));
 
         for (const User &e: r)
@@ -51,6 +57,7 @@ std::vector<User> UserPreferenceProvider::requestActiveUsers() {
 
     return results;
 }
+
 std::vector<User> UserPreferenceProvider::requestRecentUsers() {
     using namespace odb::core;
     typedef odb::query<User> query;
@@ -58,12 +65,14 @@ std::vector<User> UserPreferenceProvider::requestRecentUsers() {
 
     std::vector<User> results;
     std::shared_ptr<database> db = Database::getInstance().getDatabase();
+    static std::mutex v_mutex;
+    std::lock_guard<std::mutex> guard(v_mutex);
     {
 
         // session s;
         transaction t(db->begin());
 
-        long fromTime = TimeUtility::getCurrentMillis() - (1000*60*60*24); // millis of one day ago
+        long fromTime = TimeUtility::getCurrentMillis() - (1000 * 60 * 60 * 24); // millis of one day ago
         result r(db->query<User>(query::lastActivity > fromTime));
 
         for (const User &e: r)
@@ -74,6 +83,7 @@ std::vector<User> UserPreferenceProvider::requestRecentUsers() {
 
     return results;
 }
+
 long UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
     using namespace odb::core;
 
@@ -82,6 +92,8 @@ long UserPreferenceProvider::persistUser(User &user, bool checkAlreadyPresent) {
 
     try {
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
+        static std::mutex v_mutex;
+        std::lock_guard<std::mutex> guard(v_mutex);
         {
             transaction t(db->begin());
             user.lastModify = TimeUtility::getCurrentMillis();
@@ -102,6 +114,9 @@ User UserPreferenceProvider::getUser(long id) {
     typedef odb::result<User> result;
 
     try {
+        static std::mutex v_mutex;
+        std::lock_guard<std::mutex> guard(v_mutex);
+
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
 
@@ -123,6 +138,8 @@ User UserPreferenceProvider::getUser(long id) {
 }
 
 bool UserPreferenceProvider::isUserPresent(long id) {
+    static std::mutex v_mutex;
+    std::lock_guard<std::mutex> guard(v_mutex);
     return getUser(id).id == id;
 }
 
@@ -130,6 +147,8 @@ bool UserPreferenceProvider::isUserPresent(long id) {
 void UserPreferenceProvider::updateUser(User &user) {
     using namespace odb::core;
     try {
+        static std::mutex v_mutex;
+        std::lock_guard<std::mutex> guard(v_mutex);
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
         user.lastModify = TimeUtility::getCurrentMillis();
@@ -144,11 +163,10 @@ void UserPreferenceProvider::updateUser(User &user) {
 long UserPreferenceProvider::updateOrInsertUser(User &user) {
     UserPreferenceProvider userPP;
 
-    if (user.hasId()){
+    if (user.hasId()) {
         checkValidUserInDB(user); // throw exception if is not valid
         userPP.updateUser(user);
-    }
-    else // new user
+    } else // new user
         userPP.persistUser(user);
 
     return user.id;
@@ -158,6 +176,9 @@ void UserPreferenceProvider::removeUser(User &user) {
     using namespace odb::core;
 
     try {
+        static std::mutex v_mutex;
+        std::lock_guard<std::mutex> guard(v_mutex);
+
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
         db->erase(user);
@@ -167,7 +188,6 @@ void UserPreferenceProvider::removeUser(User &user) {
         std::cerr << e.what() << std::endl;
     }
 }
-
 
 
 void UserPreferenceProvider::checkValidUserInDB(User &user) {

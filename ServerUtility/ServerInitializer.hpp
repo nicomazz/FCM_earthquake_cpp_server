@@ -64,6 +64,8 @@ namespace FCMServer {
 
     void getRecentUsers(Request request, Response response);
 
+    void printReportsInInterval(Request request, Response response);
+
 
 }
 #endif //SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H

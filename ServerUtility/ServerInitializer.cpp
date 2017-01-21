@@ -6,6 +6,8 @@
 #include <Detector/ReportParserHTTP.hpp>
 #include <DataSources/EventProvider.hpp>
 #include <Models/Event/EventBuilder.hpp>
+#include <Models/Report/DBReport.hpp>
+#include <DataSources/ReportProvider.hpp>
 #include "ServerInitializer.hpp"
 #include "ServerFunctions.hpp"
 #include "WebCacher.hpp"
@@ -38,6 +40,16 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
                                                            shared_ptr<HttpServer::Request> request) {
         thread work_thread([response, request] {
             printUserWithId(request, response);
+        });
+        work_thread.detach();
+    };
+
+    //get all report from to millis
+    //todo verificare questa cosa e scrivere i test
+    server.resource["^/reports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
+                                                           shared_ptr<HttpServer::Request> request) {
+        thread work_thread([response, request] {
+            printReportsInInterval(request,response);
         });
         work_thread.detach();
     };
@@ -137,6 +149,35 @@ void FCMServer::printUserWithId(Request request, Response response) {
         json jsonObj = UserBuilder::userToJson(user);
 
         outputHttpOKStringResponse(jsonObj.dump(3), response);
+    }
+    catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, e.what());
+        outputHttpBADStringResponse(resp, response);
+    }
+}
+void FCMServer::printReportsInInterval(Request request, Response response) {
+    try {
+        //todo fare questa cosa in modo più efficiente
+        long from_millis = std::stoi(request->path_match[1]);
+        long to_millis = std::stoi(request->path_match[2]);
+        stringstream ss; ss<<"from: "<<from_millis<<" to:"<<to_millis;
+        syslog(LOG_INFO,ss.str().c_str());
+        vector<DBReport> res = ReportProvider::getReportsFromToTime(from_millis,to_millis);
+        json result;
+        for (DBReport r : res){
+            json att;
+            att["user_id"] = r.user_id;
+            att["millis"] = r.millis;
+            att["power"] = r.power;
+            User u = UserPreferenceProvider::getUser(r.user_id);
+            att["lat"] = u.lat;
+            att["lng"] = u.lng;
+            att["dateTime"] = TimeUtility::getTimeStringFromMillis(r.millis);
+            result.push_back(att);
+        }
+
+        outputHttpOKStringResponse(result.dump(3), response);
     }
     catch (exception &e) {
         string resp(e.what());

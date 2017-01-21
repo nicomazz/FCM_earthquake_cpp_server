@@ -80,6 +80,14 @@ namespace odb
     //
     t[2UL] = false;
 
+    // lat
+    //
+    t[3UL] = false;
+
+    // lng
+    //
+    t[4UL] = false;
+
     return grew;
   }
 
@@ -116,6 +124,20 @@ namespace odb
     b[n].type = sqlite::bind::integer;
     b[n].buffer = &i.power_value;
     b[n].is_null = &i.power_null;
+    n++;
+
+    // lat
+    //
+    b[n].type = sqlite::bind::real;
+    b[n].buffer = &i.lat_value;
+    b[n].is_null = &i.lat_null;
+    n++;
+
+    // lng
+    //
+    b[n].type = sqlite::bind::real;
+    b[n].buffer = &i.lng_value;
+    b[n].is_null = &i.lng_null;
     n++;
   }
 
@@ -190,6 +212,38 @@ namespace odb
       i.power_null = is_null;
     }
 
+    // lat
+    //
+    {
+      double const& v =
+        o.lat;
+
+      bool is_null (true);
+      sqlite::value_traits<
+          double,
+          sqlite::id_real >::set_image (
+        i.lat_value,
+        is_null,
+        v);
+      i.lat_null = is_null;
+    }
+
+    // lng
+    //
+    {
+      double const& v =
+        o.lng;
+
+      bool is_null (true);
+      sqlite::value_traits<
+          double,
+          sqlite::id_real >::set_image (
+        i.lng_value,
+        is_null,
+        v);
+      i.lng_null = is_null;
+    }
+
     return grew;
   }
 
@@ -243,6 +297,34 @@ namespace odb
         i.power_value,
         i.power_null);
     }
+
+    // lat
+    //
+    {
+      double& v =
+        o.lat;
+
+      sqlite::value_traits<
+          double,
+          sqlite::id_real >::set_value (
+        v,
+        i.lat_value,
+        i.lat_null);
+    }
+
+    // lng
+    //
+    {
+      double& v =
+        o.lng;
+
+      sqlite::value_traits<
+          double,
+          sqlite::id_real >::set_value (
+        v,
+        i.lng_value,
+        i.lng_null);
+    }
   }
 
   void access::object_traits_impl< ::DBReport, id_sqlite >::
@@ -264,15 +346,19 @@ namespace odb
   "INSERT INTO \"DBReport\" "
   "(\"millis\", "
   "\"user_id\", "
-  "\"power\") "
+  "\"power\", "
+  "\"lat\", "
+  "\"lng\") "
   "VALUES "
-  "(?, ?, ?)";
+  "(?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::DBReport, id_sqlite >::find_statement[] =
   "SELECT "
   "\"DBReport\".\"millis\", "
   "\"DBReport\".\"user_id\", "
-  "\"DBReport\".\"power\" "
+  "\"DBReport\".\"power\", "
+  "\"DBReport\".\"lat\", "
+  "\"DBReport\".\"lng\" "
   "FROM \"DBReport\" "
   "WHERE \"DBReport\".\"millis\"=?";
 
@@ -280,7 +366,9 @@ namespace odb
   "UPDATE \"DBReport\" "
   "SET "
   "\"user_id\"=?, "
-  "\"power\"=? "
+  "\"power\"=?, "
+  "\"lat\"=?, "
+  "\"lng\"=? "
   "WHERE \"millis\"=?";
 
   const char access::object_traits_impl< ::DBReport, id_sqlite >::erase_statement[] =
@@ -291,7 +379,9 @@ namespace odb
   "SELECT "
   "\"DBReport\".\"millis\", "
   "\"DBReport\".\"user_id\", "
-  "\"DBReport\".\"power\" "
+  "\"DBReport\".\"power\", "
+  "\"DBReport\".\"lat\", "
+  "\"DBReport\".\"lng\" "
   "FROM \"DBReport\"";
 
   const char access::object_traits_impl< ::DBReport, id_sqlite >::erase_query_statement[] =
@@ -694,7 +784,9 @@ namespace odb
           db.execute ("CREATE TABLE \"DBReport\" (\n"
                       "  \"millis\" INTEGER NOT NULL PRIMARY KEY,\n"
                       "  \"user_id\" INTEGER NOT NULL,\n"
-                      "  \"power\" INTEGER NOT NULL)");
+                      "  \"power\" INTEGER NOT NULL,\n"
+                      "  \"lat\" REAL NULL,\n"
+                      "  \"lng\" REAL NULL)");
           return false;
         }
       }

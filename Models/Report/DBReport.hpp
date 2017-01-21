@@ -13,6 +13,9 @@ public:
     long millis;
     int user_id;
     int power;
+
+    double lat;
+    double lng;
 };
 
 
