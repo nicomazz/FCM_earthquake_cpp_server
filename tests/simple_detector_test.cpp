@@ -193,6 +193,13 @@ void reportProviderTest(){
     assert(ReportProvider::getReportsFromToTime(5,35).size() == 3);
     assert(respJson.size() == 3);
 
+    r = client.request("GET", "/eventRelatedReports/63463/35");
+    assert(r->status_code.find("400") == string::npos);
+    stringstream output2; output2<< r->content.rdbuf();
+    respose = output2.str();
+    json rp = json::parse(respose);
+    assert(rp.size() == 5);
+
 
 
     ReportProvider::deleteReport(r1);

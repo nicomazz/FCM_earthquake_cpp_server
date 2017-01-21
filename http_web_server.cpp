@@ -29,11 +29,7 @@ void runServer() {
 
 /**
  * TODO:
- * - localizzare tutto in inglese
- * - modificare soglie per detect terremoti (con le attuali ci sono troppe segnalazioni non giuste
- * - il servizio ogni tanto deve aggiornare la posizione dell'utente, altrimenti si rischiano posizioni vecchie * -verificare in caso il server sia spento cosa fanno i dispositivi
  * - impedire l'utilizzo del tutto agli utenti senza una posizione geografica
- * - un sito per mostrare i dati in modo decente
  * */
 
 std::string getexepath() {

@@ -64,7 +64,13 @@ namespace FCMServer {
 
     void getRecentUsers(Request request, Response response);
 
+    string getReportsFromToMillis(long from_millis, long to_millis);
+
     void printReportsInInterval(Request request, Response response);
+
+
+    void printEventIdRelatedEvents(Request request, Response response);
+
 
 
 }

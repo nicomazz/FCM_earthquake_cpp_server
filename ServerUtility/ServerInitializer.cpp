@@ -12,6 +12,8 @@
 #include "ServerFunctions.hpp"
 #include "WebCacher.hpp"
 
+// 5 min
+#define MAX_MILLIS_RELATED_EVENTS (1000*60*5)
 
 void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
@@ -45,11 +47,19 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
     };
 
     //get all report from to millis
-    //todo verificare questa cosa e scrivere i test
     server.resource["^/reports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
-                                                           shared_ptr<HttpServer::Request> request) {
+                                                                       shared_ptr<HttpServer::Request> request) {
         thread work_thread([response, request] {
-            printReportsInInterval(request,response);
+            printReportsInInterval(request, response);
+        });
+        work_thread.detach();
+    };
+    //get all report for a specific event id. (the parameters are event_id and millis, because the server
+    //could not have all the event in the db
+    server.resource["^/eventRelatedReports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
+                                                                       shared_ptr<HttpServer::Request> request) {
+        thread work_thread([response, request] {
+            printEventIdRelatedEvents(request, response);
         });
         work_thread.detach();
     };
@@ -156,28 +166,62 @@ void FCMServer::printUserWithId(Request request, Response response) {
         outputHttpBADStringResponse(resp, response);
     }
 }
+
 void FCMServer::printReportsInInterval(Request request, Response response) {
     try {
         //todo fare questa cosa in modo più efficiente
         long from_millis = std::stoi(request->path_match[1]);
         long to_millis = std::stoi(request->path_match[2]);
-        stringstream ss; ss<<"from: "<<from_millis<<" to:"<<to_millis;
-        syslog(LOG_INFO,ss.str().c_str());
-        vector<DBReport> res = ReportProvider::getReportsFromToTime(from_millis,to_millis);
-        json result;
-        for (DBReport r : res){
-            json att;
-            att["user_id"] = r.user_id;
-            att["millis"] = r.millis;
-            att["power"] = r.power;
-            User u = UserPreferenceProvider::getUser(r.user_id);
-            att["lat"] = u.lat;
-            att["lng"] = u.lng;
-            att["dateTime"] = TimeUtility::getTimeStringFromMillis(r.millis);
-            result.push_back(att);
-        }
+        stringstream ss;
+        ss << "from: " << from_millis << " to:" << to_millis;
+        syslog(LOG_INFO, ss.str().c_str());
+        string res = getReportsFromToMillis(from_millis, to_millis);
 
-        outputHttpOKStringResponse(result.dump(3), response);
+        outputHttpOKStringResponse(res, response);
+    }
+    catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, e.what());
+        outputHttpBADStringResponse(resp, response);
+    }
+}
+
+string FCMServer::getReportsFromToMillis(long from_millis, long to_millis) {
+    vector<DBReport> res = ReportProvider::getReportsFromToTime(from_millis, to_millis);
+    json result;
+    for (DBReport r : res) {
+        json att;
+        att["user_id"] = r.user_id;
+        att["millis"] = r.millis;
+        att["power"] = r.power;
+        User u = UserPreferenceProvider::getUser(r.user_id);
+        att["lat"] = u.lat;
+        att["lng"] = u.lng;
+        att["dateTime"] = TimeUtility::getTimeStringFromMillis(r.millis);
+        result.push_back(att);
+    }
+
+    return result.dump(3);
+
+}
+
+void FCMServer::printEventIdRelatedEvents(Request request, Response response) {
+    try {
+        //todo fare questa cosa in modo più efficiente
+        long event_id = std::stoi(request->path_match[1]);
+        long millis = std::stoi(request->path_match[2]);
+        //caching response: if the server reboot we lose cached map, but we don't care
+        static map<long, string> cached; //event_id, to_output
+        string res = cached[event_id];
+
+        if (TimeUtility::getCurrentMillis()-millis < MAX_MILLIS_RELATED_EVENTS) // millis to recent. If we cache it we may lose reports
+            res = getReportsFromToMillis(millis - MAX_MILLIS_RELATED_EVENTS, millis + MAX_MILLIS_RELATED_EVENTS);
+        else if (res.size() == 0) // no precedent caching
+            res =
+            cached[event_id] =
+                    getReportsFromToMillis(millis - MAX_MILLIS_RELATED_EVENTS, millis + MAX_MILLIS_RELATED_EVENTS);
+
+        outputHttpOKStringResponse(res, response);
     }
     catch (exception &e) {
         string resp(e.what());
@@ -217,7 +261,7 @@ void FCMServer::handleUserActivity(FCMServer::Request request, FCMServer::Respon
         long id = ReportParserHTTP::parseActiveRequest(content);
         User user = UserPreferenceProvider::getUser(id);
 
-        syslog(LOG_INFO, "User %ld (%s) report to be active!", id, user.username.c_str() );
+        syslog(LOG_INFO, "User %ld (%s) report to be active!", id, user.username.c_str());
 
         json json_resp;
         json_resp["respose"] = "Active notify succeded!";
