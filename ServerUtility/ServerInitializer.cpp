@@ -188,7 +188,7 @@ void FCMServer::printReportsInInterval(Request request, Response response) {
 
 string FCMServer::getReportsFromToMillis(long from_millis, long to_millis) {
     vector<DBReport> res = ReportProvider::getReportsFromToTime(from_millis, to_millis);
-    json result;
+    json result = json::array();
     for (DBReport r : res) {
         json att;
         att["user_id"] = r.user_id;
