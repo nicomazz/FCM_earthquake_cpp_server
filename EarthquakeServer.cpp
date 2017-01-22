@@ -39,23 +39,29 @@ void EarthquakeServer::startServer() {
  * */
 void EarthquakeServer::serverMainLoop() {
     EventProvider dataSource;
-    FirebaseNotificationManager notificationHandler;
     for (;;) {
         boost::this_thread::sleep_for(boost::chrono::seconds{10});
-        std::vector<Event> newEvents = dataSource.requestNewEventNotInDB();
-        if (newEvents.size() == 0) {
-            continue;
-        }
-        syslog(LOG_INFO, "---------------------");
-        syslog(LOG_INFO, "%d new Events", (int) newEvents.size());
-
-        for (Event &e: newEvents) {
-            dataSource.persistEvent(e);
-            if (TimeUtility::isInLastHour(e.millis))
-                notificationHandler.handleEventNotification(e);
-        }
         dataSource.eraseOldEvents();
+        thread work_thread([this] {
+            this->searchForEventsToNotify();
+        });
+        work_thread.detach();
     }
 }
 
+void EarthquakeServer::searchForEventsToNotify(){
+    FirebaseNotificationManager notificationHandler;
+
+    std::vector<Event> newEvents = EventProvider::requestNewEventNotInDB();
+    if (newEvents.size() == 0) {
+        return;
+    }
+    syslog(LOG_INFO, "---------------------");
+    syslog(LOG_INFO, "%d new Events", (int) newEvents.size());
+    for (Event &e: newEvents) {
+        EventProvider::persistEvent(e);
+        if (TimeUtility::isInLastHour(e.millis))
+            notificationHandler.handleEventNotification(e);
+    }
+}
 #pragma clang diagnostic pop

@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <syslog.h>
+#include <mutex>
 #include "FirebaseNotificationManager.hpp"
 #include "NotificationDataBuilder.hpp"
 
@@ -47,6 +48,9 @@ std::vector<User> FirebaseNotificationManager::requestUsersToNotify(Event event)
 void FirebaseNotificationManager::sendNotificationToUser(User user, Event e) {
     syslog(LOG_INFO, "Sending notification to user: %d", (int) user.id);
     try {
+        static std::mutex send_mutex;
+        std::lock_guard<std::mutex> guard(send_mutex);
+
         HttpsClient client("fcm.googleapis.com", false); //with false ignore certificate
         std::stringstream output;
 

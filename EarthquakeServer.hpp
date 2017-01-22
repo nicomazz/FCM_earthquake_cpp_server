@@ -21,6 +21,7 @@ public:
     void startServer();
 private:
     void serverMainLoop();
+    void searchForEventsToNotify();
 };
 
 
