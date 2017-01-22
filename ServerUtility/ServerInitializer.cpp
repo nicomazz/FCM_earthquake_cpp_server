@@ -54,6 +54,7 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
         });
         work_thread.detach();
     };
+
     //get all report for a specific event id. (the parameters are event_id and millis, because the server
     //could not have all the event in the db
     server.resource["^/eventRelatedReports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
@@ -191,7 +192,7 @@ string FCMServer::getReportsFromToMillis(long from_millis, long to_millis) {
     json result = json::array();
     for (DBReport r : res) {
         json att;
-        att["user_id"] = r.user_id;
+        att["userId"] = r.user_id;
         att["millis"] = r.millis;
         att["power"] = r.power;
         User u = UserPreferenceProvider::getUser(r.user_id);
