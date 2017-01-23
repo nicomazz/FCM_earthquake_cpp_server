@@ -57,8 +57,9 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
     //get all report for a specific event id. (the parameters are event_id and millis, because the server
     //could not have all the event in the db
-    server.resource["^/eventRelatedReports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](shared_ptr<HttpServer::Response> response,
-                                                                       shared_ptr<HttpServer::Request> request) {
+    server.resource["^/eventRelatedReports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](
+            shared_ptr<HttpServer::Response> response,
+            shared_ptr<HttpServer::Request> request) {
         thread work_thread([response, request] {
             printEventIdRelatedEvents(request, response);
         });
@@ -76,11 +77,17 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
     server.resource["^/getActive"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                shared_ptr<HttpServer::Request> request) {
-        getActiveUsers(request, response);
+        thread work_thread([response, request] {
+            getActiveUsers(request, response);
+        });
+        work_thread.detach();
     };
     server.resource["^/getRecentUsers"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                     shared_ptr<HttpServer::Request> request) {
-        getRecentUsers(request, response);
+        thread work_thread([response, request] {
+            getRecentUsers(request, response);
+        });
+        work_thread.detach();
     };
 
     server.resource["^/detected_events"]["GET"] = [](shared_ptr<HttpServer::Response> response,
@@ -173,9 +180,9 @@ void FCMServer::printReportsInInterval(Request request, Response response) {
         //todo fare questa cosa in modo più efficiente
         long from_millis = std::stol(request->path_match[1]);
         long to_millis = std::stol(request->path_match[2]);
-        stringstream ss;
-        ss << "from: " << from_millis << " to:" << to_millis;
-        syslog(LOG_INFO, ss.str().c_str());
+        //stringstream ss;
+        //ss << "from: " << from_millis << " to:" << to_millis;
+        //syslog(LOG_INFO, ss.str().c_str());
         string res = getReportsFromToMillis(from_millis, to_millis);
 
         outputHttpOKStringResponse(res, response);
@@ -215,7 +222,8 @@ void FCMServer::printEventIdRelatedEvents(Request request, Response response) {
         static map<long, string> cached; //event_id, to_output
         string res = cached[event_id];
 
-        if (TimeUtility::getCurrentMillis()-millis < MAX_MILLIS_RELATED_EVENTS) // millis to recent. If we cache it we may lose reports
+        if (TimeUtility::getCurrentMillis() - millis <
+            MAX_MILLIS_RELATED_EVENTS) // millis to recent. If we cache it we may lose reports
             res = getReportsFromToMillis(millis - MAX_MILLIS_RELATED_EVENTS, millis + MAX_MILLIS_RELATED_EVENTS);
         else if (res.size() == 0) // no precedent caching
             res =
