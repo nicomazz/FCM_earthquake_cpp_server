@@ -19,6 +19,10 @@ std::string SimpleEQDetector::getDetectorName() {
 }
 
 void SimpleEQDetector::addReport(const Report &report) {
+    if (isBadReport(report)) {
+        syslog(LOG_ALERT, "one bad report received!");
+        return;
+    }
     removeUserReport(report.u);
     {
         std::lock_guard<std::mutex> guard(v_mutex);
@@ -30,6 +34,11 @@ void SimpleEQDetector::addReport(const Report &report) {
     elaborateActualReports();
 }
 
+// user must have a position setted!
+bool SimpleEQDetector::isBadReport(const Report &report) {
+    return !report.u.hasPosition();
+}
+
 void SimpleEQDetector::removeUserReport(const User &u) {
     std::lock_guard<std::mutex> guard(v_mutex);
     long last_millis = user_last_millis[u.id];
@@ -38,6 +47,7 @@ void SimpleEQDetector::removeUserReport(const User &u) {
         reports.erase(to_remove);
     }
 }
+
 void SimpleEQDetector::removeOldReports() {
     std::lock_guard<std::mutex> guard(v_mutex);
     while (!reports.empty() && isToRemove(*(reports.begin())))
@@ -53,16 +63,17 @@ void SimpleEQDetector::elaborateActualReports() {
     std::lock_guard<std::mutex> guard(v_mutex);
     float max_percent = 0.0;
     for (const Report &actual : reports) {
+
         int nearActiveUsers = getNearActiveUsers(actual.u);
-        //must be al least 3
+        //must be al least 2
         if (nearActiveUsers < MIN_USER_DETECTED_EQ) continue;
 
-        std::vector<Report> near = getNearReports(actual);
-        float percent = (float) near.size() / nearActiveUsers;
+        std::vector<Report> nearReports = getNearReports(actual);
+        float percent = (float) nearReports.size() / nearActiveUsers;
         max_percent = std::max(max_percent, percent);
         syslog(LOG_INFO, "att percent: %f", percent);
-        if (near.size() >= 2 && percent > MIN_PERCENT){
-            sendNotification(near);
+        if (nearReports.size() >= 2 && percent > MIN_PERCENT) {
+            sendNotification(nearReports);
             removeNear(actual);
             return;
         }
@@ -73,7 +84,7 @@ void SimpleEQDetector::elaborateActualReports() {
 std::vector<Report> SimpleEQDetector::getNearReports(const Report &r) {
     std::vector<Report> near_report;
     for (const Report &other : reports) {
-        if (getDistance(r, other) < NEAR_METERS)
+        if (getDistance(r, other) < NEAR_KILOMETERS)
             near_report.push_back(other);
     }
     return near_report;
@@ -127,8 +138,8 @@ Event SimpleEQDetector::getLastEventNotified() {
 int SimpleEQDetector::getNearActiveUsers(const User &target) {
     std::vector<User> active = UserPreferenceProvider::requestActiveUsers();
     int cnt = 0;
-    for (User & u: active)
-        if (getDistance(u,target) < NEAR_METERS)
+    for (User &u: active)
+        if (getDistance(u, target) < NEAR_KILOMETERS)
             cnt++;
     return cnt;
 }

@@ -252,8 +252,7 @@ void FCMServer::handleReport(FCMServer::Request request, FCMServer::Response res
 
         json json_resp;
         json_resp["respose"] = "Report send!";
-        string message = json_resp.dump(3);
-        outputHttpOKStringResponse(message, response);
+        outputHttpOKStringResponse(json_resp.dump(3), response);
 
         thread work_thread([response, r] {
             detector.addReport(r);

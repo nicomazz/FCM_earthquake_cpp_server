@@ -13,7 +13,7 @@
 #include <set>
 
 #define  REPORT_TTL (1000*60*3)
-#define  NEAR_METERS 20 * 1000
+#define  NEAR_KILOMETERS 20
 // at min the MIN_PERCENT users in range of NEAR_METER Must have detected an EQ to send the notify
 #define  MIN_PERCENT 0.30f
 #define  MIN_NEAR_REPORTS 10
@@ -68,6 +68,7 @@ private:
 
     void removeUserReport(const User &u);
 
+    bool isBadReport(const Report &report);
 };
 
 

@@ -59,6 +59,8 @@ public:
      */
     static void checkValidUserInDB(User & user);
 
+    static void updateLastActivity(long id, long lastActivity = TimeUtility::getCurrentMillis());
+
 };
 
 

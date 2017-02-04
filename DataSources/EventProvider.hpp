@@ -42,6 +42,7 @@ public:
 
     static bool isEventPresent(long id);
 
+    static void updateEvent(Event & e);
     /**
      * erase old (2 days ago) event that are not real time ones and not have related reports;
      * */

@@ -46,7 +46,7 @@ public:
     std::string username;
 
     bool hasId() { return id >= 0; }
-    bool hasPosition() {return lat != 0.0 && lng != 0.0;}
+     bool hasPosition() const {return lat != 0.0 && lng != 0.0;}
 };
 
 

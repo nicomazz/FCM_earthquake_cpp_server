@@ -16,6 +16,6 @@ void ReportChecker::checkEventRelatedReport(int minutes) {
     for (Event e : events){
         std::vector<DBReport> reports = ReportProvider::getReportsRelatedToEvents(e);
         e.numberOfReports = (int) reports.size();
-        EventProvider::persistEvent(e);
+        EventProvider::updateEvent(e);
     }
 }

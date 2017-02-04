@@ -195,7 +195,9 @@ void reportProviderTest(){
     assert(respJson.size() == 3);
 
     cout<<"start event report server request"<<endl;
-    r = client.request("GET", "/eventRelatedReports/63463/35");
+    int user_lat = u.lat*10000, user_lng = u.lng*10000;
+    stringstream ss_url; ss_url<<"/eventRelatedReports/63463/35/"<<user_lat<<"/"<<user_lng;
+    r = client.request("GET", ss_url.str());
     assert(r->status_code.find("400") == string::npos);
     stringstream output2; output2<< r->content.rdbuf();
     respose = output2.str();
@@ -298,6 +300,6 @@ int main() {
     server.stop();
     server_thread.join();
 
-    cerr << "All is working for simple detector test!";
+    cout<< "All is working for simple detector test!";
     return 0;
 }

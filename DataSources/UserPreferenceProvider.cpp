@@ -197,3 +197,9 @@ void UserPreferenceProvider::checkValidUserInDB(User &user) {
     if (inDB.secretKey != user.secretKey)
         throw std::invalid_argument("Error: secretKey mismatch!");
 }
+
+void UserPreferenceProvider::updateLastActivity(long id, long lastActivity) {
+    User userInDb = getUser(id);
+    userInDb.lastActivity = lastActivity;
+    updateUser(userInDb);
+}
