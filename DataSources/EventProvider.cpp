@@ -100,7 +100,7 @@ std::vector<Event> EventProvider::requestDetectedEvents() {
     return results;
 }
 
-std::vector<Event> EventProvider::requestDetectedEvents(int from_millis, int to_millis) {
+std::vector<Event> EventProvider::requestDetectedEvents(long from_millis, long to_millis) {
     using namespace odb::core;
     std::vector<Event> results;
 
@@ -112,7 +112,7 @@ std::vector<Event> EventProvider::requestDetectedEvents(int from_millis, int to_
         // session s;
         transaction t(db->begin());
 
-        result r(db->query<Event>((query<Event>::numberOfReports > 0) &&
+        result r(db->query<Event>((query<Event>::numberOfReports > 0 || query<Event>::isRealTimeReport) &&
                                   query<Event>::millis >= from_millis && query<Event>::millis <= to_millis));
 
         for (const Event &e: r)

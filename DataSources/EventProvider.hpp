@@ -32,7 +32,7 @@ public:
      * @return all the events that has at least one report associated
      */
     static std::vector<Event> requestDetectedEvents();
-    static std::vector<Event> requestDetectedEvents(int from_millis, int to_millis);
+    static std::vector<Event> requestDetectedEvents(long from_millis, long to_millis);
 
     static long persistEvent(Event &e, bool checkAlreadyPresent = false);
 

@@ -39,6 +39,7 @@ public:
         e.magnitude = 10;
         setMeanPosition(reports,e);
         e.contributorId = getIdsString(reports);
+        e.numberOfReports = reports.size();
         return e;
     }
     void setMeanPosition(const std::vector<Report> & reports, Event & e){

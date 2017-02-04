@@ -14,6 +14,7 @@ void ReportChecker::checkEventRelatedReport(int minutes) {
     long to_millis = TimeUtility::getCurrentMillis() - minutes_in_millis;
     std::vector<Event> events = EventProvider::requestEventsInInterval(from_millis, to_millis);
     for (Event e : events){
+        if (e.numberOfReports != 0) continue; // it already has right number
         std::vector<DBReport> reports = ReportProvider::getReportsRelatedToEvents(e);
         e.numberOfReports = (int) reports.size();
         EventProvider::updateEvent(e);
