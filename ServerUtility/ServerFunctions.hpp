@@ -8,6 +8,7 @@
 
 #include "server_http.hpp"
 
+
 namespace FCMServer {
 //generation utils
     typedef shared_ptr<SimpleWeb::ServerBase<SimpleWeb::HTTP>::Response> Response;
@@ -20,6 +21,10 @@ namespace FCMServer {
     std::string generateRecentUsers();
 
     std::string generateDetectedEvents();
+
+    std::string generateDetectedEventsFromToMillis(long from, long to);
+
+
 
 //output utils
     void outputHttpOKStringResponse(std::string s, Response response,std::string headers = "");

@@ -8,11 +8,23 @@
 
 #include <Detector/Report.hpp>
 #include <Models/Report/DBReport-odb.hpp>
+#include <Models/Event/Event.hpp>
+
 class ReportProvider {
 public:
     static long persistReport(const Report &r);
+
     static std::vector<DBReport> getReportsFromToTime(long from_millis, long to_millis);
-    static void deleteReport( Report &r);
+
+    /**
+     * take all reports that could be related to the event happened at millis_event
+     * from millis_event - 1 minute to millis_event + 5 minutes
+     * @param millis_event
+     * @return
+     */
+    static std::vector<DBReport> getReportsRelatedToEvents(Event & e);
+
+    static void deleteReport(Report &r);
 
 };
 

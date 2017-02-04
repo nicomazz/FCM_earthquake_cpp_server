@@ -20,4 +20,4 @@ systemctl status eq
 
 //to generate odb files
 sudo odb -d sqlite --generate-query --generate-schema --hxx-suffix .hpp --cxx-suffix .cpp filename.hpp
-//if it return an error reinstall odb.deb (dpkg -i odb......)
+//if it return an error reinstall odb.deb (sudo dpkg -i odb_2.4.0-1_i386.deb)

@@ -18,5 +18,13 @@ json EventBuilder::eventToJson(Event &e){
     json_content[EVENT_LAT] = e.lat;
     json_content[EVENT_LNG] = e.lng;
     json_content[EVENT_REAL_TIME] = e.isRealTimeReport;
+    json_content[EVENT_REPORTS_NUMBER] = e.numberOfReports;
     return json_content;
+}
+
+json EventBuilder::eventsToJson(std::vector<Event> &v) {
+    json res = json::array();
+    for (Event & e : v)
+        res.push_back(eventToJson(e));
+    return res;
 }

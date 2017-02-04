@@ -19,3 +19,4 @@
 #define EVENT_LAT "lat"
 #define EVENT_LNG "lng"
 #define EVENT_REAL_TIME "isRealTimeReport"
+#define EVENT_REPORTS_NUMBER "numberOfReports"

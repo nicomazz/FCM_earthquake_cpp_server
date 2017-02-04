@@ -270,6 +270,18 @@ namespace odb
     isRealTimeReport_type_;
 
     static const isRealTimeReport_type_ isRealTimeReport;
+
+    // numberOfReports
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        int,
+        sqlite::id_integer >::query_type,
+      sqlite::id_integer >
+    numberOfReports_type_;
+
+    static const numberOfReports_type_ numberOfReports;
   };
 
   template <typename A>
@@ -346,6 +358,11 @@ namespace odb
   const typename query_columns< ::Event, id_sqlite, A >::isRealTimeReport_type_
   query_columns< ::Event, id_sqlite, A >::
   isRealTimeReport (A::table_name, "\"isRealTimeReport\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::Event, id_sqlite, A >::numberOfReports_type_
+  query_columns< ::Event, id_sqlite, A >::
+  numberOfReports (A::table_name, "\"numberOfReports\"", 0);
 
   template <typename A>
   struct pointer_query_columns< ::Event, id_sqlite, A >:
@@ -451,6 +468,11 @@ namespace odb
       long long isRealTimeReport_value;
       bool isRealTimeReport_null;
 
+      // numberOfReports
+      //
+      long long numberOfReports_value;
+      bool numberOfReports_null;
+
       std::size_t version;
     };
 
@@ -490,7 +512,7 @@ namespace odb
 
     typedef sqlite::query_base query_base_type;
 
-    static const std::size_t column_count = 15UL;
+    static const std::size_t column_count = 16UL;
     static const std::size_t id_column_count = 1UL;
     static const std::size_t inverse_column_count = 0UL;
     static const std::size_t readonly_column_count = 0UL;

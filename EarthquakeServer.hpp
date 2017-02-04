@@ -22,6 +22,11 @@ public:
 private:
     void serverMainLoop();
     void searchForEventsToNotify();
+
+    /**
+     * check the correlation between report and last hour's events
+     */
+    void eventRelatedEventLoop();
 };
 
 

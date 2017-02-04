@@ -47,13 +47,17 @@ std::string FCMServer::generateRecentUsers() {
 }
 
 std::string FCMServer::generateDetectedEvents() {
-    std::vector<Event> realTimeEvents = EventProvider::requestDetectorEvents();
+    std::vector<Event> realTimeEvents = EventProvider::requestDetectedEvents();
     json jsonObj = json::array();
 
     for (Event &e : realTimeEvents)
         jsonObj.push_back(EventBuilder::eventToJson(e));
 
     return jsonObj.dump(3);
+}
+std::string FCMServer::generateDetectedEventsFromToMillis(long from, long to) {
+    std::vector<Event> realTimeEvents = EventProvider::requestDetectedEvents(from,to);
+    return EventBuilder::eventsToJson(realTimeEvents).dump(3);
 }
 
 void FCMServer::outputHttpOKStringResponse(std::string s, Response response, std::string headers) {
@@ -73,3 +77,4 @@ void FCMServer::outputHttpBADStringResponse(std::string s, Response response) {
     *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << s.length() << "\r\n\r\n"
               << s;
 }
+

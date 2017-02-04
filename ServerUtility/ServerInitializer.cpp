@@ -7,13 +7,13 @@
 #include <DataSources/EventProvider.hpp>
 #include <Models/Event/EventBuilder.hpp>
 #include <Models/Report/DBReport.hpp>
+#include <Models/Report/ReportBuilder.hpp>
 #include <DataSources/ReportProvider.hpp>
 #include "ServerInitializer.hpp"
 #include "ServerFunctions.hpp"
 #include "WebCacher.hpp"
 
 // 5 min
-#define MAX_MILLIS_RELATED_EVENTS (1000*60*5)
 
 void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
@@ -57,11 +57,12 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
     //get all report for a specific event id. (the parameters are event_id and millis, because the server
     //could not have all the event in the db
-    server.resource["^/eventRelatedReports/([0-9]+)/([0-9]+)$"]["GET"] = [&server](
+    //event id, millis,lat*10000,lng*10000
+    server.resource["^/eventRelatedReports/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)$"]["GET"] = [&server](
             shared_ptr<HttpServer::Response> response,
             shared_ptr<HttpServer::Request> request) {
         thread work_thread([response, request] {
-            printEventIdRelatedEvents(request, response);
+            printEventRelatedReports(request, response);
         });
         work_thread.detach();
     };
@@ -92,7 +93,18 @@ void FCMServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
     server.resource["^/detected_events"]["GET"] = [](shared_ptr<HttpServer::Response> response,
                                                      shared_ptr<HttpServer::Request> request) {
-        printDetectedEvents(request, response);
+        thread work_thread([response, request] {
+            printDetectedEvents(request, response);
+        });
+        work_thread.detach();
+    };
+    //detected events from to millis
+    server.resource["^/detected_events/([0-9]+)/([0-9]+)$"]["GET"] = [](shared_ptr<HttpServer::Response> response,
+                                                                        shared_ptr<HttpServer::Request> request) {
+        thread work_thread([response, request] {
+            printDetectedEventsFromToMillis(request, response);
+        });
+        work_thread.detach();
     };
     // respond to a list of user id, with the details of all users
     // request must have user id, secret key
@@ -194,41 +206,32 @@ void FCMServer::printReportsInInterval(Request request, Response response) {
     }
 }
 
-string FCMServer::getReportsFromToMillis(long from_millis, long to_millis) {
-    vector<DBReport> res = ReportProvider::getReportsFromToTime(from_millis, to_millis);
-    json result = json::array();
-    for (DBReport r : res) {
-        json att;
-        att["userId"] = r.user_id;
-        att["millis"] = r.millis;
-        att["power"] = r.power;
-        User u = UserPreferenceProvider::getUser(r.user_id);
-        att["lat"] = u.lat;
-        att["lng"] = u.lng;
-        att["dateTime"] = TimeUtility::getTimeStringFromMillis(r.millis);
-        result.push_back(att);
-    }
-
-    return result.dump(3);
-
+string FCMServer::getReportsRelatedToEvent(Event &e) {
+    vector<DBReport> res = ReportProvider::getReportsRelatedToEvents(e);
+    return ReportBuilder::reportsToJson(res).dump(3);
 }
 
-void FCMServer::printEventIdRelatedEvents(Request request, Response response) {
+string FCMServer::getReportsFromToMillis(long from_millis, long to_millis) {
+    vector<DBReport> res = ReportProvider::getReportsFromToTime(from_millis, to_millis);
+    return ReportBuilder::reportsToJson(res).dump(3);
+}
+
+void FCMServer::printEventRelatedReports(Request request, Response response) {
     try {
         //todo fare questa cosa in modo più efficiente
-        long event_id = std::stol(request->path_match[1]);
-        long millis = std::stol(request->path_match[2]);
+        Event e;
+        e.id = std::stol(request->path_match[1]);
+        e.millis = std::stol(request->path_match[2]);
+        e.lat = std::stol(request->path_match[3]) / 10000;
+        e.lng = std::stol(request->path_match[4]) / 10000;
+
         //caching response: if the server reboot we lose cached map, but we don't care
         static map<long, string> cached; //event_id, to_output
-        string res = cached[event_id];
+        string res = cached[e.id];
 
-        if (TimeUtility::getCurrentMillis() - millis <
-            MAX_MILLIS_RELATED_EVENTS) // millis to recent. If we cache it we may lose reports
-            res = getReportsFromToMillis(millis - MAX_MILLIS_RELATED_EVENTS, millis + MAX_MILLIS_RELATED_EVENTS);
-        else if (res.size() == 0) // no precedent caching
-            res =
-            cached[event_id] =
-                    getReportsFromToMillis(millis - MAX_MILLIS_RELATED_EVENTS, millis + MAX_MILLIS_RELATED_EVENTS);
+        // millis to recent or cached empty.
+        if (res.size() == 0 || TimeUtility::getCurrentMillis() - e.millis < TimeUtility::MILLIS_IN_MINUTE * 5)
+            res = cached[e.id] = getReportsRelatedToEvent(e);
 
         outputHttpOKStringResponse(res, response);
     }
@@ -311,6 +314,20 @@ void FCMServer::printDetectedEvents(FCMServer::Request /*request*/, FCMServer::R
         static WebCacher detectedEventCacher(FCMServer::generateDetectedEvents,
                                              5000);
         outputHttpOKStringResponse(detectedEventCacher.getResponse(), response);
+    } catch (exception &e) {
+        string resp(e.what());
+        syslog(LOG_INFO, e.what());
+        outputHttpBADStringResponse(resp, response);
+    }
+}
+
+void FCMServer::printDetectedEventsFromToMillis(FCMServer::Request request, FCMServer::Response response) {
+    try {
+        long from = std::stol(request->path_match[1]);
+        long to = std::stol(request->path_match[2]);
+
+        string res = FCMServer::generateDetectedEventsFromToMillis(from, to);
+        outputHttpOKStringResponse(res, response);
     } catch (exception &e) {
         string resp(e.what());
         syslog(LOG_INFO, e.what());

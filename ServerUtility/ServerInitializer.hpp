@@ -46,6 +46,8 @@ namespace FCMServer {
 
     void printDetectedEvents(Request request, Response response);
 
+    void printDetectedEventsFromToMillis(Request request, Response response);
+
     /**
      * read from request a json array of ids, and return a list of requested users.
      * The request must be made by an user that provide a secret key
@@ -64,13 +66,14 @@ namespace FCMServer {
 
     void getRecentUsers(Request request, Response response);
 
+    string getReportsRelatedToEvent(Event &e);
+
     string getReportsFromToMillis(long from_millis, long to_millis);
 
     void printReportsInInterval(Request request, Response response);
 
 
-    void printEventIdRelatedEvents(Request request, Response response);
-
+    void printEventRelatedReports(Request request, Response response);
 
 
 }

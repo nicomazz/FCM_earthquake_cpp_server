@@ -9,7 +9,7 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
 
     vector<unique_ptr<WebDataSourceInterface>> sources;
     sources.push_back(unique_ptr<WebDataSourceInterface>(new INGVDataSource));
-   // sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
+    // sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
     vector<Event> results;
 
     for (unique_ptr<WebDataSourceInterface> &thisDatasource: sources) {
@@ -53,7 +53,7 @@ std::vector<Event> EventProvider::requestEventFromDB() {
     return results;
 }
 
-std::vector<Event> EventProvider::requestDetectorEvents() {
+std::vector<Event> EventProvider::requestEventsInInterval(long from_millis, long to_millis) {
     using namespace odb::core;
     std::vector<Event> results;
 
@@ -65,7 +65,54 @@ std::vector<Event> EventProvider::requestDetectorEvents() {
         // session s;
         transaction t(db->begin());
 
-        result r(db->query<Event>(query<Event>::isRealTimeReport == true));
+        result r(db->query<Event>(query<Event>::millis >= from_millis && query<Event>::millis <= to_millis));
+
+        for (const Event &e: r)
+            results.push_back(e);
+
+        t.commit();
+    }
+
+    return results;
+}
+
+std::vector<Event> EventProvider::requestDetectedEvents() {
+    using namespace odb::core;
+    std::vector<Event> results;
+
+    std::shared_ptr<database> db = Database::getInstance().getDatabase();
+
+    {
+        typedef odb::result<Event> result;
+
+        // session s;
+        transaction t(db->begin());
+
+        result r(db->query<Event>(query<Event>::isRealTimeReport == true || query<Event>::numberOfReports > 0));
+
+        for (const Event &e: r)
+            results.push_back(e);
+
+        t.commit();
+    }
+
+    return results;
+}
+
+std::vector<Event> EventProvider::requestDetectedEvents(int from_millis, int to_millis) {
+    using namespace odb::core;
+    std::vector<Event> results;
+
+    std::shared_ptr<database> db = Database::getInstance().getDatabase();
+
+    {
+        typedef odb::result<Event> result;
+
+        // session s;
+        transaction t(db->begin());
+
+        result r(db->query<Event>((query<Event>::numberOfReports > 0) &&
+                                  query<Event>::millis >= from_millis && query<Event>::millis <= to_millis));
 
         for (const Event &e: r)
             results.push_back(e);
@@ -141,7 +188,7 @@ void EventProvider::deleteEvent(Event e) {
     }
 }
 
-void EventProvider::eraseOldEvents(){
+void EventProvider::eraseOldEvents() {
     using namespace odb::core;
     typedef odb::query<Event> query;
 
@@ -149,9 +196,11 @@ void EventProvider::eraseOldEvents(){
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
         long millis_threshold = TimeUtility::getNDaysAgoMillis(2);
-        db->erase_query<Event> (query::isRealTimeReport == false && query::millis < millis_threshold);
+        db->erase_query<Event>(
+                query::isRealTimeReport == false && query::numberOfReports == 0 && query::millis<millis_threshold);
         t.commit();
     } catch (const odb::exception &e) {
         std::cerr << e.what() << std::endl;
     }
 }
+

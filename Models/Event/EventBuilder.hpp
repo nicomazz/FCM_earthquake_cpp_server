@@ -15,6 +15,7 @@ class EventBuilder {
 public:
 
     static json eventToJson(Event &e);
+    static json eventsToJson(std::vector<Event> &v);
 
 };
 

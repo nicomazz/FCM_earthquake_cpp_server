@@ -160,6 +160,10 @@ namespace odb
     //
     t[14UL] = false;
 
+    // numberOfReports
+    //
+    t[15UL] = false;
+
     return grew;
   }
 
@@ -312,6 +316,13 @@ namespace odb
     b[n].type = sqlite::bind::integer;
     b[n].buffer = &i.isRealTimeReport_value;
     b[n].is_null = &i.isRealTimeReport_null;
+    n++;
+
+    // numberOfReports
+    //
+    b[n].type = sqlite::bind::integer;
+    b[n].buffer = &i.numberOfReports_value;
+    b[n].is_null = &i.numberOfReports_null;
     n++;
   }
 
@@ -602,6 +613,22 @@ namespace odb
       i.isRealTimeReport_null = is_null;
     }
 
+    // numberOfReports
+    //
+    {
+      int const& v =
+        o.numberOfReports;
+
+      bool is_null (false);
+      sqlite::value_traits<
+          int,
+          sqlite::id_integer >::set_image (
+        i.numberOfReports_value,
+        is_null,
+        v);
+      i.numberOfReports_null = is_null;
+    }
+
     return grew;
   }
 
@@ -831,6 +858,20 @@ namespace odb
         i.isRealTimeReport_value,
         i.isRealTimeReport_null);
     }
+
+    // numberOfReports
+    //
+    {
+      int& v =
+        o.numberOfReports;
+
+      sqlite::value_traits<
+          int,
+          sqlite::id_integer >::set_value (
+        v,
+        i.numberOfReports_value,
+        i.numberOfReports_null);
+    }
   }
 
   void access::object_traits_impl< ::Event, id_sqlite >::
@@ -864,9 +905,10 @@ namespace odb
   "\"millis\", "
   "\"lat\", "
   "\"lng\", "
-  "\"isRealTimeReport\") "
+  "\"isRealTimeReport\", "
+  "\"numberOfReports\") "
   "VALUES "
-  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::Event, id_sqlite >::find_statement[] =
   "SELECT "
@@ -884,7 +926,8 @@ namespace odb
   "\"Event\".\"millis\", "
   "\"Event\".\"lat\", "
   "\"Event\".\"lng\", "
-  "\"Event\".\"isRealTimeReport\" "
+  "\"Event\".\"isRealTimeReport\", "
+  "\"Event\".\"numberOfReports\" "
   "FROM \"Event\" "
   "WHERE \"Event\".\"id\"=?";
 
@@ -904,7 +947,8 @@ namespace odb
   "\"millis\"=?, "
   "\"lat\"=?, "
   "\"lng\"=?, "
-  "\"isRealTimeReport\"=? "
+  "\"isRealTimeReport\"=?, "
+  "\"numberOfReports\"=? "
   "WHERE \"id\"=?";
 
   const char access::object_traits_impl< ::Event, id_sqlite >::erase_statement[] =
@@ -927,7 +971,8 @@ namespace odb
   "\"Event\".\"millis\", "
   "\"Event\".\"lat\", "
   "\"Event\".\"lng\", "
-  "\"Event\".\"isRealTimeReport\" "
+  "\"Event\".\"isRealTimeReport\", "
+  "\"Event\".\"numberOfReports\" "
   "FROM \"Event\"";
 
   const char access::object_traits_impl< ::Event, id_sqlite >::erase_query_statement[] =
@@ -1356,7 +1401,8 @@ namespace odb
                       "  \"millis\" INTEGER NOT NULL,\n"
                       "  \"lat\" REAL NULL,\n"
                       "  \"lng\" REAL NULL,\n"
-                      "  \"isRealTimeReport\" INTEGER NOT NULL)");
+                      "  \"isRealTimeReport\" INTEGER NOT NULL,\n"
+                      "  \"numberOfReports\" INTEGER NOT NULL)");
           return false;
         }
       }

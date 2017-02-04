@@ -16,13 +16,23 @@ class EventProvider {
 public:
     EventProvider() {}
 
+    /**
+     * update the database from the web data sources (INGV, USGS)
+     * @return
+     */
     static std::vector<Event> requestEventWebUpdate();
 
     static std::vector<Event> requestNewEventNotInDB();
 
     static std::vector<Event> requestEventFromDB();
 
-    static std::vector<Event> requestDetectorEvents();
+    static std::vector<Event> requestEventsInInterval(long from_millis, long to_millis);
+
+    /**
+     * @return all the events that has at least one report associated
+     */
+    static std::vector<Event> requestDetectedEvents();
+    static std::vector<Event> requestDetectedEvents(int from_millis, int to_millis);
 
     static long persistEvent(Event &e, bool checkAlreadyPresent = false);
 
@@ -33,8 +43,7 @@ public:
     static bool isEventPresent(long id);
 
     /**
-     * erase old (2 days ago) event that are not real time ones;
-     * @return
+     * erase old (2 days ago) event that are not real time ones and not have related reports;
      * */
     static void eraseOldEvents();
 

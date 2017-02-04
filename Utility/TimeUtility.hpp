@@ -11,7 +11,8 @@
 
 
 namespace TimeUtility {
-    const long MILLIS_IN_A_HOUR = 1000 * 60 * 60;
+    const long MILLIS_IN_MINUTE = 1000 * 60;
+    const long MILLIS_IN_A_HOUR = MILLIS_IN_MINUTE * 60;
     const long MILLIS_IN_A_DAY = MILLIS_IN_A_HOUR * 24;
 
     long getCurrentMillis();
