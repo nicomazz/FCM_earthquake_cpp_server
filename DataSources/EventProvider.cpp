@@ -196,7 +196,7 @@ void EventProvider::eraseOldEvents() {
     try {
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
-        long millis_threshold = TimeUtility::getNDaysAgoMillis(2);
+        long millis_threshold = TimeUtility::getNDaysAgoMillis(7);
         db->erase_query<Event>(
                 query::isRealTimeReport == false && query::numberOfReports == 0 && query::millis<millis_threshold);
         t.commit();

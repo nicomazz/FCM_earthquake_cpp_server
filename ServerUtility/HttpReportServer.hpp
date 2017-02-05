@@ -1,12 +1,12 @@
 //
-// Created by nicomazz97 on 20/11/16.
+// Created by nicomazz97 on 05/02/17.
 //
 
-#ifndef SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H
-#define SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H
+#ifndef SIMPLE_WEB_SERVER_HTTPREPORTSERVER_HPP
+#define SIMPLE_WEB_SERVER_HTTPREPORTSERVER_HPP
 
-#include "ServerUtility/server_http.hpp"
-#include "ServerUtility/client_http.hpp"
+#include "server_http.hpp"
+#include "client_http.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -14,6 +14,11 @@
 #include <boost/chrono.hpp>
 #include <iostream>
 
+#include <Models/User/User.hpp>
+#include <DataSources/UserPreferenceProvider.hpp>
+#include <Models/User/UserBuilder.hpp>
+#include "Utility/json.hpp"
+#include "../Detector/SimpleEQDetector.hpp"
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <vector>
@@ -23,8 +28,18 @@
 #include <Models/User/UserBuilder.hpp>
 #include "Utility/json.hpp"
 #include "../Detector/SimpleEQDetector.hpp"
+#include <Firebase/NotificationDataBuilder.hpp>
+#include <Detector/ReportParserHTTP.hpp>
+#include <DataSources/EventProvider.hpp>
+#include <Models/Event/EventBuilder.hpp>
+#include <Models/Report/DBReport.hpp>
+#include <Models/Report/ReportBuilder.hpp>
+#include <DataSources/ReportProvider.hpp>
+#include "ServerUtility.hpp"
+#include "WebCacher.hpp"
 
-namespace FCMServer {
+
+namespace HttpReportServer {
     typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
     typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
@@ -34,37 +49,18 @@ namespace FCMServer {
     using namespace std;
     using namespace boost::property_tree;
 
-
-    void initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server);
-
-    void handleUserRequest(Request request, Response response);
-
-    void printAllUsers(Response response);
+    void initReportServer(SimpleWeb::Server<SimpleWeb::HTTP> &server);
 
     //id in url of request
-    void printUserWithId(Request request, Response response);
 
     void printDetectedEvents(Request request, Response response);
 
     void printDetectedEventsFromToMillis(Request request, Response response);
 
-    /**
-     * read from request a json array of ids, and return a list of requested users.
-     * The request must be made by an user that provide a secret key
-     * @param request
-     * @param response
-     */
-    void getUsersDetails(Request request, Response response);
+
 
     void handleReport(Request request, Response response);
 
-
-    void handleUserActivity(Request request, Response response);
-
-
-    void getActiveUsers(Request request, Response response);
-
-    void getRecentUsers(Request request, Response response);
 
     string getReportsRelatedToEvent(Event &e);
 
@@ -75,6 +71,11 @@ namespace FCMServer {
 
     void printEventRelatedReports(Request request, Response response);
 
+    std::string generateDetectedEvents();
 
-}
-#endif //SIMPLE_WEB_SERVER_FIRECLOUDSERVERINITIALIZER_H
+    std::string generateDetectedEventsFromToMillis(long from, long to);
+
+};
+
+
+#endif //SIMPLE_WEB_SERVER_HTTPREPORTSERVER_HPP

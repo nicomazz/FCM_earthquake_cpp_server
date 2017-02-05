@@ -4,7 +4,7 @@
 
 #include "ServerUtility/server_http.hpp"
 #include "ServerUtility/client_http.hpp"
-#include "ServerUtility/ServerInitializer.hpp"
+#include "ServerUtility/HTTPQuakeServer.hpp"
 #include <cassert>
 #include <Detector/ReportParserHTTP.hpp>
 #include <DataSources/EventProvider.hpp>
@@ -219,7 +219,7 @@ void reportProviderTest(){
 int main() {
 
     HttpServer server(8080, 1);
-    FCMServer::initServer(server);
+    HTTPQuakeServer::initServer(server);
     thread server_thread([&server]() {
         server.start();
     });

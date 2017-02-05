@@ -9,10 +9,15 @@
 class ReportChecker {
 public:
     /**
-        * search the number of reports related events in interval -minutes*2, -minutes
-        * @param minutes
-        */
+     * search the number of reports related events in interval -minutes*2, -minutes
+     * @param minutes
+     */
     static void checkEventRelatedReport(int minutes);
+
+    /**
+     * reupdate the number of reports for every events in db
+     */
+    static void checkAllEventRelatedReport();
 };
 
 

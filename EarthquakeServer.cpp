@@ -16,7 +16,7 @@ void EarthquakeServer::startServer() {
      * HTTP SERVER
      * */
     HttpServer server(8080, 1);
-    FCMServer::initServer(server);
+    HTTPQuakeServer::initServer(server);
     thread server_thread([&server]() {
         server.start();
     });
@@ -79,6 +79,8 @@ void EarthquakeServer::searchForEventsToNotify(){
 }
 
 void EarthquakeServer::eventRelatedEventLoop() {
+    //only at startup renew all events in db
+    ReportChecker::checkAllEventRelatedReport();
     const int delta_minutes = 10;
     for (;;) {
         boost::this_thread::sleep_for(boost::chrono::minutes{delta_minutes});
