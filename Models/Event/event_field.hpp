@@ -14,7 +14,7 @@
 #define EVENT_CONTRIBUTOR_ID "contributorId"
 #define EVENT_MAG_TYPE "magType"
 #define EVENT_MAGNITUDE "magnitude"
-#define EVENT_LOCATION "location"
+#define EVENT_LOCATION "eventLocation"
 #define EVENT_MILLIS "millis"
 #define EVENT_LAT "lat"
 #define EVENT_LNG "lng"
