@@ -5,6 +5,10 @@
 #ifndef SIMPLE_WEB_SERVER_REPORTCHECKER_HPP
 #define SIMPLE_WEB_SERVER_REPORTCHECKER_HPP
 
+#include <Utility/TimeUtility.hpp>
+#include <Models/Event/Event.hpp>
+#include <DataSources/EventProvider.hpp>
+#include <DataSources/ReportProvider.hpp>
 
 class ReportChecker {
 public:

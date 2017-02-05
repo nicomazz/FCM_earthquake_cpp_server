@@ -2,10 +2,7 @@
 // Created by nicomazz97 on 04/02/17.
 //
 
-#include <Utility/TimeUtility.hpp>
-#include <Models/Event/Event.hpp>
-#include <DataSources/EventProvider.hpp>
-#include <DataSources/ReportProvider.hpp>
+
 #include "ReportChecker.hpp"
 
 void ReportChecker::checkEventRelatedReport(int minutes) {
