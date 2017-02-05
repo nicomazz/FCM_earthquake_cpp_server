@@ -84,8 +84,8 @@ void HttpReportServer::printEventRelatedReports(Request request, Response respon
         Event e;
         e.id = std::stol(request->path_match[1]);
         e.millis = std::stol(request->path_match[2]);
-        e.lat = std::stol(request->path_match[3]) / 10000;
-        e.lng = std::stol(request->path_match[4]) / 10000;
+        e.lat = ((double) std::stol(request->path_match[3])) / 10000;
+        e.lng = ((double) std::stol(request->path_match[4])) / 10000;
 
         //caching response: if the server reboot we lose cached map, but we don't care
         static map<long, string> cached; //event_id, to_output
