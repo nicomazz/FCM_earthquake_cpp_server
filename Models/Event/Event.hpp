@@ -14,6 +14,7 @@ public:
         id = millis = 0;
         numberOfReports = 0;
         isRealTimeReport = false;
+        magnitude = 3;
     }
 
     Event(long id, std::string location);
