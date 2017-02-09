@@ -3,6 +3,7 @@
 #include <ServerUtility/client_http.hpp>
 #include <iostream>
 #include <Utility/TimeUtility.hpp>
+#include <syslog.h>
 #include "INGVDataSource.hpp"
 
 
@@ -13,7 +14,8 @@ std::vector<Event> INGVDataSource::parseEvents(std::string webResponse) {
         try {
             Event event = buildEvent(eStr);
             result.push_back(event);
-        } catch (...) {
+        } catch (std::exception exception) {
+            syslog(LOG_INFO, exception.what());
             std::cerr << "eccezione nel parse di un'evento\n";
         }
     }
@@ -26,6 +28,8 @@ std::vector<Event> INGVDataSource::parseEvents(std::string webResponse) {
 
 Event INGVDataSource::buildEvent(std::string s) {
     std::vector<std::string> splitted = split(s, '|');
+    if (splitted.size() != 13)
+        throw std::invalid_argument("splitted length problem");
     Event event;
     std::stringstream ss;
     std::string id;
