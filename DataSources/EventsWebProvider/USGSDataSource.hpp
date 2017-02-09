@@ -16,7 +16,7 @@ protected:
      * ritorna l'url al quale fare la richiesta
      * @return
      */
-    std::string getWebServiceUrl() override;
+    virtual std::string getWebServiceUrl() override;
 };
 
 
