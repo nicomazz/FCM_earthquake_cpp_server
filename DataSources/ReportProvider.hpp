@@ -22,10 +22,12 @@ public:
      * @param millis_event
      * @return
      */
-    static std::vector<DBReport> getReportsRelatedToEvents(Event & e);
+    static std::vector<DBReport> getReportsRelatedToEvents(Event &e);
 
     static void deleteReport(Report &r);
 
+private:
+    static void getReportPosition(DBReport &r, double &lat, double &lng);
 };
 
 #endif //SIMPLE_WEB_SERVER_REPORTPROVIDER_HPP

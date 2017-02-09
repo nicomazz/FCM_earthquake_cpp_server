@@ -6,6 +6,7 @@
 #include "../Models/Report/DBReport-odb.hpp"
 #include "ReportProvider.hpp"
 #include "Database.hpp"
+#include "UserPreferenceProvider.hpp"
 
 long ReportProvider::persistReport(const Report &r) {
     using namespace odb::core;
@@ -75,9 +76,22 @@ std::vector<DBReport> ReportProvider::getReportsRelatedToEvents(Event &e) {
     std::vector<DBReport> reports = getReportsFromToTime(e.millis - TimeUtility::MILLIS_IN_MINUTE,
                                                          e.millis + TimeUtility::MILLIS_IN_MINUTE * 5);
     std::vector<DBReport> result;
-    for (DBReport &r : reports)
-        if (GeoUtility::distanceEarth(r.lat, r.lng, e.lat, e.lng) < max_distance_kilometers)
+    double report_lat, report_lng;
+    for (DBReport &r : reports) {
+        getReportPosition(r,report_lat,report_lng);
+        if (GeoUtility::distanceEarth(report_lat, report_lng, e.lat, e.lng) < max_distance_kilometers)
             result.push_back(r);
+    }
 
     return result;
+}
+
+void ReportProvider::getReportPosition(DBReport &r, double &lat, double &lng) {
+    lat = r.lat;
+    lng = r.lng;
+    if (lat == 0 || lng == 0) {
+        User u = UserPreferenceProvider::getUser(r.user_id);
+        lat = u.lat;
+        lng = u.lng;
+    }
 }

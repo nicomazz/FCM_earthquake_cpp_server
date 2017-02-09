@@ -9,6 +9,7 @@
 
 class DBReport {
 public:
+    DBReport(){lat = lng = 0;}
 #pragma db id
     long millis;
     int user_id;
@@ -16,6 +17,7 @@ public:
 
     double lat;
     double lng;
+
 };
 
 

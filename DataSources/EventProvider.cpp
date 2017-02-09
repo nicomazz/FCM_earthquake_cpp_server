@@ -225,8 +225,6 @@ void EventProvider::removeOldEvents() {
 void EventProvider::updateEvent(Event &e) {
     using namespace odb::core;
     try {
-        static std::mutex v_mutex;
-        std::lock_guard<std::mutex> guard(v_mutex);
         std::shared_ptr<database> db = Database::getInstance().getDatabase();
         transaction t(db->begin());
         db->update(e);
