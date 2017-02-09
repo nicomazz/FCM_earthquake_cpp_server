@@ -14,9 +14,7 @@ std::vector<Event> INGVDataSource::parseEvents(std::string webResponse) {
         try {
             Event event = buildEvent(eStr);
             result.push_back(event);
-        } catch (std::exception exception) {
-            syslog(LOG_INFO, exception.what());
-            std::cerr << "eccezione nel parse di un'evento\n";
+        } catch (...) { //ignored
         }
     }
     return result;

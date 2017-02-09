@@ -2,6 +2,7 @@
 #include <DataSources/EventsWebProvider/USGSDataSource.hpp>
 #include <Utility/TimeUtility.hpp>
 #include <mutex>
+#include <Models/Event/EventBuilder.hpp>
 #include "EventProvider.hpp"
 
 
@@ -33,6 +34,7 @@ std::vector<Event> EventProvider::requestNewEventNotInDB() {
         if (EventProvider::isEventPresent(e.id))continue;
         new_events.push_back(e);
     }
+    syslog(LOG_INFO,EventBuilder::eventsToJson(new_events).dump(3).c_str());
     return new_events;
 }
 

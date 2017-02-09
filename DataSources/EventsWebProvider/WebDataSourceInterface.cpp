@@ -59,6 +59,7 @@ std::vector<Event> WebDataSourceInterface::requestEventsInDateRange(long from, l
             output << r->content.rdbuf();
             respose = output.str();
         }
+
         // todo check if it is a bad respose
         return parseEvents(respose);
     } catch (std::invalid_argument e) { // no web connection
