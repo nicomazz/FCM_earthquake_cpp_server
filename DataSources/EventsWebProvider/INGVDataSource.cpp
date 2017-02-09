@@ -25,6 +25,9 @@ std::vector<Event> INGVDataSource::parseEvents(std::string webResponse) {
 //#EventID|Time|Latitude|Longitude|Depth/km|Author|Catalog|Contributor|ContributorID|MagType|Magnitude|MagAuthor|EventLocationName
 
 Event INGVDataSource::buildEvent(std::string s) {
+    if (s.size() > 0 && s[0] == '#')
+        throw std::invalid_argument("Initial description");
+
     std::vector<std::string> splitted = split(s, '|');
     if (splitted.size() != 13) {
         std::string error = "splitted string problem: "+s+"\nsplitted size: "+std::to_string(splitted.size());
