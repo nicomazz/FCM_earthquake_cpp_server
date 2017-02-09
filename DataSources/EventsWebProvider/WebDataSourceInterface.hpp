@@ -25,11 +25,12 @@ public:
     virtual std::string getDataSourceName() = 0;
 
     static std::string getUrlParameterForDay(long millis);
-
 protected:
-    virtual std::string getWebServiceUrl() = 0;
 
+    virtual std::string getWebServiceUrl() = 0;
     virtual std::string getWebServiceUrlParams() = 0;
+    static std::string getUrlParametersForDateRange(long from, long to);
+
 
     virtual std::vector<Event> parseEvents(std::string webResponse) = 0;
 
@@ -37,8 +38,9 @@ protected:
 
     std::vector<std::string> split(std::string &str, char delimiter);
 
+    static int hashCode(std::string & s);
+
 //private:
-    static std::string getUrlParametersForDateRange(long from, long to);
 };
 
 #endif //SIMPLE_WEB_SERVER_DATASOURCE_H

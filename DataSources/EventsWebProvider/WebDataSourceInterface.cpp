@@ -34,7 +34,7 @@ std::string WebDataSourceInterface::getUrlParameterForDay(long millis) {
     return getUrlParametersForDateRange(millis, millis);
 }
 
-std::string WebDataSourceInterface::getUrlParametersForDateRange(long from, long to ) {
+std::string WebDataSourceInterface::getUrlParametersForDateRange(long from, long to) {
     from = TimeUtility::getPrecMidnightMillis(from);
     to = TimeUtility::getNextMidnightMillis(to);
 
@@ -46,7 +46,7 @@ std::string WebDataSourceInterface::getUrlParametersForDateRange(long from, long
 }
 
 std::vector<Event> WebDataSourceInterface::requestEventsInADay(long millis) {
-    return requestEventsInDateRange(millis,millis);
+    return requestEventsInDateRange(millis, millis);
 }
 
 std::vector<Event> WebDataSourceInterface::requestEventsInDateRange(long from, long to) {
@@ -65,5 +65,13 @@ std::vector<Event> WebDataSourceInterface::requestEventsInDateRange(long from, l
         syslog(LOG_INFO, e.what());
         return std::vector<Event>();
     }
+}
+
+int WebDataSourceInterface::hashCode(std::string &s) {
+    int h = 0;
+    for (char c : s)
+        h = 31 * h + c;
+    if (h < 0) h *= -1;
+    return h;
 }
 
