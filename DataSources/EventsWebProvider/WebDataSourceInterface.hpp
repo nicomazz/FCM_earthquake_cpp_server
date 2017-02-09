@@ -13,8 +13,19 @@
 class WebDataSourceInterface {
 public:
     virtual std::vector<Event> requestEvents();
+    /**
+     * parse all the events in the millis's day
+     * @param millis: if millis is currentmillis parse all events from last midnight to this midnight
+     * @return
+     */
+    virtual std::vector<Event> requestEventsInADay(long millis);
+
+    virtual std::vector<Event> requestEventsInDateRange(long from, long to);
 
     virtual std::string getDataSourceName() = 0;
+
+    static std::string getUrlParameterForDay(long millis);
+
 protected:
     virtual std::string getWebServiceUrl() = 0;
 
@@ -26,6 +37,8 @@ protected:
 
     std::vector<std::string> split(std::string &str, char delimiter);
 
+//private:
+    static std::string getUrlParametersForDateRange(long from, long to);
 };
 
 #endif //SIMPLE_WEB_SERVER_DATASOURCE_H

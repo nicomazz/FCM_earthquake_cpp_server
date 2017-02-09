@@ -54,7 +54,7 @@ void EarthquakeServer::serverMainLoop() {
     EventProvider dataSource;
     for (;;) {
         boost::this_thread::sleep_for(boost::chrono::seconds{10});
-        dataSource.eraseOldEvents();
+        dataSource.removeOldEvents();
         thread work_thread([this] {
             this->searchForEventsToNotify();
         });

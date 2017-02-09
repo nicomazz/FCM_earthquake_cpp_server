@@ -2,6 +2,7 @@
 // Created by nicomazz97 on 24/12/16.
 //
 
+#include <Utility/TimeUtility.hpp>
 #include "USGSDataSource.hpp"
 
 std::string USGSDataSource::getDataSourceName(){
@@ -10,3 +11,4 @@ std::string USGSDataSource::getDataSourceName(){
 std::string USGSDataSource::getWebServiceUrl() {
     return "http://earthquake.usgs.gov/fdsnws/event/1/query?format=text";
 }
+

@@ -25,13 +25,14 @@ std::string TimeUtility::getTimeStringFromMillis(unsigned long long millis) {
     boost::posix_time::ptime t = epoch_milliseconds_to_ptime(millis);
     return boost::posix_time::to_iso_extended_string(t);
 }
+
 unsigned long long TimeUtility::getMillisFromTimeString(std::string s) {
     std::stringstream ss(s);
-    boost::local_time::local_time_input_facet* ifc= new boost::local_time::local_time_input_facet();
+    boost::local_time::local_time_input_facet *ifc = new boost::local_time::local_time_input_facet();
     ifc->set_iso_extended_format();
     ss.imbue(std::locale(ss.getloc(), ifc));
     boost::local_time::local_date_time zonetime(boost::local_time::not_a_date_time);
-    if( ss >> zonetime ) {
+    if (ss >> zonetime) {
         boost::posix_time::ptime t;
         t = zonetime.utc_time();
         boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
@@ -44,4 +45,12 @@ unsigned long long TimeUtility::getMillisFromTimeString(std::string s) {
 boost::posix_time::ptime TimeUtility::epoch_milliseconds_to_ptime(unsigned long long ms) {
     static const boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
     return epoch + boost::posix_time::milliseconds(ms);
+}
+
+long TimeUtility::getPrecMidnightMillis(long millis) {
+    return millis - (millis % MILLIS_IN_A_DAY);
+}
+
+long TimeUtility::getNextMidnightMillis(long millis) {
+    return millis - (millis % MILLIS_IN_A_DAY) + MILLIS_IN_A_DAY;
 }

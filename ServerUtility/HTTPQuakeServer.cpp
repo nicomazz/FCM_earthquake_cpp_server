@@ -8,7 +8,7 @@
 void HTTPQuakeServer::initServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
 
     HttpUserServer::initUserFunctions(server);
-    HttpReportServer::initReportServer(server);
+    HttpEventReportServer::initReportServer(server);
     //Default GET-example. If no other matches, this anonymous function will be called.
     //Will respond with content in the web/-directory, and its subdirectories.
     //Default file: index.html

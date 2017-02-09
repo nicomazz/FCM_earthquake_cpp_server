@@ -53,6 +53,7 @@ int main() {
 
     timeTest();
 
+    cout<<"url parameter for today: "<<WebDataSourceInterface::getUrlParameterForDay(TimeUtility::getCurrentMillis());
     std::cout<<"All is working For Event!";
 
     return 0;

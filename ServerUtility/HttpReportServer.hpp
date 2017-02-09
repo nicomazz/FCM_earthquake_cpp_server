@@ -39,7 +39,7 @@
 #include "WebCacher.hpp"
 
 
-namespace HttpReportServer {
+namespace HttpEventReportServer {
     typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
     typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
@@ -58,23 +58,32 @@ namespace HttpReportServer {
     void printDetectedEventsFromToMillis(Request request, Response response);
 
 
-
     void handleReport(Request request, Response response);
+
+
+    void printReportsInMillisInterval(Request request, Response response);
+
+
+    void printEventRelatedReports(Request request, Response response);
+
+    void downloadAndPrintEventsInDayMillis(Request request, Response response);
+
+    void downloadAndPrintEventsInDateRange(Request request, Response response);
+
+    /**
+     * GENERATORS
+     */
 
 
     string getReportsRelatedToEvent(Event &e);
 
     string getReportsFromToMillis(long from_millis, long to_millis);
 
-    void printReportsInInterval(Request request, Response response);
-
-
-    void printEventRelatedReports(Request request, Response response);
-
     std::string generateDetectedEvents();
 
     std::string generateDetectedEventsFromToMillis(long from, long to);
 
+    std::string generateEventAndUpdateReportsFromWeb(long from, long to);
 };
 
 

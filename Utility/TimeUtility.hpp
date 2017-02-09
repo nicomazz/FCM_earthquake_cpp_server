@@ -11,7 +11,8 @@
 
 
 namespace TimeUtility {
-    const long MILLIS_IN_MINUTE = 1000 * 60;
+    const long MILLIS_IN_A_SECOND = 1000;
+    const long MILLIS_IN_MINUTE = MILLIS_IN_A_SECOND * 60;
     const long MILLIS_IN_A_HOUR = MILLIS_IN_MINUTE * 60;
     const long MILLIS_IN_A_DAY = MILLIS_IN_A_HOUR * 24;
 
@@ -26,5 +27,9 @@ namespace TimeUtility {
     std::string getTimeStringFromMillis(unsigned long long millis);
 
     boost::posix_time::ptime epoch_milliseconds_to_ptime(unsigned long long ms);
+
+    long getPrecMidnightMillis(long millis);
+
+    long getNextMidnightMillis(long millis);
 }
 #endif //SIMPLE_WEB_SERVER_TIMEUTILITY_H

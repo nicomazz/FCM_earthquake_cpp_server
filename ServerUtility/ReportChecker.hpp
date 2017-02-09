@@ -22,7 +22,7 @@ public:
      * reupdate the number of reports for every events in db
      */
     static void checkAllEventRelatedReport();
-private:
+
     static void updateEventReportsNumber(Event &e);
 };
 

@@ -6,15 +6,20 @@
 
 
 std::vector<Event> EventProvider::requestEventWebUpdate() {
+    return requestEventsFromWebDataSources(TimeUtility::getCurrentMillis());
+}
+
+std::vector<Event> EventProvider::requestEventsFromWebDataSources(long fromMillis, long toMillis) {
     using namespace std;
 
+    if (toMillis <= 0) toMillis = fromMillis;
     vector<unique_ptr<WebDataSourceInterface>> sources;
     sources.push_back(unique_ptr<WebDataSourceInterface>(new INGVDataSource));
-    // sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
+    sources.push_back(unique_ptr<WebDataSourceInterface>(new USGSDataSource));
     vector<Event> results;
 
     for (unique_ptr<WebDataSourceInterface> &thisDatasource: sources) {
-        vector<Event> thisResults = thisDatasource->requestEvents();
+        vector<Event> thisResults = thisDatasource->requestEventsInDateRange(fromMillis, toMillis);
         results.insert(results.end(), thisResults.begin(), thisResults.end());
     }
 
@@ -22,14 +27,24 @@ std::vector<Event> EventProvider::requestEventWebUpdate() {
 }
 
 std::vector<Event> EventProvider::requestNewEventNotInDB() {
-    std::vector<Event> all_events = requestEventWebUpdate();
+    std::vector<Event> all_events = EventProvider::requestEventWebUpdate();
     std::vector<Event> new_events;
     for (Event &e : all_events) {
-        if (isEventPresent(e.id))continue;
+        if (EventProvider::isEventPresent(e.id))continue;
         new_events.push_back(e);
     }
     return new_events;
 }
+
+std::vector<Event> EventProvider::requestAndPersistEventFromWebInDateRange(long fromMillis, long toMillis) {
+    std::vector<Event> all_events = EventProvider::requestEventsFromWebDataSources(fromMillis, toMillis);
+    for (Event &e : all_events) {
+        if (EventProvider::isEventPresent(e.id))continue;
+        EventProvider::persistEvent(e);
+    }
+    return all_events;
+}
+
 
 std::vector<Event> EventProvider::requestEventFromDB() {
     using namespace odb::core;
@@ -189,7 +204,7 @@ void EventProvider::deleteEvent(Event e) {
     }
 }
 
-void EventProvider::eraseOldEvents() {
+void EventProvider::removeOldEvents() {
     using namespace odb::core;
     typedef odb::query<Event> query;
 
@@ -218,3 +233,4 @@ void EventProvider::updateEvent(Event &e) {
         std::cerr << e.what() << std::endl;
     }
 }
+
