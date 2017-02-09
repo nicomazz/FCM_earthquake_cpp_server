@@ -229,7 +229,7 @@ std::string HttpEventReportServer::generateDetectedEventsFromToMillis(long from,
 
 std::string HttpEventReportServer::generateEventAndUpdateReportsFromWeb(long from, long to) {
     std::vector<Event> allEventsParsed = EventProvider::requestAndPersistEventFromWebInDateRange(from, to);
-    for (Event e: allEventsParsed)
+    for (Event &e: allEventsParsed)
         ReportChecker::updateEventReportsNumber(e);
     std::string res = EventBuilder::eventsToJson(allEventsParsed).dump(3);
     EventProvider::removeOldEvents();

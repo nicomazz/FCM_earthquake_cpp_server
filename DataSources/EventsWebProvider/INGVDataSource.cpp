@@ -30,8 +30,8 @@ Event INGVDataSource::buildEvent(std::string s) {
 
     std::vector<std::string> splitted = split(s, '|');
     if (splitted.size() != 13) {
-        std::string error = "splitted string problem: "+s+"\nsplitted size: "+std::to_string(splitted.size());
-        syslog(LOG_ERR,error.c_str());
+        //std::string error = "splitted string problem: "+s+"\nsplitted size: "+std::to_string(splitted.size());
+       // syslog(LOG_ERR,error.c_str());
         throw std::invalid_argument("splitted length problem");
     }
     Event event;

@@ -52,5 +52,5 @@ long TimeUtility::getPrecMidnightMillis(long millis) {
 }
 
 long TimeUtility::getNextMidnightMillis(long millis) {
-    return millis - (millis % MILLIS_IN_A_DAY) + MILLIS_IN_A_DAY;
+    return getPrecMidnightMillis(millis) + MILLIS_IN_A_DAY;
 }
