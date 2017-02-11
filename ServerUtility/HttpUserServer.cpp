@@ -11,7 +11,10 @@ void HttpUserServer::initUserFunctions(SimpleWeb::Server<SimpleWeb::HTTP> &serve
         */
     server.resource["^/addUser"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                               shared_ptr<HttpServer::Request> request) {
-        handleUserRequest(request, response);
+        thread work_thread([response, request] {
+            handleUserRequest(request, response);
+        });
+        work_thread.detach();
     };
 
     //GET-example for the path /info
@@ -36,7 +39,10 @@ void HttpUserServer::initUserFunctions(SimpleWeb::Server<SimpleWeb::HTTP> &serve
 
     server.resource["^/active"]["POST"] = [](shared_ptr<HttpServer::Response> response,
                                              shared_ptr<HttpServer::Request> request) {
-        handleUserActivity(request, response);
+        thread work_thread([response, request] {
+            handleUserActivity(request, response);
+        });
+        work_thread.detach();
     };
 
     server.resource["^/getActive"]["GET"] = [](shared_ptr<HttpServer::Response> response,

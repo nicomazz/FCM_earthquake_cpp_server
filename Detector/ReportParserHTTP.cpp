@@ -51,11 +51,11 @@ long ReportParserHTTP::parseActiveRequest(std::string body) {
     } catch (std::invalid_argument e) {
         syslog(LOG_INFO, e.what());
         throw std::invalid_argument(
-                "Error: json string with bad format: " + string(e.what()) + ", cannot create the active request");
+                "Error: json string with bad format: " + string(e.what()) + ", cannot create the active request. Body: "+body);
     } catch (std::domain_error e) {
         syslog(LOG_INFO, e.what());
         throw std::invalid_argument(
-                "Error: json string with bad format: missing fields, cannot create the active request");
+                "Error: json string with bad format: missing fields, cannot create the active request. Body: "+body);
 
     }
 }
