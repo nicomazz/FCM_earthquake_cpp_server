@@ -24,6 +24,8 @@ public:
     * @return The distance between the two points in kilometers
     */
     static double distanceEarth(const double lat1d, const double lon1d, const double lat2d, const double lon2d);
+
+    static int getQuakeRangeKm(double magnitude);
 };
 
 

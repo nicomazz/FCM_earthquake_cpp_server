@@ -71,7 +71,7 @@ void ReportProvider::deleteReport(Report &r) {
 }
 
 std::vector<DBReport> ReportProvider::getReportsRelatedToEvents(Event &e) {
-    const int max_distance_kilometers = (const int) (150 + 20 * e.magnitude);
+    const int max_distance_kilometers = GeoUtility::getQuakeRangeKm(e.magnitude);
 
     std::vector<DBReport> reports = getReportsFromToTime(e.millis - TimeUtility::MILLIS_IN_MINUTE,
                                                          e.millis + TimeUtility::MILLIS_IN_MINUTE * 5);

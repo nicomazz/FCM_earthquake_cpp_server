@@ -16,6 +16,8 @@ using namespace std;
 typedef SimpleWeb::Server<SimpleWeb::HTTP> HttpServer;
 typedef SimpleWeb::Client<SimpleWeb::HTTP> HttpClient;
 
+void quakeRangeTest();
+
 #define TEST_POWER 10
 
 json generateGoodRequest(const User &user) {
@@ -54,7 +56,8 @@ User generateNewUser() {
     newUser.lng = 12 + (rand() / 100 * 0.00001f);
     newUser.secretKey = "123";
     long insertedId = UserPreferenceProvider::persistUser(newUser);
-    insertedId++; insertedId--;
+    insertedId++;
+    insertedId--;
     assert(insertedId >= 0);
     assert(newUser.id == insertedId);
     return newUser;
@@ -155,7 +158,7 @@ void removeOldReportsTest() {
 }
 
 //test of report storage
-void reportProviderTest(){
+void reportProviderTest() {
     User u = generateNewUser();
     string goodRequest = generateGoodRequest(u).dump();
 
@@ -176,34 +179,35 @@ void reportProviderTest(){
     ReportProvider::persistReport(r4);
     ReportProvider::persistReport(r5);
 
-    assert(ReportProvider::getReportsFromToTime(0,5).size() == 0);
-    assert(ReportProvider::getReportsFromToTime(0,10).size() == 1);
-    assert(ReportProvider::getReportsFromToTime(10,11).size() == 1);
-    assert(ReportProvider::getReportsFromToTime(10,31).size() == 3);
-    assert(ReportProvider::getReportsFromToTime(0,100).size() == 5);
+    assert(ReportProvider::getReportsFromToTime(0, 5).size() == 0);
+    assert(ReportProvider::getReportsFromToTime(0, 10).size() == 1);
+    assert(ReportProvider::getReportsFromToTime(10, 11).size() == 1);
+    assert(ReportProvider::getReportsFromToTime(10, 31).size() == 3);
+    assert(ReportProvider::getReportsFromToTime(0, 100).size() == 5);
 
     HttpClient client("localhost:8080");
 
-    cout<<"start report server request"<<endl;
+    cout << "start report server request" << endl;
     auto r = client.request("GET", "/reports/5/35");
     assert(r->status_code.find("400") == string::npos);
     stringstream output;
     output << r->content.rdbuf();
     std::string respose = output.str();
     json respJson = json::parse(respose);
-    assert(ReportProvider::getReportsFromToTime(5,35).size() == 3);
+    assert(ReportProvider::getReportsFromToTime(5, 35).size() == 3);
     assert(respJson.size() == 3);
 
-    cout<<"start event report server request"<<endl;
-    int user_lat = u.lat*10000, user_lng = u.lng*10000;
-    stringstream ss_url; ss_url<<"/eventRelatedReports/63463/35/"<<user_lat<<"/"<<user_lng;
+    cout << "start event report server request" << endl;
+    int user_lat = u.lat * 10000, user_lng = u.lng * 10000;
+    stringstream ss_url;
+    ss_url << "/eventRelatedReports/63463/35/" << user_lat << "/" << user_lng;
     r = client.request("GET", ss_url.str());
     assert(r->status_code.find("400") == string::npos);
-    stringstream output2; output2<< r->content.rdbuf();
+    stringstream output2;
+    output2 << r->content.rdbuf();
     respose = output2.str();
     json rp = json::parse(respose);
     assert(rp.size() == 5);
-
 
 
     ReportProvider::deleteReport(r1);
@@ -215,6 +219,12 @@ void reportProviderTest(){
     UserPreferenceProvider::removeUser(u);
 }
 
+
+void quakeRangeTest() {
+    for (double i = 0.5; i < 8; i += 0.5)
+        cout << "mag: " << i << " range: " << GeoUtility::getQuakeRangeKm(i)<<" Km\n";
+
+}
 
 int main() {
 
@@ -261,7 +271,8 @@ int main() {
             utenti.push_back(generateNewUser());
 
         int startEventNumber = EventProvider::requestEventFromDB().size();
-        startEventNumber++; startEventNumber--; // to fix unused warning
+        startEventNumber++;
+        startEventNumber--; // to fix unused warning
         detector.clear();
         // generate n requests
         for (int i = 0; i < n_users; i++) {
@@ -274,7 +285,8 @@ int main() {
 
         // must have sent a notification in the previous 100 ms
         long timeDiff = TimeUtility::getCurrentMillis() - detector.millisLastNotifySend;
-        timeDiff++;timeDiff--; // to fix unused warning
+        timeDiff++;
+        timeDiff--; // to fix unused warning
         assert(timeDiff < 100);
         assert(startEventNumber + 1 == (int) EventProvider::requestEventFromDB().size());
 
@@ -296,10 +308,12 @@ int main() {
 
     reportProviderTest();
 
+    quakeRangeTest();
 
     server.stop();
     server_thread.join();
 
-    cout<< "All is working for simple detector test!";
+    cout << "All is working for simple detector test!";
     return 0;
 }
+

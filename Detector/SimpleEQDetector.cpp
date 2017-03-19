@@ -65,7 +65,7 @@ void SimpleEQDetector::elaborateActualReports() {
     for (const Report &actual : reports) {
 
         int nearActiveUsers = getNearActiveUsers(actual.u);
-        //must be al least 2
+        //must be al least 2 ( for now )
         if (nearActiveUsers < MIN_USER_DETECTED_EQ) continue;
 
         std::vector<Report> nearReports = getNearReports(actual);

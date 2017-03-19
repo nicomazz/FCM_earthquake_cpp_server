@@ -27,3 +27,8 @@ double GeoUtility::distanceEarth(const double lat1d, const double lon1d, const d
     return 2.0 * earthRadiusKm * asin(sqrt(u * u + cos(lat1r) * cos(lat2r) * v * v));
 
 }
+
+int GeoUtility::getQuakeRangeKm(double magnitude) {
+    if (magnitude < 1) magnitude = 1;
+    return (int) 80 * pow(2,magnitude-1);
+}
